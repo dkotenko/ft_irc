@@ -1,6 +1,6 @@
-SRCS =		main.cpp
+SRCS =		main.cpp Server.cpp
 
-INCLUDES =
+INCLUDES = Server.hpp
 
 OBJS	= 	$(SRCS:%.cpp=%.o)
 
