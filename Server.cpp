@@ -1,11 +1,17 @@
-
-
 #include "Server.hpp"
 #include "utils.h"
 
 Server::Server(int port) {
+    struct rlimit rlp;
+
     this->port = port;
-    init_env();
+    xassert(getrlimit(RLIMIT_NOFILE, &rlp) != -1, "getrlimit");
+    maxfd = FD_SETSIZE - 1;
+    fds = (FileDescriptor *)malloc(sizeof(FileDescriptor) * FD_SETSIZE);
+    for (int i = 0; i < maxfd; i++)
+    {
+        fds[i] = FileDescriptor();
+    }
     this->create();
 }
 
@@ -20,7 +26,7 @@ void Server::create()
   sin.sin_port = htons(port);
   bind(s, (struct sockaddr*)&sin, sizeof(sin));
   listen(s, 42);
-  env->fds[s].type = FD_SERV;
+  fds[s].type = FD_SERV;
 }
 
 void Server::create_socket() {
@@ -68,81 +74,57 @@ void Server::listen_port() {
     //write(this->sockfd, "001", 3);
 }
 
-void   Server::init_env() {
-    int		i;
-    struct rlimit rlp;
-	
-    env = (t_env *)malloc(sizeof(t_env));
-	xassert(getrlimit(RLIMIT_NOFILE, &rlp) != -1, "getrlimit");
-    env->maxfd = FD_SETSIZE - 1;
-    /*
-	env->maxfd = rlp.rlim_cur;
-	if (env->maxfd >= FD_SETSIZE)
-		env->maxfd = FD_SETSIZE - 1;
-    
-    env->fds = (t_fd*)malloc(sizeof(*env->fds) * env->maxfd);
-    */
-    //xassert(e.fds > 0, "malloc error");
-    i = 0;
-    while (i < env->maxfd)
-    {
-        env->fds[i] = FileDescriptor();
-        i++;
-    }
-}
 
-void	Server::init_fd(t_env *e)
+
+void	Server::init_fd()
 {
   int	i;
 
   i = 0;
-  e->max = 0;
-  FD_ZERO(&e->fd_read);
-  FD_ZERO(&e->fd_write);
-  while (i < e->maxfd)
+  max = 0;
+  FD_ZERO(&fd_read);
+  FD_ZERO(&fd_write);
+  while (i < maxfd)
     {
-      if (e->fds[i].type != FD_FREE)
+      if (fds[i].type != FD_FREE)
 	{
-	  FD_SET(i, &e->fd_read);
-	  if (strlen(e->fds[i].buf_write) > 0)
+	  FD_SET(i, &fd_read);
+	  if (strlen(fds[i].buf_write) > 0)
 	    {
-	      FD_SET(i, &e->fd_write);
+	      FD_SET(i, &fd_write);
 	    }
-	  e->max = MAX(e->max, i);
+	  max = MAX(max, i);
 	}
       i++;
     }
 }
 
-void	Server::do_select(t_env *e)
+void	Server::do_select()
 {
-  e->r = select(e->max + 1, &e->fd_read, &e->fd_write, NULL, NULL);
+  r = select(max + 1, &fd_read, &fd_write, NULL, NULL);
 }
 
-void	Server::check_fd(t_env *e)
+void	Server::check_fd()
 {
-  int	i;
-
-  i = 0;
-  while ((i < e->maxfd) && (e->r > 0))
-    {
-      if (FD_ISSET(i, &e->fd_read)) {
-        fct_read(e, i);
-      }
-      if (FD_ISSET(i, &e->fd_write))
-	    fct_write(e, i);
-      if (FD_ISSET(i, &e->fd_read) ||
-	  FD_ISSET(i, &e->fd_write))
-	e->r--;
-      i++;
+    for (int i = 0; (i < maxfd) && (r > 0) ; i++) {
+        if (FD_ISSET(i, &fd_read)) {
+            fct_read(i);
+        }
+        if (FD_ISSET(i, &fd_write)) {
+            fct_write(i);
+        }
+        if (FD_ISSET(i, &fd_read) ||
+        FD_ISSET(i, &fd_write)) {
+            r--;
+        }
     }
 }
 
 void Server::mainloop() {
     while (true) {
-        init_fd(env);
-        do_select(env);
-        check_fd(env);
+        init_fd();
+        do_select();
+        check_fd();
         /*
         // Read from the connection
         char buffer[100];
@@ -173,6 +155,66 @@ void Server::s_close() {
     // Close the connections
     close(this->connection);
     close(this->sockfd);
+}
+
+
+
+void Server::fct_read(int fd) {
+	if (fds[fd].type == FD_SERV) {
+		srv_accept(fd);
+	} else if (fds[fd].type == FD_CLIENT) {
+		client_read(fd);
+	} else {
+		std::cout << "Error: invalid fd type in fct_read: " << fds[fd].type << std::endl;
+	}
+}
+
+void Server::srv_accept(int s)
+{
+  int			cs;
+  struct sockaddr_in	csin;
+  socklen_t		csin_len;
+
+  csin_len = sizeof(csin);
+  cs = accept(s, (struct sockaddr*)&csin, &csin_len);
+  printf("New client #%d from %s:%d\n", cs,
+	 inet_ntoa(csin.sin_addr), ntohs(csin.sin_port));
+  fds[cs].type = FD_CLIENT;
+}
+
+void Server::client_read(int cs)
+{
+  int	r;
+  int	i;
+
+  r = recv(cs, fds[cs].buf_read, BUF_SIZE, 0);
+  if (r <= 0)
+    {
+      close(cs);
+      fds[cs].clean();
+      printf("client #%d gone away\n", cs);
+    }
+  else
+    {
+      i = 0;
+      while (i < maxfd)
+	{
+	  if ((fds[i].type == FD_CLIENT) &&
+	      (i != cs))
+	    send(i, fds[cs].buf_read, r, 0);
+	  i++;
+	}
+    }
+}
+
+void Server::fct_write(int cs)
+{
+	client_write(cs);
+}
+
+void Server::client_write(int cs)
+{
+    (void)cs;
 }
 
 

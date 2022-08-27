@@ -28,22 +28,7 @@
 # define USAGE		"Usage: %s port\n"
 
 
-typedef struct	s_env
-{
-  FileDescriptor fds[FD_SETSIZE];
-  int		port;
-  int		maxfd;
-  int		max;
-  int		r;
-  fd_set	fd_read;
-  fd_set	fd_write;
-}		t_env;
-
 int		xassert(int value, const std::string& input);
 void	sigh(int n);
-void fct_read(struct s_env *env, int fd);
-void srv_accept(struct s_env *env, int s);
-void client_read(struct s_env *env, int cs);
-void fct_write(struct s_env *env, int cs);
-void client_write(struct s_env *env, int cs);
+
 #endif

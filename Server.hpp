@@ -17,8 +17,10 @@
 #include <cstdlib>
 #include <netdb.h>
 #include <arpa/inet.h>
+#include <algorithm>
 #include "FileDescriptor.hpp"
 #include "utils.h"
+#include <map>
 
 
 
@@ -32,16 +34,28 @@ public:
     int port;
     int sockfd;
     int connection;
+    int		maxfd;
+    int		max;
+    int		r;
+    fd_set	fd_read;
+    fd_set	fd_write;
+    FileDescriptor *fds;
 private:
+    std::string password;
+    struct sockaddr_in sockaddr;
+
+    FileDescriptor *getByFd(int fd);
     void create();
-    void check_fd(t_env *e);
-    void do_select(t_env *e);
+    void check_fd();
+    void do_select();
     void wait_connection();
     void init_env();
-    void init_fd(t_env *e);
-    std::string password;
-    t_env *env;
-    struct sockaddr_in sockaddr;
+    void init_fd();
+    void fct_read(int fd);
+    void srv_accept(int s);
+    void client_read(int cs);
+    void fct_write(int cs);
+    void client_write(int cs);
 };
 
 

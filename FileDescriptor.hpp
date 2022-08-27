@@ -15,6 +15,7 @@ class FileDescriptor
 	public:
 
 		FileDescriptor();
+		FileDescriptor(int type, int fd);
 		//FileDescriptor( FileDescriptor const & src );
 		~FileDescriptor();
 		int GetType() const;
@@ -30,6 +31,7 @@ class FileDescriptor
 		*/
 		
 		int type;
+		int fd;
 		char buf_read[BUF_SIZE + 1];
 		char buf_write[BUF_SIZE + 1];
 		void clean();

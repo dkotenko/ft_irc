@@ -9,6 +9,13 @@ FileDescriptor::FileDescriptor()
 	this->clean();
 }
 
+FileDescriptor::FileDescriptor(int type, int fd)
+{
+	this->clean();
+	this->type = type;
+	this->fd = fd;
+}
+
 int FileDescriptor::GetType() const {
 	return type;
 }
