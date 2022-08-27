@@ -1,4 +1,5 @@
 #include "FileDescriptor.hpp"
+#include <strings.h>
 
 /*
 ** ------------------------------- CONSTRUCTOR --------------------------------
@@ -7,8 +8,8 @@
 FileDescriptor::FileDescriptor()
 {
 	this->clean();
-	this->buf_read = new char[BUF_SIZE + 1];
-	this->buf_write = new char[BUF_SIZE + 1];
+	this->buf_read = new char[BUF_SIZE + 1] ();
+	this->buf_write = new char[BUF_SIZE + 1] ();
 }
 
 FileDescriptor::FileDescriptor(int type, int fd)
@@ -16,6 +17,8 @@ FileDescriptor::FileDescriptor(int type, int fd)
 	this->clean();
 	this->type = type;
 	this->fd = fd;
+	this->buf_read = new char[BUF_SIZE + 1] ();
+	this->buf_write = new char[BUF_SIZE + 1] ();
 }
 
 int FileDescriptor::GetType() const {

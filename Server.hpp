@@ -20,7 +20,7 @@
 #include <algorithm>
 #include "FileDescriptor.hpp"
 #include "utils.h"
-#include <map>
+#include <vector>
 
 
 
@@ -39,7 +39,7 @@ public:
     int		r;
     fd_set	fd_read;
     fd_set	fd_write;
-    FileDescriptor *fds;
+    std::vector<FileDescriptor *> fds;
 private:
     std::string password;
     struct sockaddr_in sockaddr;
