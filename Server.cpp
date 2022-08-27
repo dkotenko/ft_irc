@@ -7,7 +7,8 @@ Server::Server(int port) {
     this->port = port;
     xassert(getrlimit(RLIMIT_NOFILE, &rlp) != -1, "getrlimit");
     maxfd = FD_SETSIZE - 1;
-    fds = (FileDescriptor *)malloc(sizeof(FileDescriptor) * FD_SETSIZE);
+    FileDescriptor *fdc = new FileDescriptor();
+    fds = (FileDescriptor *)malloc(sizeof(fdc) * FD_SETSIZE);
     for (int i = 0; i < maxfd; i++)
     {
         fds[i] = FileDescriptor();

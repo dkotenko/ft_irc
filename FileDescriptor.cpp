@@ -7,6 +7,8 @@
 FileDescriptor::FileDescriptor()
 {
 	this->clean();
+	this->buf_read = new char[BUF_SIZE + 1];
+	this->buf_write = new char[BUF_SIZE + 1];
 }
 
 FileDescriptor::FileDescriptor(int type, int fd)

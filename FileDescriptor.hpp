@@ -32,8 +32,8 @@ class FileDescriptor
 		
 		int type;
 		int fd;
-		char buf_read[BUF_SIZE + 1];
-		char buf_write[BUF_SIZE + 1];
+		char *buf_read;
+		char *buf_write;
 		void clean();
 	private:
 };
