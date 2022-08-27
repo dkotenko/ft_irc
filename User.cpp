@@ -4,25 +4,31 @@
 
 #include "User.hpp"
 #include <string>
-#include "map"
+#include <map>
 
-struct message {
-    int fd_from;
-    vector<int> fd_to;
-    string operation;
-    string data;
-};
 
-string pass
 
-map <string, vector<string>> users;
-
-User::User(string nick, string password) {
-    if (!users.find(nick)) {
-        if
-    }
+User::User(int fd, std::string nickname) {
+    this->fd = fd;
+    this->nickname = nickname;
 }
 
-void setUser(string nick) {
+void User::setUserName(std::string username) {
+    this->username = username;
+}
 
+void User::setNickName(std::string nickname) {
+    this->nickname = nickname;
+}
+
+std::string User::getUserName() {
+    return this->username;
+}
+
+std::string User::getNickName() {
+    return this->username;
+}
+
+void User::delUser(std::string username) {
+    
 }
