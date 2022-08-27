@@ -7,9 +7,7 @@
 
 FileDescriptor::FileDescriptor()
 {
-	this->clean();
-	this->buf_read = new char[BUF_SIZE + 1] ();
-	this->buf_write = new char[BUF_SIZE + 1] ();
+	
 }
 
 FileDescriptor::FileDescriptor(int type, int fd)
@@ -24,12 +22,6 @@ FileDescriptor::FileDescriptor(int type, int fd)
 int FileDescriptor::GetType() const {
 	return type;
 }
-
-void FileDescriptor::clean() {
-	this->type = FD_FREE;
-}
-
-
 
 /*
 ** -------------------------------- DESTRUCTOR --------------------------------

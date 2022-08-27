@@ -4,10 +4,7 @@
 # include <iostream>
 # include <string>
 
-# define BUF_SIZE	4096
-# define FD_FREE	0
-# define FD_SERV	1
-# define FD_CLIENT	2
+
 
 class FileDescriptor
 {
@@ -30,11 +27,7 @@ class FileDescriptor
 		void	client_write(struct s_env *env, int cs);
 		*/
 		
-		int type;
-		int fd;
-		char *buf_read;
-		char *buf_write;
-		void clean();
+		
 	private:
 };
 

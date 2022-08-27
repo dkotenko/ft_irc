@@ -18,7 +18,7 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <algorithm>
-#include "FileDescriptor.hpp"
+#include "User.hpp"
 #include "utils.h"
 #include <vector>
 
@@ -39,7 +39,7 @@ public:
     int		r;
     fd_set	fd_read;
     fd_set	fd_write;
-    std::vector<FileDescriptor *> fds;
+    std::vector<User *> users;
 private:
     std::string password;
     struct sockaddr_in sockaddr;

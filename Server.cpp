@@ -11,7 +11,7 @@ Server::Server(int port) {
 
     for (int i = 0; i < maxfd; i++)
     {
-        fds.push_back(new FileDescriptor(FD_FREE, i));
+        users.push_back(new User(FD_FREE, i));
     }
     
     this->create();
@@ -28,7 +28,7 @@ void Server::create()
   sin.sin_port = htons(port);
   bind(s, (struct sockaddr*)&sin, sizeof(sin));
   listen(s, 42);
-  fds[s]->type = FD_SERV;
+  users[s]->type = FD_SERV;
 }
 
 void Server::create_socket() {
@@ -88,10 +88,10 @@ void	Server::init_fd()
   FD_ZERO(&fd_write);
   while (i < maxfd)
     {
-      if (fds[i]->type != FD_FREE)
+      if (users[i]->type != FD_FREE)
 	{
 	  FD_SET(i, &fd_read); 
-	  if (strlen(fds[i]->buf_write) > 0)
+	  if (strlen(users[i]->buf_write) > 0)
 	    {
 	      FD_SET(i, &fd_write);
 	    }
@@ -162,12 +162,12 @@ void Server::s_close() {
 
 
 void Server::fct_read(int fd) {
-	if (fds[fd]->type == FD_SERV) {
+	if (users[fd]->type == FD_SERV) {
 		srv_accept(fd);
-	} else if (fds[fd]->type == FD_CLIENT) {
+	} else if (users[fd]->type == FD_CLIENT) {
 		client_read(fd);
 	} else {
-		std::cout << "Error: invalid fd type in fct_read: " << fds[fd]->type << std::endl;
+		std::cout << "Error: invalid fd type in fct_read: " << users[fd]->type << std::endl;
 	}
 }
 
@@ -181,7 +181,7 @@ void Server::srv_accept(int s)
   cs = accept(s, (struct sockaddr*)&csin, &csin_len);
   printf("New client #%d from %s:%d\n", cs,
 	 inet_ntoa(csin.sin_addr), ntohs(csin.sin_port));
-  fds[cs]->type = FD_CLIENT;
+  users[cs]->type = FD_CLIENT;
 }
 
 void Server::client_read(int cs)
@@ -189,11 +189,11 @@ void Server::client_read(int cs)
   int	r;
   int	i;
 
-  r = recv(cs, fds[cs]->buf_read, BUF_SIZE, 0);
+  r = recv(cs, users[cs]->buf_read, BUF_SIZE, 0);
   if (r <= 0)
     {
       close(cs);
-      fds[cs]->clean();
+      users[cs]->clean();
       printf("client #%d gone away\n", cs);
     }
   else
@@ -201,9 +201,9 @@ void Server::client_read(int cs)
       i = 0;
       while (i < maxfd)
 	{
-	  if ((fds[i]->type == FD_CLIENT) &&
+	  if ((users[i]->type == FD_CLIENT) &&
 	      (i != cs))
-	    send(i, fds[cs]->buf_read, r, 0);
+	    send(i, users[cs]->buf_read, r, 0);
 	  i++;
 	}
     }

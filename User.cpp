@@ -6,11 +6,18 @@
 #include <string>
 #include <map>
 
+User::User(int type, int fd)
+{
+	this->clean();
+    isConnected = false;
+	this->type = type;
+	this->fd = fd;
+	this->buf_read = new char[BUF_SIZE + 1] ();
+	this->buf_write = new char[BUF_SIZE + 1] ();
+}
 
-
-User::User(int fd, std::string nickname) {
-    this->fd = fd;
-    this->nickname = nickname;
+void User::clean() {
+	this->type = FD_FREE;
 }
 
 void User::setUserName(std::string username) {
@@ -30,5 +37,5 @@ std::string User::getNickName() {
 }
 
 void User::delUser(std::string username) {
-    
+    (void)username;
 }

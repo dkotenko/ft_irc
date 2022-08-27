@@ -1,9 +1,9 @@
 SRCS =		main.cpp \
 			Server.cpp \
-			FileDescriptor.cpp \
+			User.cpp \
 			utils.cpp
 
-INCLUDES = Server.hpp FileDescriptor.hpp utils.h
+INCLUDES = Server.hpp User.hpp utils.h
 
 OBJS	= 	$(SRCS:%.cpp=%.o)
 
