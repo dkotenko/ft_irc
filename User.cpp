@@ -79,10 +79,10 @@ int			User::getNickNamePassed() {
 std::string getFirstWord(std::string msg){
     std::string fw;
     if (!msg.empty()){
-        std::istringstream stringToSplit(message.c_str());
+        std::istringstream stringToSplit(msg.c_str());
 		std::string stringSplitted;
 	
-		while (getline(stringToSplit, stringSplitted, ' ' ) && stringSplitted != " "){
+		while (std::getline(stringToSplit, stringSplitted, ' ' ) && stringSplitted != " "){
 			fw = stringSplitted;
 			break ;
 		}
@@ -121,7 +121,7 @@ int User::cmdParse(Server &server, std::string msg, int i, struct pollfd filedes
     if (!ifAllIsDone)
 		return server.getUserID(i).preparationCommands(server, msg, i);
 	vector<User> newVector = server.getVectorOfUsers();
-	Cmd command(msg, server.getUserID(i).getFd(), server.getUserID(i).getNickname(), server.getUserID(i).getUsername(), newVector);
+	MessageOp command(msg, server.getUserID(i).getFd(), server.getUserID(i).getNickName(), server.getUserID(i).getUsername(), newVector);
 	return command.commandStart(server, filedescs);
 }
 
@@ -148,5 +148,54 @@ int			User::preparationCommands(Server &server, std::string message, int i){
 
 //парсинг никнейма пользователя
 
+int				User::parsNickCommand(Server &server, string message, int i){
+	vector<string>	parametrs = getParametrs(message);
+	if (parametrs.size() == 0){
+		sendError(ERR_NEEDMOREPARAMS(string("NICK")));
+		return (1);
+	}
+	int error = checkIdentity(server, parametrs, _sockfd);
+	if (error)
+		return 1;
+	
+	server.setNicknameByUser(parametrs[0], i);
+	server.setNicknamePassedByUser(i);
+	if (GET_USER_PASSED){
+		send(fd, NEW_USER(nickname, username).c_str(), NEW_USER(nickname, username).length() + 1, 0);
+		SEND_ABOUT_NEW_USER;
+	}
+	return (1);
+}
+
 //парсинг команды пользователя
+int				User::parsUserCommand(Server &server, string msg, int i){
+	vector<string>	parametrs = getParametrs(msg);
+	
+	if (parametrs.size() == 0){
+		sendError(ERR_NEEDMOREPARAMS(string("USER")));
+		return (1);
+	}
+	server.setUsernameByUser(parametrs[0], i);
+	server.setUserPassedByUser(i);
+	if (GET_NICK_PASSED){
+		send(_sockfd, NEW_USER(nickname, username).c_str(), NEW_USER(nickname, username).length() + 1, 0);
+		SEND_ABOUT_NEW_USER;
+	}
+	return (1);
+}
+
+//парсинг пароля
+
+void			User::checkUserPassword(Server &server, std::string message, int i){
+	vector<std::string>	parametrs = getParametrs(message);
+	if (parametrs.size() == 0){
+		sendError(ERR_NEEDMOREPARAMS(string("PASS")));
+		return ;
+	}
+
+	if (parametrs[0] == std::string(server.getPassword()))
+		server.setPasswordPassedByUser(i);
+	else
+		sendErr(ERR_PASSWDMISMATCH);
+}
 

@@ -51,6 +51,9 @@ public:
 	bool	getAllPassedArgs();
 	int		preparationCommands(Server &server, std::string message, int i);
 	void sendErr(string err);
+    int	 parsNickCommand(Server &server, string message, int i);
+    int parsUserCommand(Server &server, string msg, int i);
+    void checkUserPassword(Server &server, std::string message, int i);
 private:
 	int		pswdPassed; // is password passed
 	int		nnPassed; // is nickname passed
