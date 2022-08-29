@@ -40,6 +40,9 @@ public:
     fd_set	fd_read;
     fd_set	fd_write;
     std::vector<User *> users;
+    User getUserID(int i);
+	vector<Chanel>	getVectorOfChannels();
+	vector<User>	getVectorOfUsers();
 private:
     std::string password;
     struct sockaddr_in sockaddr;

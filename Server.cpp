@@ -159,7 +159,9 @@ void Server::s_close() {
     close(this->sockfd);
 }
 
-
+void Server::getUserID(int i){
+  return users[i];
+}
 
 void Server::fct_read(int fd) {
 	if (users[fd]->type == FD_SERV) {
