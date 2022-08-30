@@ -2,7 +2,7 @@
 
 Command::Command() { }
 
-Command::Command(string msg, int fd, string nickname, string username, vector<User> &users) : fd(fd), msg(msg),  username(username), nickname(nickname),  _users(users) {
+/*Command::Command(string msg, int fd, string nickname, string username, vector<User> &users) : fd(fd), msg(msg),  username(username), nickname(nickname),  _users(users) {
 	if (!message.empty()){	
 		std::istringstream stringToSplit(message.c_str());
 		string stringSplitted;
@@ -12,9 +12,9 @@ Command::Command(string msg, int fd, string nickname, string username, vector<Us
 		command = arguments[0];
 		command.erase(std::remove(command.begin(), command.end(), '\r'), command.end());
 		command.erase(std::remove(command.begin(), command.end(), '\n'), command.end());
-		arguments.erase(_rguments.begin());
+		arguments.erase(arguments.begin());
 
-		for (vector<string>::iterator it = _arguments.begin(); it != _arguments.end(); it++)
+		for (vector<string>::iterator it = arguments.begin(); it != _arguments.end(); it++)
 			(*it).erase(std::remove((*it).begin(), (*it).end(), '\r'), (*it).end());
 
 		for (vector<string>::iterator it = _arguments.begin(); it != _arguments.end(); it++)
@@ -85,7 +85,7 @@ void	Command::doNickCommand(Server &server){
 void	Command::doPrivmsgCommand(Server &server){
 
 	if (_arguments.size() < 2){ 
-		send(_fd, ERR_NEEDMOREPARAMS(string("PRIVMSG")).c_str(), ERR_NEEDMOREPARAMS(string("PRIVMSG")).length() + 1, 0);
+		send(fd, ERR_NEEDMOREPARAMS(string("PRIVMSG")).c_str(), ERR_NEEDMOREPARAMS(string("PRIVMSG")).length() + 1, 0);
 		return ; 
 	}
 
@@ -119,5 +119,5 @@ void	Command::doPrivmsgCommand(Server &server){
 		return ;
 	}
 }
-
+*/
 Command::~Command() { }

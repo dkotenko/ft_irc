@@ -1,9 +1,9 @@
 SRCS =		main.cpp \
 			Server.cpp \
 			User.cpp \
-			utils.cpp
+			utils.cpp Command.cpp MessageOp.cpp 
 
-INCLUDES = Server.hpp User.hpp utils.h
+INCLUDES = Server.hpp User.hpp utils.h MessageOp.hpp Command.hpp
 
 OBJS	= 	$(SRCS:%.cpp=%.o)
 
