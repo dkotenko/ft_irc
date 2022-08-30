@@ -3,6 +3,7 @@
 //
 
 #include "User.hpp"
+#include "Command.hpp"
 #include <string>
 #include <map>
 
@@ -41,8 +42,9 @@ int User::getFd(){
     return fd;
 }
 
-std::string User::getNickName() {
-    return this->username;
+std::string User::
+getNickName() {
+    return this->nickname;
 }
 
 void User::delUser(std::string username) {
@@ -121,7 +123,7 @@ int User::cmdParse(Server &server, std::string msg, int i, struct pollfd filedes
     if (!ifAllIsDone)
 		return server.getUserID(i).preparationCommands(server, msg, i);
 	vector<User> newVector = server.getVectorOfUsers();
-	MessageOp command(msg, server.getUserID(i).getFd(), server.getUserID(i).getNickName(), server.getUserID(i).getUsername(), newVector);
+	Command command(msg, server.getUserID(i).getFd(), server.getUserID(i).getNickName(), server.getUserID(i).getUserName(), newVector);
 	return command.commandStart(server, filedescs);
 }
 
