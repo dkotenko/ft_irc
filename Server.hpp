@@ -25,6 +25,8 @@
 
 
 class Server {
+	vector<User>	_users;
+	vector<Chanel>	_channels;
 public:
     Server(int port);
     void create_socket();
@@ -46,7 +48,6 @@ public:
 private:
     std::string password;
     struct sockaddr_in sockaddr;
-
     FileDescriptor *getByFd(int fd);
     void create();
     void check_fd();

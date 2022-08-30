@@ -1,49 +1,21 @@
 #include "MessageOp.hpp"
 
-/*Message::Message(const std::string &str)
-{
-	std::string	strWithoutNL = std::string(str.begin(), str.end() - 1);
-	std::queue<std::string>	que = split(strWithoutNL, ' ', false);
-	if (que.size() > 0 && que.front()[0] == ':')
-	{
-		prefix = std::string(que.front().begin() + 1, que.front().end());
-		que.pop();
-	}
-	if (que.size() > 0)
-	{
-		command = que.front();
-		que.pop();
-	}
-	while (que.size() > 0)
-	{
-		if (que.front()[0] == ':')
-		{
-			std::string	s(que.front().begin() + 1, que.front().end());
-			que.pop();
-			while (que.size() > 0)
-			{
-				s.append(" ");
-				s.append(que.front());
-				que.pop();
-			}
-			parameters.push_back(s);
-		}
-		else
-		{
-			parameters.push_back(que.front());
-			que.pop();
-		}
-	}
-}*/
-
-void getPrefix(string prefix){
-    return prefix;
+void	MessageDeliveryFormat(int fd, string nickname, string username, string message){
+	string messageToSend = ":" + nickname + "!" + username + "@127.0.0.1 " + message + "\r\n";
+	send(fd, messageToSend.c_str(), messageToSend.length() + 1, 0);
 }
 
-void getCmd(string cmd){
-    return cmd;
+bool	contains(string array[], string message){
+	for (size_t i = 0; i < array->length(); i++){
+		if (array[i] == message) {
+			std::cout << message << std::endl;
+			return (true);
+		}
+	}
+	return (false);
 }
 
-void getParams(){
-    return params;
+void	error(string error){
+	std::cout << error << std::endl;
+	exit(EXIT_FAILURE);
 }
