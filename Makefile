@@ -3,9 +3,10 @@ SRCS =		main.cpp \
 			User.cpp \
 			utils.cpp \
 			Message.cpp \
-			Parser.cpp
+			Parser.cpp \
+			ServerData.cpp
 
-INCLUDES = Server.hpp User.hpp utils.h Message.hpp Parser.hpp
+INCLUDES = Server.hpp User.hpp utils.h Message.hpp Parser.hpp ServerData.hpp
 
 OBJS	= 	$(SRCS:%.cpp=%.o)
 

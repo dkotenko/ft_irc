@@ -22,6 +22,7 @@
 #include "utils.h"
 #include <vector>
 #include "Parser.hpp"
+#include "ServerData.hpp"
 
 
 class Server {

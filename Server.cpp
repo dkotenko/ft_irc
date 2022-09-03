@@ -188,6 +188,10 @@ void Server::client_read(int cs)
   int	r;
   int	i;
 
+  //parser.serverData = serverData;
+  ServerData *serverdata = new ServerData;
+  serverdata->addUser("name1", "pass");
+
   r = recv(cs, users[cs]->buf_read, BUF_SIZE, 0);
   if (r <= 0)
     {
@@ -203,7 +207,9 @@ void Server::client_read(int cs)
 	  if ((users[i]->type == FD_CLIENT) &&
 	      (i != cs)) {
           std::string str(users[cs]->buf_read);
-          Message *msg = parser.parse(str);
+
+          Message *msg(parser.parse(str));
+          msg->command = "qwe";
 
           send(i, &msg->command[0] , r, 0);
           for (int j = 0; j < (int)msg->params.size(); j++) {
