@@ -3,11 +3,10 @@
 
 Server::Server(int port) {
     struct rlimit rlp;
-
+    parser = Parser();
     this->port = port;
     xassert(getrlimit(RLIMIT_NOFILE, &rlp) != -1, "getrlimit");
     maxfd = FD_SETSIZE - 1;
-
 
     for (int i = 0; i < maxfd; i++)
     {
@@ -202,8 +201,15 @@ void Server::client_read(int cs)
       while (i < maxfd)
 	{
 	  if ((users[i]->type == FD_CLIENT) &&
-	      (i != cs))
-	    send(i, users[cs]->buf_read, r, 0);
+	      (i != cs)) {
+          std::string str(users[cs]->buf_read);
+          Message *msg = parser.parse(str);
+
+          send(i, &msg->command[0] , r, 0);
+          for (int j = 0; j < (int)msg->params.size(); j++) {
+              send(i, &msg->params[j][0] , r, 0);
+          }
+      }
 	  i++;
 	}
     }

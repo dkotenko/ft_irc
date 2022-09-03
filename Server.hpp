@@ -21,7 +21,7 @@
 #include "User.hpp"
 #include "utils.h"
 #include <vector>
-
+#include "Parser.hpp"
 
 
 class Server {
@@ -43,6 +43,7 @@ public:
 private:
     std::string password;
     struct sockaddr_in sockaddr;
+    Parser parser;
 
     FileDescriptor *getByFd(int fd);
     void create();

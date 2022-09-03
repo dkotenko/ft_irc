@@ -4,16 +4,17 @@
 
 #ifndef FT_IRC_PARSER_H
 #define FT_IRC_PARSER_H
-
+#include <iostream>
+#include <sstream>
+#include <vector>
+#include <string>
+#include "utils.h"
+#include "Message.hpp"
 
 class Parser {
-    Parser() {
-
-    }
-
-    void parse(std::string src) {
-
-    }
+public:
+    Parser();
+    Message *parse(std::string src);
 };
 
 

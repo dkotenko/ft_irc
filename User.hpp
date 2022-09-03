@@ -12,13 +12,6 @@
 # define FD_SERV	1
 # define FD_CLIENT	2
 
-struct message {
-    int fd_from;
-    std::vector<int> fd_to;
-    std::string command;
-    std::vector<string> params;
-    std::string src;
-};
 
 
 // JOIN
