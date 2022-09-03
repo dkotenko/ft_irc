@@ -21,5 +21,8 @@ Message *Parser::parse(std::string src) {
             message->params.push_back(val);
         i++;
     }
+    if (!message->command.compare("NICK")) {
+
+    }
     return message;
 }

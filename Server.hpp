@@ -58,6 +58,7 @@ private:
     void client_read(int cs);
     void fct_write(int cs);
     void client_write(int cs);
+    Message *parse(int fd, std::string msg);
 };
 
 

@@ -11,15 +11,12 @@ class ServerData
 
 	public:
 		ServerData();
-        std::map<std::string, User*> users;
-		ServerData &		operator=( ServerData const & rhs );
         void addUser(std::string username, std::string password);
         ~ServerData();
+
+        std::map<std::string, User*> users;
 private:
 
 };
-
-
-std::ostream &			operator<<( std::ostream & o, ServerData const & i );
 
 #endif /* ****************************************************** SERVERDATA_H */

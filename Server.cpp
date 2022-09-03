@@ -208,17 +208,49 @@ void Server::client_read(int cs)
 	      (i != cs)) {
           std::string str(users[cs]->buf_read);
 
-          Message *msg(parser.parse(str));
+          Message *msg(parse(i, str));
+
           std::string space = " ";
           for (int j = 0; j < (int)msg->params.size(); j++) {
               //send(i, &space[0] , r, 0);
-              send(i, users[cs]->buf_read , r, 0);
+              if (users[i]->isConnected) {
+                  std::string welcomeMessage = "001 :Welcome!";
+                  memcpy(users[cs]->buf_read, &welcomeMessage[0], welcomeMessage.length());
+                  send(i, users[cs]->buf_read , r, 0);
+              }
+
               //memset(users[cs]->buf_read, 0, 100);
           }
       }
 	  i++;
 	}
     }
+}
+
+Message *Server::parse(int fd, std::string src) {
+    const char separator = ' ';
+    Message *message = new Message();
+
+    std::vector<std::string> outputArray;
+    std::stringstream streamData(src);
+    std::string val;
+    int i = 0;
+    while (std::getline(streamData, val, separator)) {
+        if (i == 0)
+            message->command = val;
+        if (i != 0)
+            message->params.push_back(val);
+        i++;
+    }
+    if (!message->command.compare("NICK")) {
+        users[fd]->connectStatus |= NICK_PASSED;
+    } else if (!message->command.compare("USER")) {
+        users[fd]->connectStatus |= USER_PASSED;
+    } else if (!message->command.compare("PASS")) {
+        users[fd]->connectStatus |= PASS_PASSED;
+    }
+    users[fd]->isConnected = users[fd]->connectStatus & CONNECTED;
+    return message;
 }
 
 void Server::fct_write(int cs)

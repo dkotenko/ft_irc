@@ -12,6 +12,16 @@
 # define FD_SERV	1
 # define FD_CLIENT	2
 
+//111
+enum e_connect_states {
+    NOT_CONNECTED = 0,
+    NICK_PASSED = 1,
+    USER_PASSED = 3, //10
+    PASS_PASSED = 7, //100
+    CONNECTED,
+    CONNECT_STATES_NUM
+};
+
 
 
 // JOIN
@@ -21,6 +31,7 @@ public:
     std::string username;
     std::string nickname;
     std::string password;
+    int connectStatus;
     bool isConnected;
     int type;
     int fd;

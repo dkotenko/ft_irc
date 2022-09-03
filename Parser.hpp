@@ -10,11 +10,13 @@
 #include <string>
 #include "utils.h"
 #include "Message.hpp"
+#include "ServerData.hpp"
 
 class Parser {
 public:
     Parser();
     Message *parse(std::string src);
+    ServerData serverData;
 };
 
 

@@ -9,7 +9,7 @@
 User::User(int type, int fd)
 {
 	this->clean();
-    isConnected = false;
+    connectStatus = NOT_CONNECTED;
 	this->type = type;
 	this->fd = fd;
 	this->buf_read = new char[BUF_SIZE + 1] ();
