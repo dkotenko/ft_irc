@@ -15,10 +15,13 @@
 struct message {
     int fd_from;
     std::vector<int> fd_to;
-    std::string operation;
-    std::string data;
+    std::string command;
+    std::vector<string> params;
+    std::string src;
 };
 
+
+// JOIN
 class User {
 public:
     User(int type, int fd);
