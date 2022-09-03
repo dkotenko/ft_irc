@@ -16,9 +16,9 @@
 enum e_connect_states {
     NOT_CONNECTED = 0,
     NICK_PASSED = 1,
-    USER_PASSED = 3, //10
-    PASS_PASSED = 7, //100
-    CONNECTED,
+    USER_PASSED = 2, //10
+    PASS_PASSED = 4, //100
+    CONNECTED = 7,
     CONNECT_STATES_NUM
 };
 

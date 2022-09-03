@@ -205,22 +205,26 @@ void Server::client_read(int cs)
       while (i < maxfd)
 	{
 	  if ((users[i]->type == FD_CLIENT) &&
-	      (i != cs)) {
+	      (i == cs)) {
+
           std::string str(users[cs]->buf_read);
 
           Message *msg(parse(i, str));
+          std::cout << users[i]->connectStatus << std::endl;
 
-          std::string space = " ";
+          std::string welcomeMessage = "001 :Welcome!";
+          memcpy(users[cs]->buf_read, &welcomeMessage[0], welcomeMessage.length());
+          send(i, users[cs]->buf_read , r, 0);
+
+          if (users[i]->isConnected) {
+              ;
+          }
           for (int j = 0; j < (int)msg->params.size(); j++) {
               //send(i, &space[0] , r, 0);
-              if (users[i]->isConnected) {
-                  std::string welcomeMessage = "001 :Welcome!";
-                  memcpy(users[cs]->buf_read, &welcomeMessage[0], welcomeMessage.length());
-                  send(i, users[cs]->buf_read , r, 0);
-              }
-
               //memset(users[cs]->buf_read, 0, 100);
           }
+      } else {
+          send(i, users[cs]->buf_read , r, 0);
       }
 	  i++;
 	}
