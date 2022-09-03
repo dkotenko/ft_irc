@@ -209,11 +209,11 @@ void Server::client_read(int cs)
           std::string str(users[cs]->buf_read);
 
           Message *msg(parser.parse(str));
-          msg->command = "qwe";
-
-          send(i, &msg->command[0] , r, 0);
+          std::string space = " ";
           for (int j = 0; j < (int)msg->params.size(); j++) {
-              send(i, &msg->params[j][0] , r, 0);
+              //send(i, &space[0] , r, 0);
+              send(i, users[cs]->buf_read , r, 0);
+              //memset(users[cs]->buf_read, 0, 100);
           }
       }
 	  i++;
