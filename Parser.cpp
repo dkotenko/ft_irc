@@ -6,7 +6,7 @@
 
 Parser::Parser() {}
 
-Message *parse(std::string src) {
+Message *Parser::parse(std::string src) {
     const char separator = ' ';
     Message *message = new Message();
 
