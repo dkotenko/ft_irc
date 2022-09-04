@@ -205,7 +205,10 @@ void Server::client_read(int cs)
                   //memset(users[cs]->buf_read, 0, 100);
                 }
                  */
-                send(i, &messageOutput->data[0], r, 0);
+                for(int i = 0; i < (int)messageOutput->fd_to.size(); i++) {
+                    send(messageOutput->fd_to[i], &messageOutput->data[0], r, 0);
+                }
+                //delete &messageOutput;
             } else if (users[i]->type == FD_CLIENT) {
                 send(i, users[cs]->buf_read , r, 0);
             }
@@ -250,6 +253,10 @@ MessageOutput *Server::parse(int fd, std::string src) {
                     messageOutput->data = "372 :Message of the Day";
                 }
             }
+        }
+        else if (!messageInput->command.compare("PRIVMSG")) {
+            serverData.chanels[messageInput->params[0]]->addMessage(users[messageInput->fd_from]->username, serverData.chanels[messageInput->params[0]]->getAllUsers(), messageInput->params[0]);
+            //messageOutput->data = serverData.chanels[messageInput->params[0]]->getMessage().datamessage;
         }
     }
     return messageOutput;

@@ -18,7 +18,8 @@ class Chanel {
         void delUser(std::string username);
         void addMessage(std::string from_username, std::vector<std::string> to_usernames, std::string message);
         std::vector<std::string> getUsers();
-    endmessage getMessage();
+        endmessage getMessage();
+        std::vector<std::string> getAllUsers();
     private:
         std::vector<std::string> users;
         std::vector<endmessage> messages;

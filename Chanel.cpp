@@ -4,7 +4,7 @@
 
 
 Chanel::Chanel(std::string chname) {
-    this->chname = chname;
+    Chanel::chname = chname;
 }
 
 void Chanel::addUser(std::string username) {
@@ -38,4 +38,8 @@ endmessage Chanel::getMessage() {
     res = Chanel::messages.back();
     //Chanel::messages.pop_back();
     return res;
+}
+
+std::vector<std::string> Chanel::getAllUsers() {
+    return users;
 }
