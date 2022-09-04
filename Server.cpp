@@ -246,14 +246,21 @@ Message *Server::parse(int fd, std::string src) {
             message->params.push_back(val);
         i++;
     }
-    if (!message->command.compare("NICK")) {
-        users[fd]->connectStatus |= NICK_PASSED;
-    } else if (!message->command.compare("USER")) {
-        users[fd]->connectStatus |= USER_PASSED;
-    } else if (!message->command.compare("PASS")) {
-        users[fd]->connectStatus |= PASS_PASSED;
+
+    if (!users[fd]->isConnected) {
+        if (!message->command.compare("NICK")) {
+            users[fd]->connectStatus |= NICK_PASSED;
+        } else if (!message->command.compare("USER")) {
+            users[fd]->connectStatus |= USER_PASSED;
+        } else if (!message->command.compare("PASS")) {
+            users[fd]->connectStatus |= PASS_PASSED;
+        }
+        users[fd]->isConnected = users[fd]->connectStatus & CONNECTED;
+    } else {
+        //other commands
     }
-    users[fd]->isConnected = users[fd]->connectStatus & CONNECTED;
+
+
     return message;
 }
 
