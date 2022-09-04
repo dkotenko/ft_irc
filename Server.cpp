@@ -209,7 +209,7 @@ void Server::client_read(int cs)
 
           std::string str(users[cs]->buf_read);
 
-          Message *msg(parse(i, str));
+          MessageOutput *msg(parse(i, str));
           std::cout << users[i]->connectStatus << std::endl;
 
           std::string welcomeMessage = "001 :Welcome!";
@@ -219,10 +219,11 @@ void Server::client_read(int cs)
           if (users[i]->isConnected) {
               ;
           }
-          for (int j = 0; j < (int)msg->params.size(); j++) {
+          //for (int j = 0; j < (int)msg->params.size(); j++) {
               //send(i, &space[0] , r, 0);
               //memset(users[cs]->buf_read, 0, 100);
-          }
+          //}
+          send(i, &msg->data[0], r, 0);
       } else {
           send(i, users[cs]->buf_read , r, 0);
       }
@@ -231,9 +232,10 @@ void Server::client_read(int cs)
     }
 }
 
-Message *Server::parse(int fd, std::string src) {
+MessageOutput *Server::parse(int fd, std::string src) {
     const char separator = ' ';
-    Message *message = new Message();
+    MessageInput *messageInput = new MessageInput();
+    MessageOutput *messageOutput = new MessageOutput();
 
     std::vector<std::string> outputArray;
     std::stringstream streamData(src);
@@ -241,27 +243,34 @@ Message *Server::parse(int fd, std::string src) {
     int i = 0;
     while (std::getline(streamData, val, separator)) {
         if (i == 0)
-            message->command = val;
+            messageInput->command = val;
         if (i != 0)
-            message->params.push_back(val);
+            messageInput->params.push_back(val);
         i++;
     }
 
     if (!users[fd]->isConnected) {
-        if (!message->command.compare("NICK")) {
+        if (!messageInput->command.compare("NICK")) {
             users[fd]->connectStatus |= NICK_PASSED;
-        } else if (!message->command.compare("USER")) {
+        } else if (!messageInput->command.compare("USER")) {
             users[fd]->connectStatus |= USER_PASSED;
-        } else if (!message->command.compare("PASS")) {
+        } else if (!messageInput->command.compare("PASS")) {
             users[fd]->connectStatus |= PASS_PASSED;
         }
         users[fd]->isConnected = users[fd]->connectStatus & CONNECTED;
     } else {
-        //other commands
+        //TODO остальные случаи
+        if (!messageInput->command.compare("JOIN")) {
+            for (int i = 0; i < (int)messageInput->params.size(); i++) {
+                if (messageInput->params[i][0] == '#') {
+                    serverData.addChanel(messageInput->params[i]);
+                    serverData.chanels[messageInput->params[0]]->addUser(users[fd]->username);
+                    messageOutput->data = "372 :Message of the Day";
+                }
+            }
+        }
     }
-
-
-    return message;
+    return messageOutput;
 }
 
 void Server::fct_write(int cs)

@@ -2,6 +2,8 @@
 #define CHANEL_H
 
 #include <vector>
+#include <string>
+#include <map>
 
 struct endmessage{
     std::string from_m;
@@ -15,7 +17,8 @@ class Chanel {
         void addUser(std::string username);
         void delUser(std::string username);
         void addMessage(std::string from_username, std::vector<std::string> to_usernames, std::string message);
-        endmessage getMessage();
+        std::vector<std::string> getUsers();
+    endmessage getMessage();
     private:
         std::vector<std::string> users;
         std::vector<endmessage> messages;

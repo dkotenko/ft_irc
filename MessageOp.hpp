@@ -2,19 +2,19 @@
 #include <vector>
 #include "utils.hpp"
 
-class Message
+class MessageInput
 {
 	private:
 		std::string						prefix;
 		std::string						command;
 		std::vector<std::string>		parameters;
 
-		Message();
-		Message(const Message& copy);
-		Message	&operator=(const Message& other);
+        MessageInput();
+        MessageInput(const Message& copy);
+        MessageInput &operator=(const Message& other);
 	public:
-		Message(const std::string &str);
-		virtual ~Message();
+        MessageInput(const std::string &str);
+		virtual ~MessageInput();
 		const std::string				&getPrefix() const;
 		const std::string				&getCmd() const;
 		const std::vector<std::string>	&getParams() const;

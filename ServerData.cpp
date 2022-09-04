@@ -26,6 +26,12 @@ void ServerData::addUser(std::string username, std::string password) {
     ServerData::users[username] = user;
 }
 
+void ServerData::addChanel(std::string chanelname) {
+    if (chanels.find(chanelname) == chanels.end()) {
+        Chanel *chanel = new Chanel(chanelname);
+        chanels[chanelname] = chanel;
+    }
+}
 
 /*
 ** --------------------------------- OVERLOAD ---------------------------------

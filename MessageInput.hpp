@@ -2,15 +2,15 @@
 // Created by Redwyn Poetess on 03.09.2022.
 //
 
-#ifndef FT_IRC_MESSAGE_H
-#define FT_IRC_MESSAGE_H
+#ifndef FT_IRC_MESSAGEINPUT_H
+#define FT_IRC_MESSAGEINPUT_H
 
 #include <iostream>
 #include <sstream>
 #include <vector>
 #include <string>
 
-class Message {
+class MessageInput {
 public:
     int fd_from;
     std::vector<int> fd_to;
@@ -18,9 +18,9 @@ public:
     std::vector<std::string> params;
     std::string src;
 
-    Message();
-    //~Message();
+    MessageInput();
+    //~MessageInput();
 };
 
 
-#endif //FT_IRC_MESSAGE_H
+#endif //FT_IRC_MESSAGEINPUT_H

@@ -1,13 +1,10 @@
 
 #include "Chanel.hpp"
-#include <string>
-#include <map>
+
 
 
 Chanel::Chanel(std::string chname) {
     this->chname = chname;
-    Chanel::users = {};
-    Chanel::messages = {};
 }
 
 void Chanel::addUser(std::string username) {
@@ -15,11 +12,15 @@ void Chanel::addUser(std::string username) {
 }
 
 void Chanel::delUser(std::string username) {
-    for(int i = 0; i < Chanel::users.size(); i++) {
+    for(int i = 0; i < (int)Chanel::users.size(); i++) {
         if (Chanel::users[i] == username) {
             Chanel::users.erase(Chanel::users.begin() + i);
         }
     }
+}
+
+std::vector<std::string> Chanel::getUsers() {
+    return Chanel::users;
 }
 
 void Chanel::addMessage(std::string from_username, std::vector<std::string> to_usernames, std::string message) {

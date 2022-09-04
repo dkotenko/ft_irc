@@ -23,6 +23,7 @@
 #include <vector>
 #include "Parser.hpp"
 #include "ServerData.hpp"
+#include "MessageOutput.hpp"
 
 
 class Server {
@@ -41,6 +42,7 @@ public:
     fd_set	fd_read;
     fd_set	fd_write;
     std::vector<User *> users;
+    ServerData serverData;
 private:
     std::string password;
     struct sockaddr_in sockaddr;
@@ -58,7 +60,7 @@ private:
     void client_read(int cs);
     void fct_write(int cs);
     void client_write(int cs);
-    Message *parse(int fd, std::string msg);
+    MessageOutput *parse(int fd, std::string msg);
 };
 
 

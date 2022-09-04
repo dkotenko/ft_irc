@@ -2,11 +2,12 @@ SRCS =		main.cpp \
 			Server.cpp \
 			User.cpp \
 			utils.cpp \
-			Message.cpp \
+			MessageInput.cpp \
 			Parser.cpp \
-			ServerData.cpp
+			ServerData.cpp \
+			Chanel.cpp
 
-INCLUDES = Server.hpp User.hpp utils.h Message.hpp Parser.hpp ServerData.hpp
+INCLUDES = Server.hpp User.hpp utils.h MessageInput.hpp Parser.hpp ServerData.hpp Chanel.hpp
 
 OBJS	= 	$(SRCS:%.cpp=%.o)
 
