@@ -18,16 +18,27 @@ Server::Server(int port) {
 
 void Server::create()
 {
-  int			s;
-  struct sockaddr_in	sin;
+    struct sockaddr_in	sin;
 
-  s =  socket(PF_INET, SOCK_STREAM, 0);
-  sin.sin_family = AF_INET;
-  sin.sin_addr.s_addr = INADDR_ANY;
-  sin.sin_port = htons(port);
-  bind(s, (struct sockaddr*)&sin, sizeof(sin));
-  listen(s, 42);
-  users[s]->type = FD_SERV;
+    sockfd =  socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd == -1) {
+        printError("Failed to create socket");
+    }
+    const int enable = 1;
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
+        printError("setsockopt(SO_REUSEADDR) failed");
+    }
+
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &enable, sizeof(int)) < 0) {
+        printError("setsockopt(SO_REUSEPORT) failed");
+    }
+
+    sin.sin_family = AF_INET;
+    sin.sin_addr.s_addr = INADDR_ANY;
+    sin.sin_port = htons(port);
+    bind(sockfd, (struct sockaddr*)&sin, sizeof(sin));
+    listen(sockfd, 42);
+    users[sockfd]->type = FD_SERV;
 }
 
 void Server::create_socket() {
@@ -37,7 +48,7 @@ void Server::create_socket() {
         std::cout << "Failed to create socket. errno: " << errno << std::endl;
         exit(EXIT_FAILURE);
     }
-    create_socket();
+    //create_socket();
     listen_port();
 }
 
@@ -126,34 +137,10 @@ void Server::mainloop() {
         init_fd();
         do_select();
         check_fd();
-        /*
-        // Read from the connection
-        char buffer[100];
-        int r = read(this->connection, buffer, 100);
-        if (r < 0) {
-            std::cout << "Read error: " << std::cout;
-        }
-        else if (r == 0) {
-            std::cout << "Client disconnected" << std::endl;
-            wait_connection();
-        }
-        if (strcmp(buffer, "QUIT\n") == 0) {
-            break;
-        }
-        else if (r > 0) {
-            std::cout << "The message was: " << buffer;
-        }
-        
-        // Send a message to the connection
-        //std::string response = "Good talking to you\n";
-        //send(connection, response.c_str(), response.size(), 0);
-        bzero(buffer, 100);
-        */
     }
 }
 
 void Server::s_close() {
-    // Close the connections
     close(this->connection);
     close(this->sockfd);
 }
@@ -185,49 +172,43 @@ void Server::srv_accept(int s)
 
 void Server::client_read(int cs)
 {
-  int	r;
-  int	i;
+    int	r;
+    int	i;
 
-  //parser.serverData = serverData;
-  ServerData *serverdata = new ServerData;
-  serverdata->addUser("name1", "pass");
+    //parser.serverData = serverData;
+    ServerData *serverdata = new ServerData;
+    serverdata->addUser("name1", "pass");
 
-  r = recv(cs, users[cs]->buf_read, BUF_SIZE, 0);
-  if (r <= 0)
-    {
+    r = recv(cs, users[cs]->buf_read, BUF_SIZE, 0);
+    if (r <= 0) {
       close(cs);
       users[cs]->clean();
       printf("client #%d gone away\n", cs);
     }
-  else
-    {
-      i = 0;
-      while (i < maxfd)
-	{
-	  if ((users[i]->type == FD_CLIENT) &&
-	      (i == cs)) {
+    else {
+        i = 0;
+        for (int i = 0; i < maxfd; i++) {
+            if (users[i]->type == FD_CLIENT && i == cs) {
+                std::string str(users[cs]->buf_read);
 
-          std::string str(users[cs]->buf_read);
-
-          Message *msg(parse(i, str));
-          std::cout << users[i]->connectStatus << std::endl;
-
-          std::string welcomeMessage = "001 :Welcome!";
-          memcpy(users[cs]->buf_read, &welcomeMessage[0], welcomeMessage.length());
-          send(i, users[cs]->buf_read , r, 0);
-
-          if (users[i]->isConnected) {
-              ;
-          }
-          for (int j = 0; j < (int)msg->params.size(); j++) {
-              //send(i, &space[0] , r, 0);
-              //memset(users[cs]->buf_read, 0, 100);
-          }
-      } else {
-          send(i, users[cs]->buf_read , r, 0);
-      }
-	  i++;
-	}
+                parse(i, str);
+                std::cout << str << std::endl;
+                std::cout << users[i]->connectStatus << std::endl;
+                if (users[i]->isConnected) {
+                    std::string welcomeMessage = "001 :Welcome!";
+                    memcpy(users[cs]->buf_read, &welcomeMessage[0], welcomeMessage.length());
+                    send(i, users[cs]->buf_read , r, 0);
+                }
+                /*
+                for (int j = 0; j < (int)msg->params.size(); j++) {
+                  //send(i, &space[0] , r, 0);
+                  //memset(users[cs]->buf_read, 0, 100);
+                }
+                 */
+            } else if (users[i]->type == FD_CLIENT) {
+                send(i, users[cs]->buf_read , r, 0);
+            }
+        }
     }
 }
 
@@ -255,7 +236,7 @@ Message *Server::parse(int fd, std::string src) {
         } else if (!message->command.compare("PASS")) {
             users[fd]->connectStatus |= PASS_PASSED;
         }
-        users[fd]->isConnected = users[fd]->connectStatus & CONNECTED;
+        users[fd]->isConnected = users[fd]->connectStatus == CONNECTED;
     } else {
         //other commands
     }
