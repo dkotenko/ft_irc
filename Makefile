@@ -42,7 +42,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(INCLUDES) | $(OBJDIR)
 	$(CC) $(CFLAGS) -I $(INCDIR) -c $< -o $@ 
 
 clean:
-			@rm -rf *.o
+			@-rm -rf $(OBJDIR)
 
 fclean:		clean
 			@rm -rf $(NAME)
