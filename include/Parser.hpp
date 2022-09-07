@@ -8,7 +8,7 @@
 #include <sstream>
 #include <vector>
 #include <string>
-#include "utils.h"
+#include "utils.hpp"
 #include "MessageInput.hpp"
 #include "ServerData.hpp"
 

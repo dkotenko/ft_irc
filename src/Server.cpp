@@ -1,5 +1,5 @@
 #include "Server.hpp"
-#include "utils.h"
+#include "utils.hpp"
 
 Server::Server(int port) {
     struct rlimit rlp;

@@ -1,4 +1,11 @@
-SRCS =		main.cpp \
+
+NAME		=	ft_irc
+
+INCDIR		= include
+SRCDIR		= src
+OBJDIR		= obj
+
+SRC_FILES =	main.cpp \
 			Server.cpp \
 			User.cpp \
 			utils.cpp \
@@ -7,22 +14,32 @@ SRCS =		main.cpp \
 			ServerData.cpp \
 			Chanel.cpp
 
-INCLUDES = Server.hpp User.hpp utils.h MessageInput.hpp Parser.hpp ServerData.hpp Chanel.hpp
+INC_FILES =	Server.hpp \
+			User.hpp \
+			utils.hpp \
+			MessageInput.hpp \
+			Parser.hpp \
+			ServerData.hpp \
+			Chanel.hpp
 
-OBJS	= 	$(SRCS:%.cpp=%.o)
+OBJS_FILES	= $(SRC_FILES:%.cpp=%.o)
 
-NAME	=	ft_irc
+OBJS		:= $(addprefix $(OBJDIR)/, $(OBJS_FILES))
+INCLUDES	:= $(addprefix $(INCDIR)/, $(INC_FILES))
 
-FLAGS	=	-Wall -Wextra -Werror -std=c++98 -pedantic
+FLAGS	=	-Wall -Wextra -Werror -std=c++98
 CC		= clang++
 
-all: 		$(NAME)
+all: 		$(OBJDIR) $(NAME)
 
-$(NAME):	$(OBJS) $(INCLUDES)
+$(NAME):	$(OBJS)
 			$(CC) $(FLAGS) $(OBJS) -o $@
 
-%.o: %.cpp
-	$(CC) $(FLAGS) -I ./ -c $< -o $@
+$(OBJDIR):
+	@mkdir -p $@
+
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(INCLUDES) | $(OBJDIR)
+	$(CC) $(CFLAGS) -I $(INCDIR) -c $< -o $@ 
 
 clean:
 			@rm -rf *.o

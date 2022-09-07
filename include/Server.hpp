@@ -19,7 +19,7 @@
 #include <arpa/inet.h>
 #include <algorithm>
 #include "User.hpp"
-#include "utils.h"
+#include "utils.hpp"
 #include <vector>
 #include "Parser.hpp"
 #include "ServerData.hpp"
