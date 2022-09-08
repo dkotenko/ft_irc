@@ -5,7 +5,7 @@
 # include <string>
 #include "map"
 #include "User.hpp"
-#include "Chanel.hpp"
+#include "Channel.hpp"
 
 class ServerData
 {
@@ -14,9 +14,9 @@ class ServerData
 		ServerData();
         ~ServerData();
         void addUser(std::string username, std::string password);
-        void addChanel(std::string chanelname);
+        void addChannel(std::string channelName);
         std::map<std::string, User*> users;
-        std::map<std::string, Chanel*> chanels;
+        std::map<std::string, Channel*> channels;
 private:
 
 };

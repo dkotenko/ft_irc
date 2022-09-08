@@ -273,20 +273,21 @@ void Server::handleJoin(MessageInput *messageInput, MessageOutput *messageOutput
 
     for (int i = 0; i < (int)messageInput->params.size(); i++) {
         if (messageInput->params[i][0] == '#') {
-            serverData.addChanel(messageInput->params[i]);
-            serverData.chanels[messageInput->params[0]]->addUser(users[fd]->username);
+            serverData.addChannel(messageInput->params[i]);
+            serverData.channels[messageInput->params[0]]->addUser(users[fd]->username);
             messageOutput->data = "372 :Message of the Day";
         }
     }
 }
 
 void Server::handlePrivMsg(MessageInput *messageInput, MessageOutput *messageOutput) {
-    
-    serverData.chanels[messageInput->params[0]]->addMessage
+    std::cout << "Channel name: " << messageInput->params[0] << std::endl;
+    std::cout << "Message: " << messageInput->params[1] << std::endl;
+    serverData.channels[messageInput->params[0]]->addMessage
     (
         users[messageInput->fd_from]->username,
-        serverData.chanels[messageInput->params[0]]->getAllUsers(),
-        messageInput->params[0]
+        serverData.channels[messageInput->params[0]]->getAllUsers(),
+        messageInput->params[1]
     );
 }
 
@@ -305,7 +306,9 @@ MessageOutput *Server::parse(std::string src) {
         if (i != 0)
             messageInput->params.push_back(val);
         i++;
+        //std::cout << messageInput->params.size() << std::endl;
     }
+
     
     if (handleMap.count(messageInput->command) == 1) {
 

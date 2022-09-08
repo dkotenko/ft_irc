@@ -26,10 +26,10 @@ void ServerData::addUser(std::string username, std::string password) {
     ServerData::users[username] = user;
 }
 
-void ServerData::addChanel(std::string chanelname) {
-    if (chanels.find(chanelname) == chanels.end()) {
-        Chanel *chanel = new Chanel(chanelname);
-        chanels[chanelname] = chanel;
+void ServerData::addChannel(std::string channelname) {
+    if (channels.find(channelname) == channels.end()) {
+        Channel *channel = new Channel(channelname);
+        channels[channelname] = channel;
     }
 }
 

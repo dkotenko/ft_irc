@@ -12,7 +12,7 @@ SRC_FILES =	main.cpp \
 			MessageInput.cpp \
 			Parser.cpp \
 			ServerData.cpp \
-			Chanel.cpp
+			Channel.cpp
 
 INC_FILES =	Server.hpp \
 			User.hpp \
@@ -20,7 +20,7 @@ INC_FILES =	Server.hpp \
 			MessageInput.hpp \
 			Parser.hpp \
 			ServerData.hpp \
-			Chanel.hpp \
+			Channel.hpp \
 			const.hpp
 
 OBJS_FILES	= $(SRC_FILES:%.cpp=%.o)

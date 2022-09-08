@@ -11,9 +11,9 @@ struct endmessage{
     std::string datamessage;
 };
 
-class Chanel {
+class Channel {
     public:
-        Chanel(std::string chname);
+        Channel(std::string chname);
         void addUser(std::string username);
         void delUser(std::string username);
         void addMessage(std::string from_username, std::vector<std::string> to_usernames, std::string message);
