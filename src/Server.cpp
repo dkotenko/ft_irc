@@ -219,12 +219,6 @@ void Server::client_read(int cs)
                     send(i, users[cs]->buf_read , r, welcomeSize);
                     users[i]->welcomeReceived = true;
                 }
-                /*
-                for (int j = 0; j < (int)msg->params.size(); j++) {
-                  //send(i, &space[0] , r, 0);
-                  //memset(users[cs]->buf_read, 0, 100);
-                }
-                 */
                 for(int i = 0; i < (int)messageOutput->fd_to.size(); i++) {
                     send(messageOutput->fd_to[i], &messageOutput->data[0], r, 0);
                 }
@@ -242,6 +236,7 @@ void Server::handleNick(MessageInput *messageInput, MessageOutput *messageOutput
     if (!users[fd]->isConnected) {
         users[fd]->connectStatus |= NICK_PASSED;
         users[fd]->isConnected = users[fd]->connectStatus == CONNECTED;
+        users[fd]->nickname = messageInput->params[1];
     }
     (void)messageInput;
     (void)messageOutput;
@@ -253,6 +248,7 @@ void Server::handleUser(MessageInput *messageInput, MessageOutput *messageOutput
     if (!users[fd]->isConnected) {
         users[fd]->connectStatus |= USER_PASSED;
         users[fd]->isConnected = users[fd]->connectStatus == CONNECTED;
+        users[fd]->username = messageInput->params[1];
     }
     (void)messageInput;
     (void)messageOutput;
@@ -281,10 +277,10 @@ void Server::handleJoin(MessageInput *messageInput, MessageOutput *messageOutput
 }
 
 void Server::handlePrivMsg(MessageInput *messageInput, MessageOutput *messageOutput) {
-    std::cout << "Channel name: " << messageInput->params[0] << std::endl;
-    std::cout << "Message: " << messageInput->params[1] << std::endl;
+
     serverData.channels[messageInput->params[0]]->addMessage
     (
+
         users[messageInput->fd_from]->username,
         serverData.channels[messageInput->params[0]]->getAllUsers(),
         messageInput->params[1]
@@ -306,10 +302,8 @@ MessageOutput *Server::parse(std::string src) {
         if (i != 0)
             messageInput->params.push_back(val);
         i++;
-        //std::cout << messageInput->params.size() << std::endl;
     }
 
-    
     if (handleMap.count(messageInput->command) == 1) {
 
         (this->*(handleMap[messageInput->command]))(messageInput, messageOutput);

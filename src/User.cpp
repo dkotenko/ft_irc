@@ -12,6 +12,7 @@ User::User(int type, int fd)
     connectStatus = NOT_CONNECTED;
 	this->type = type;
 	this->fd = fd;
+	username = "temp";
 	this->buf_read = new char[BUF_SIZE + 1] ();
 	this->buf_write = new char[BUF_SIZE + 1] ();
 }

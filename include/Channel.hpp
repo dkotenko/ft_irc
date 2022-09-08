@@ -16,10 +16,10 @@ class Channel {
         Channel(std::string chname);
         void addUser(std::string username);
         void delUser(std::string username);
-        void addMessage(std::string from_username, std::vector<std::string> to_usernames, std::string message);
+        void addMessage(std::string from_username, std::vector<std::string> &to_usernames, std::string message);
         std::vector<std::string> getUsers();
         endmessage getMessage();
-        std::vector<std::string> getAllUsers();
+        std::vector<std::string> &getAllUsers();
     private:
         std::vector<std::string> users;
         std::vector<endmessage> messages;

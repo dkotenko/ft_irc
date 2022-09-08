@@ -25,4 +25,4 @@
 	For debugging console apps LLDB needs to be selected in Preferences/Toolchains.
 	If it is left on GDB, my breakpoints don't work.
 
-
+6. Segfault в channels

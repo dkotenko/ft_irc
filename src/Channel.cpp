@@ -1,29 +1,27 @@
 
 #include "Channel.hpp"
 
-
-
 Channel::Channel(std::string chname) {
-    Channel::chname = chname;
+    chname = chname;
 }
 
 void Channel::addUser(std::string username) {
-    Channel::users.push_back(username);
+    users.push_back(username);
 }
 
 void Channel::delUser(std::string username) {
-    for(int i = 0; i < (int)Channel::users.size(); i++) {
-        if (Channel::users[i] == username) {
-            Channel::users.erase(Channel::users.begin() + i);
+    for(int i = 0; i < (int)users.size(); i++) {
+        if (users[i] == username) {
+            users.erase(users.begin() + i);
         }
     }
 }
 
 std::vector<std::string> Channel::getUsers() {
-    return Channel::users;
+    return users;
 }
 
-void Channel::addMessage(std::string from_username, std::vector<std::string> to_usernames, std::string message) {
+void Channel::addMessage(std::string from_username, std::vector<std::string> &to_usernames, std::string message) {
     endmessage new_message;
     new_message.from_m = from_username;
     new_message.to_m = to_usernames;
@@ -35,11 +33,11 @@ void Channel::addMessage(std::string from_username, std::vector<std::string> to_
 
 endmessage Channel::getMessage() {
     endmessage res;
-    res = Channel::messages.back();
+    res = messages.back();
     //Channel::messages.pop_back();
     return res;
 }
 
-std::vector<std::string> Channel::getAllUsers() {
+std::vector<std::string> &Channel::getAllUsers() {
     return users;
 }
