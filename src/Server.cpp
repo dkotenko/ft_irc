@@ -179,6 +179,7 @@ void Server::client_read(int cs)
     ServerData *serverdata = new ServerData;
     serverdata->addUser("name1", "pass");
 
+    std::memset(users[cs]->buf_read, 0, BUF_SIZE);
     r = recv(cs, users[cs]->buf_read, BUF_SIZE, 0);
     if (r <= 0) {
       close(cs);
@@ -192,12 +193,17 @@ void Server::client_read(int cs)
             if (users[i]->type == FD_CLIENT && i == cs) {
                 std::string str(users[cs]->buf_read);
                 MessageOutput *messageOutput = parse(i, str);
-                std::cout << str << std::endl;
-                std::cout << users[i]->connectStatus << std::endl;
-                if (users[i]->isConnected) {
-                    std::string welcomeMessage = "001 :Welcome!";
+                std::cout << messageOutput->data << str << std::endl;
+                if (!users[i]->isConnected) {
+                    std::cout << "connect status " << users[i]->connectStatus << std::endl;
+                }
+                //TODO уточнить формат сообщений для клиента
+                if (users[i]->isConnected && !users[i]->welcomeReceived) {
+                    std::string welcomeMessage = "001 :Welcome!\n";
+                    std::memset(users[cs]->buf_read, 0, BUF_SIZE);
                     memcpy(users[cs]->buf_read, &welcomeMessage[0], welcomeMessage.length());
                     send(i, users[cs]->buf_read , r, 0);
+                    users[i]->welcomeReceived = true;
                 }
                 /*
                 for (int j = 0; j < (int)msg->params.size(); j++) {

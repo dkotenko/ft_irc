@@ -33,6 +33,7 @@ public:
     std::string password;
     int connectStatus;
     bool isConnected;
+    bool welcomeReceived;
     int type;
     int fd;
     char *buf_read;
