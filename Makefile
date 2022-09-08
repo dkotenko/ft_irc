@@ -20,7 +20,8 @@ INC_FILES =	Server.hpp \
 			MessageInput.hpp \
 			Parser.hpp \
 			ServerData.hpp \
-			Chanel.hpp
+			Chanel.hpp \
+			const.hpp
 
 OBJS_FILES	= $(SRC_FILES:%.cpp=%.o)
 
@@ -30,9 +31,10 @@ INCLUDES	:= $(addprefix $(INCDIR)/, $(INC_FILES))
 FLAGS	=	-Wall -Wextra -Werror -std=c++98
 CC		= clang++
 
-all: 		$(OBJDIR) $(NAME)
+all:
+	@make --no-print-directory -j $(NAME)
 
-$(NAME):	$(OBJS)
+$(NAME):	$(OBJDIR) $(OBJS)
 			$(CC) $(FLAGS) $(OBJS) -o $@
 
 $(OBJDIR):

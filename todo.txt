@@ -16,3 +16,13 @@
 	- если парсеру следует сообщить об ошибке серверу, сообщение заполняется кодом ошибки в соответствующем поле
 	- при успешной валидации соответствующие действия в логике вызываются из handle_*название_команды*
 
+3. Согласно документации, максимальный размер сообщения клиента 512 байт включая название команды, параметров и символов конца строки \r\n
+4. Channels names are strings (beginning with a '&' or '#' character) of length up to 200 characters.
+
+5. CLion проблема с дебагом (не останавливается на брейкпоинтах), проверить решение (https://stackoverflow.com/questions/35888818/why-are-my-breakpoints-not-hit-in-clion):
+	I had a different issue that caused my breakpoints not to be hit. I develop both embedded apps and native MacOS console apps with CLion.
+	For the embedded work, GDB needs to be set for your selected Preferences/Toolchains.
+	For debugging console apps LLDB needs to be selected in Preferences/Toolchains.
+	If it is left on GDB, my breakpoints don't work.
+
+

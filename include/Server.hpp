@@ -24,6 +24,7 @@
 #include "Parser.hpp"
 #include "ServerData.hpp"
 #include "MessageOutput.hpp"
+#include "const.hpp"
 
 
 class Server {
@@ -39,10 +40,12 @@ public:
     int		maxfd;
     int		max;
     int		r;
+    int fd;
     fd_set	fd_read;
     fd_set	fd_write;
     std::vector<User *> users;
     ServerData serverData;
+    std::map<std::string, void (Server::*)(MessageInput *, MessageOutput *)> handleMap;
 private:
     std::string password;
     struct sockaddr_in sockaddr;
@@ -60,8 +63,14 @@ private:
     void client_read(int cs);
     void fct_write(int cs);
     void client_write(int cs);
-    MessageOutput *parse(int fd, std::string msg);
+    MessageOutput *parse(std::string msg);
+    void populatehandleMap();
+
+    void handleNick(MessageInput *messageInput, MessageOutput *output);
+    void handleUser(MessageInput *messageInput, MessageOutput *output);
+    void handlePass(MessageInput *messageInput, MessageOutput *output);
+    void handleJoin(MessageInput *messageInput, MessageOutput *output);
+    void handlePrivMsg(MessageInput *messageInput, MessageOutput *output);
+
 };
-
-
 #endif //FT_IRC_SERVER_H
