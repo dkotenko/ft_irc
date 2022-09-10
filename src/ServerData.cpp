@@ -27,23 +27,23 @@ void ServerData::addUser(std::string username, std::string password) {
 }
 
 void ServerData::addChannel(std::string channelName) {
-    if (channels.find(channelName) == channels.end()) {
+    if (channels.count(channelName) == 0) {
         Channel *channel = new Channel(channelName);
         channels[channelName] = channel;
     }
 }
 
-/*
-** --------------------------------- OVERLOAD ---------------------------------
-*/
+void ServerData::printAllChannels() {
+    std::map<std::string ,Channel*> :: iterator it;
+    for(it=channels.begin(); it != channels.end(); ++it) {
+        std::cout << it->first << std::endl;
+    }
+}
 
-
-
-/*
-** --------------------------------- METHODS ----------------------------------
-*/
-
-
-/*
-** --------------------------------- ACCESSOR ---------------------------------
-*/
+Channel *ServerData::getChannel(std::string channelName) {
+    if (channels.count(channelName)) {
+        return channels[channelName];
+    }
+    else
+        return NULL;
+}
