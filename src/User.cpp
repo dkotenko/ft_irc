@@ -12,29 +12,30 @@ User::User(int type, int fd)
     connectStatus = NOT_CONNECTED;
 	this->type = type;
 	this->fd = fd;
-	username = "temp";
-	this->buf_read = new char[BUF_SIZE + 1] ();
-	this->buf_write = new char[BUF_SIZE + 1] ();
+	buf_read = new char[BUF_SIZE + 1] ();
+	buf_write = new char[BUF_SIZE + 1] ();
+	isConnected = false;
+	welcomeReceived = false;
 }
 
 void User::clean() {
 	this->type = FD_FREE;
 }
 
-void User::setUserName(std::string username) {
+void User::setUserName(std::string *username) {
     this->username = username;
 }
 
-void User::setNickName(std::string nickname) {
+void User::setNickName(std::string *nickname) {
     this->nickname = nickname;
 }
 
 std::string User::getUserName() {
-    return this->username;
+    return *this->username;
 }
 
 std::string User::getNickName() {
-    return this->username;
+    return *this->username;
 }
 
 void User::delUser(std::string username) {

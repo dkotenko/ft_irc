@@ -28,9 +28,9 @@ enum e_connect_states {
 class User {
 public:
     User(int type, int fd);
-    std::string username;
-    std::string nickname;
-    std::string password;
+    std::string *username;
+    std::string *nickname;
+    std::string *password;
     int connectStatus;
     bool isConnected;
     bool welcomeReceived;
@@ -39,8 +39,8 @@ public:
     char *buf_read;
     char *buf_write;
     void clean();
-    void setUserName(std::string username);
-    void setNickName(std::string nickname);
+    void setUserName(std::string *username);
+    void setNickName(std::string *nickname);
     std::string getUserName();
     std::string getNickName();
     void delUser(std::string username);

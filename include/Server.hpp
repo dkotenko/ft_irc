@@ -29,7 +29,7 @@
 
 class Server {
 public:
-    Server(int port);
+    Server(int port, std::string *password);
     void create_socket();
     void listen_port();
     void mainloop();
@@ -47,7 +47,7 @@ public:
     ServerData serverData;
     std::map<std::string, void (Server::*)(MessageInput *, MessageOutput *)> handleMap;
 private:
-    std::string password;
+    std::string *password;
     struct sockaddr_in sockaddr;
     Parser parser;
 
@@ -65,6 +65,7 @@ private:
     void client_write(int cs);
     MessageOutput *parse(std::string msg);
     void populatehandleMap();
+    void send_welcome(int i);
 
     void handleNick(MessageInput *messageInput, MessageOutput *output);
     void handleUser(MessageInput *messageInput, MessageOutput *output);

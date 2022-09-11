@@ -16,7 +16,7 @@ public:
     std::vector<int> fd_to;
     std::string command;
     std::vector<std::string> params;
-    std::string src;
+    std::string *src;
 
     MessageInput();
     //~MessageInput();

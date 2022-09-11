@@ -13,7 +13,7 @@ class ServerData
 	public:
 		ServerData();
         ~ServerData();
-        void addUser(std::string username, std::string password);
+        
         void addChannel(std::string channelName);
         std::map<std::string, User*> users;
         std::map<std::string, Channel*> channels;
