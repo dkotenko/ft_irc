@@ -252,7 +252,7 @@ void Server::handleUser(MessageInput *messageInput, MessageOutput *messageOutput
     if (!users[fd]->isConnected) {
         users[fd]->connectStatus |= USER_PASSED;
         users[fd]->isConnected = users[fd]->connectStatus == CONNECTED;
-        users[fd]->username = &messageInput->params[1];
+        users[fd]->username = &messageInput->params[0];
     }
     (void)messageInput;
     (void)messageOutput;
@@ -273,6 +273,7 @@ void Server::handleJoin(MessageInput *messageInput, MessageOutput *messageOutput
     //добавить обработку join с параметрами
     for (int i = 0; i < (int)messageInput->params.size(); i++) {
         if (messageInput->params[i][0] == '#') {
+            std::cout << "J PARAMS: " << messageInput->params[i];
             serverData.addChannel(messageInput->params[i]);
             serverData.channels[messageInput->params[0]]->addUser(users[fd]->username);
             messageOutput->data = "372 :Message of the Day";
@@ -282,13 +283,26 @@ void Server::handleJoin(MessageInput *messageInput, MessageOutput *messageOutput
 }
 
 void Server::handlePrivMsg(MessageInput *messageInput, MessageOutput *messageOutput) {
+   std::cout << "M PARAMS: " << messageInput->params[0] << std::endl;
+   std::cout << "Channels: " << std::endl;
+   serverData.printAllChannels();
+//   std::cout << "M FD FROM: " << messageInput->fd_from << std::endl;
+//   std::cout << "M USER: " << users[messageInput->fd_from]->username << std::endl;
+    //std::cout << serverData.channels[messageInput->params[0]] << std::endl;
+    if (serverData.channels.count(messageInput->params[0])) {
+    //   std::cout << serverData.channels[messageInput->params[0]] << std::endl;
+    //    for (int i = 0; i < serverData.channels[messageInput->params[0]]->getAllUsers().size(); i++) {
+    //        std::cout << serverData.channels[messageInput->params[0]]->getAllUsers()[0];
+    //    }
+        std::cout << "CHECK" << std::endl;
+        serverData.getChannel(messageInput->params[0])->addMessage
+        (
 
-    serverData.channels[messageInput->params[0]]->addMessage
-    (
-        users[messageInput->fd_from]->username,
-        serverData.channels[messageInput->params[0]]->getUsers(),
-        &messageInput->params[1]
-    );
+            users[messageInput->fd_from]->username,
+            serverData.getChannel(messageInput->params[0])->getUsers(),
+            &messageInput->params[1]
+        );
+   }
 }
 
 MessageOutput *Server::parse(std::string src) {
@@ -300,6 +314,7 @@ MessageOutput *Server::parse(std::string src) {
     std::stringstream streamData(src);
     std::string val;
     int i = 0;
+    messageInput->fd_from = this->fd;
     while (std::getline(streamData, val, separator)) {
         
         if (i == 0)

@@ -26,3 +26,4 @@
 	If it is left on GDB, my breakpoints don't work.
 
 6. Segfault в channels
+	UI клиент не отправляет сообщение JOIN, поэтому канал не создается
