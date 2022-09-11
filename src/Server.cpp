@@ -211,9 +211,11 @@ void Server::client_read(int cs)
         i = 0;
         for (int i = 0; i < maxfd; i++) {
             if (users[i]->type == FD_CLIENT && i == cs) {
-                std::stringstream streamData(r);
+                std::stringstream streamData(users[cs]->buf_read);
                 std::string str;
-                std::getline(streamData, str, "\n");
+                std::getline(streamData, str, '\n');
+                str.erase(std::remove(str.begin(), str.end(), '\r' ), str.end());
+                str.erase(std::remove(str.begin(), str.end(), '\n' ), str.end());
                 //std::string str(users[cs]->buf_read);
                 fd = i;
                 MessageOutput *messageOutput = parse(str);
@@ -279,7 +281,6 @@ void Server::handleJoin(MessageInput *messageInput, MessageOutput *messageOutput
             messageOutput->data = "372 :Message of the Day";
         }
     }
-    exit(0);
 }
 
 void Server::handlePrivMsg(MessageInput *messageInput, MessageOutput *messageOutput) {
