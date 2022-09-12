@@ -17,7 +17,7 @@ void Channel::delUser(std::string *username) {
     }
 }
 
-std::vector<std::string *> Channel::getUsers() {
+std::vector<std::string *> const &Channel::getUsers () const {
     return users;
 }
 

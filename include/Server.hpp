@@ -65,7 +65,7 @@ private:
     void client_write(int cs);
     MessageOutput *parse(std::string msg);
     void populatehandleMap();
-    void send_welcome(int i);
+    void send_welcome(int i, MessageOutput *messageOutput);
 
     void handleNick(MessageInput *messageInput, MessageOutput *output);
     void handleUser(MessageInput *messageInput, MessageOutput *output);
