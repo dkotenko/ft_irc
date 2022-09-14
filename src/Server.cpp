@@ -244,6 +244,8 @@ void Server::handleNick(MessageInput *messageInput, MessageOutput *messageOutput
         users[fd]->connectStatus |= NICK_PASSED;
         users[fd]->isConnected = users[fd]->connectStatus == CONNECTED;
         users[fd]->nickname = &messageInput->params[1];
+        send_welcome(fd, messageOutput);
+        return ;
     }
     (void)messageInput;
     (void)messageOutput;
@@ -256,6 +258,8 @@ void Server::handleUser(MessageInput *messageInput, MessageOutput *messageOutput
         users[fd]->connectStatus |= USER_PASSED;
         users[fd]->isConnected = users[fd]->connectStatus == CONNECTED;
         users[fd]->username = &messageInput->params[0];
+        send_welcome(fd, messageOutput);
+        return ;
     }
     (void)messageInput;
     (void)messageOutput;
@@ -267,26 +271,39 @@ void Server::handlePass(MessageInput *messageInput, MessageOutput *messageOutput
     if (!users[fd]->isConnected && messageInput->params[0] == *password) {
         users[fd]->connectStatus |= PASS_PASSED;
         users[fd]->isConnected = users[fd]->connectStatus == CONNECTED;
+        send_welcome(fd, messageOutput);
+        return ;
     }
     (void)messageInput;
     (void)messageOutput;
+}
+
+
+void Server::send_welcome(int i, MessageOutput *messageOutput) {
+    if (users[i]->isConnected && !users[i]->welcomeReceived) {
+        messageOutput->data = "001 :Welcome!\r\n";
+        messageOutput->fd_to.push_back(i);
+        users[i]->welcomeReceived = true;
+    }
+
 }
 
 void Server::handleJoin(MessageInput *messageInput, MessageOutput *messageOutput) {
     //добавить обработку join с параметрами
     for (int i = 0; i < (int)messageInput->params.size(); i++) {
         if (messageInput->params[i][0] == '#') {
-            std::cout << "J PARAMS: " << messageInput->params[i];
+            //std::cout << "J PARAMS: " << messageInput->params[i];
             serverData.addChannel(messageInput->params[i]);
             serverData.channels[messageInput->params[0]]->addUser(users[fd]->username);
             messageOutput->data = "372 :Message of the Day";
+            messageOutput->fd_to.push_back(fd);
         }
     }
 }
 
 void Server::handlePrivMsg(MessageInput *messageInput, MessageOutput *messageOutput) {
-   std::cout << "M PARAMS: " << messageInput->params[0] << std::endl;
-   std::cout << "Channels: " << std::endl;
+   //std::cout << "M PARAMS: " << messageInput->params[0] << std::endl;
+   //std::cout << "Channels: " << std::endl;
    serverData.printAllChannels();
 //   std::cout << "M FD FROM: " << messageInput->fd_from << std::endl;
 //   std::cout << "M USER: " << users[messageInput->fd_from]->username << std::endl;
@@ -296,7 +313,7 @@ void Server::handlePrivMsg(MessageInput *messageInput, MessageOutput *messageOut
     //    for (int i = 0; i < serverData.channels[messageInput->params[0]]->getAllUsers().size(); i++) {
     //        std::cout << serverData.channels[messageInput->params[0]]->getAllUsers()[0];
     //    }
-        std::cout << "CHECK" << std::endl;
+        //std::cout << "CHECK" << std::endl;
         serverData.getChannel(messageInput->params[0])->addMessage
         (
 
@@ -305,6 +322,48 @@ void Server::handlePrivMsg(MessageInput *messageInput, MessageOutput *messageOut
             &messageInput->params[1]
         );
    }
+}
+
+void Server::client_read(int cs)
+{
+    int	r;
+    int	i;
+
+    std::memset(users[cs]->buf_read, 0, BUF_SIZE);
+    r = recv(cs, users[cs]->buf_read, MESSAGE_MAX_LEN, 0);
+    if (r <= 0) {
+      close(cs);
+      users[cs]->clean();
+      printf("client #%d gone away\n", cs);
+    }
+    else {
+        i = 0;
+        for (int i = 0; i < maxfd; i++) {
+            if (users[i]->type == FD_CLIENT && i == cs) {
+                std::stringstream streamData(users[cs]->buf_read);
+                std::string str;
+                std::getline(streamData, str, '\n');
+                str.erase(std::remove(str.begin(), str.end(), '\r' ), str.end());
+                str.erase(std::remove(str.begin(), str.end(), '\n' ), str.end());
+                std::cout << str << std::endl;
+                fd = i;
+                MessageOutput *messageOutput = parse(str);
+                if (!users[i]->isConnected) {
+                    std::cout << "connect status " << users[i]->connectStatus << std::endl;
+                }
+                //TODO уточнить формат сообщений для клиента
+                
+                
+                for(int i = 0; i < (int)messageOutput->fd_to.size(); i++) {
+                    send(messageOutput->fd_to[i], &messageOutput->data[0], r, 0);
+                }
+                delete(messageOutput);
+            } else if (users[i]->type == FD_CLIENT) {
+                send(i, users[cs]->buf_read , r, 0);
+            }
+        }
+
+    }
 }
 
 MessageOutput *Server::parse(std::string src) {
