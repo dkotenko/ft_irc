@@ -189,7 +189,7 @@ void Server::send_welcome(int i) {
         std::memset(welcome, 0, welcomeSize);
         memcpy(welcome, &welcomeMessage[0], welcomeMessage.length());
         std::cout << welcome << std::endl;
-        send(i, welcome , r, welcomeSize);
+        send(i, welcome , welcomeMessage.length(), 0);
         users[i]->welcomeReceived = true;
     }
 
@@ -211,6 +211,7 @@ void Server::client_read(int cs)
         i = 0;
         for (int i = 0; i < maxfd; i++) {
             if (users[i]->type == FD_CLIENT && i == cs) {
+                
                 std::stringstream streamData(users[cs]->buf_read);
                 std::string str;
                 std::getline(streamData, str, '\n');
