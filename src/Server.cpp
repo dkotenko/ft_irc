@@ -181,63 +181,6 @@ void Server::srv_accept(int s)
   users[cs]->type = FD_CLIENT;
 }
 
-void Server::send_welcome(int i) {
-    if (users[i]->isConnected && !users[i]->welcomeReceived) {
-        int welcomeSize = 20;
-        char welcome[welcomeSize];
-        std::string welcomeMessage = "001 :Welcome!\r\n";
-        std::memset(welcome, 0, welcomeSize);
-        memcpy(welcome, &welcomeMessage[0], welcomeMessage.length());
-        std::cout << welcome << std::endl;
-        send(i, welcome , welcomeMessage.length(), 0);
-        users[i]->welcomeReceived = true;
-    }
-
-}
-
-void Server::client_read(int cs)
-{
-    int	r;
-    int	i;
-
-    std::memset(users[cs]->buf_read, 0, BUF_SIZE);
-    r = recv(cs, users[cs]->buf_read, MESSAGE_MAX_LEN, 0);
-    if (r <= 0) {
-      close(cs);
-      users[cs]->clean();
-      printf("client #%d gone away\n", cs);
-    }
-    else {
-        i = 0;
-        for (int i = 0; i < maxfd; i++) {
-            if (users[i]->type == FD_CLIENT && i == cs) {
-                
-                std::stringstream streamData(users[cs]->buf_read);
-                std::string str;
-                std::getline(streamData, str, '\n');
-                str.erase(std::remove(str.begin(), str.end(), '\r' ), str.end());
-                str.erase(std::remove(str.begin(), str.end(), '\n' ), str.end());
-                //std::string str(users[cs]->buf_read);
-                fd = i;
-                MessageOutput *messageOutput = parse(str);
-                std::cout << messageOutput->data << str << " " << str.length() << std::endl; 
-                if (!users[i]->isConnected) {
-                    std::cout << "connect status " << users[i]->connectStatus << std::endl;
-                }
-                //TODO уточнить формат сообщений для клиента
-                send_welcome(i);
-                for(int i = 0; i < (int)messageOutput->fd_to.size(); i++) {
-                    send(messageOutput->fd_to[i], &messageOutput->data[0], r, 0);
-                }
-                delete(messageOutput);
-            } else if (users[i]->type == FD_CLIENT) {
-                send(i, users[cs]->buf_read , r, 0);
-            }
-        }
-
-    }
-}
-
 void Server::handleNick(MessageInput *messageInput, MessageOutput *messageOutput) {
     
     if (!users[fd]->isConnected) {
