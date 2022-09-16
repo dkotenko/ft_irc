@@ -1,5 +1,5 @@
 
-NAME		=	ft_irc
+NAME		=	ircserv
 
 INCDIR		= include
 SRCDIR		= src
@@ -21,7 +21,8 @@ INC_FILES =	Server.hpp \
 			Parser.hpp \
 			ServerData.hpp \
 			Channel.hpp \
-			const.hpp
+			const.hpp \
+			error.hpp
 
 OBJS_FILES	= $(SRC_FILES:%.cpp=%.o)
 

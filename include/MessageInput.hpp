@@ -18,6 +18,18 @@ public:
     std::vector<std::string> params;
     std::string *src;
 
+    int getFd_from();
+    void setFd_from(int fd_from);
+    std::vector<int> getFd_to();
+    void setFd_to(std::vector<int> fd_to);
+    std::string getCommand();
+    void setCommand(std::string command);
+    std::vector<std::string> getParams();
+    void setParams(std::vector<std::string> params);
+    //std::string get*Src();
+    //void set*Src(std::string *src);
+
+
     MessageInput();
     //~MessageInput();
 };

@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <cstdlib>
+#include <fcntl.h>
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <algorithm>
@@ -25,15 +26,18 @@
 #include "ServerData.hpp"
 #include "MessageOutput.hpp"
 #include "const.hpp"
+#include "error.hpp"
 
+#ifdef __APPLE__
+#define IRC_NOSIGNAL SO_NOSIGPIPE
+#else
+#define IRC_NOSIGNAL MSG_NOSIGNAL
+#endif
 
 class Server {
 public:
     Server(int port, std::string *password);
-    void create_socket();
-    void listen_port();
-    void mainloop();
-    void s_close();
+    
     int port;
     int sockfd;
     int connection;
@@ -41,16 +45,25 @@ public:
     int		max;
     int		r;
     int fd;
+    std::string serverName;
     fd_set	fd_read;
     fd_set	fd_write;
     std::vector<User *> users;
     ServerData serverData;
+    bool is_debug;
     std::map<std::string, void (Server::*)(MessageInput *, MessageOutput *)> handleMap;
+
+    void create_socket();
+    void listen_port();
+    void mainloop();
+    void s_close();
+
 private:
     std::string *password;
     struct sockaddr_in sockaddr;
     Parser parser;
 
+    void print_debug(std::string &s);
     FileDescriptor *getByFd(int fd);
     void create();
     void check_fd();
@@ -66,6 +79,7 @@ private:
     MessageOutput *parse(std::string msg);
     void populatehandleMap();
     void send_welcome(int i, MessageOutput *messageOutput);
+    int		sendError(const User &user, int err, const std::string &arg1, const std::string &arg2);
 
     void handleNick(MessageInput *messageInput, MessageOutput *output);
     void handleUser(MessageInput *messageInput, MessageOutput *output);

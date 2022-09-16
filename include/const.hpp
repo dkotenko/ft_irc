@@ -9,4 +9,6 @@
 #define CMD_JOIN "JOIN"
 #define CMD_PRIVMSG "PRIVMSG"
 
+#define SERVERNAME "IRCserv"
+
 #endif

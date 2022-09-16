@@ -41,8 +41,8 @@ public:
     void clean();
     void setUserName(std::string *username);
     void setNickName(std::string *nickname);
-    std::string getUserName();
-    std::string getNickName();
+    const std::string &getUserName() const;
+    const std::string &getNickName() const;
     void delUser(std::string username);
 };
 

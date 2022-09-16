@@ -31,4 +31,5 @@ int		xassert(int value, const std::string& input);
 void	sigh(int n);
 void    printError(std::string s);
 
+
 #endif

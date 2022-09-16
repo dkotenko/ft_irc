@@ -18,3 +18,4 @@ void printError(std::string s) {
     std::cout << s << ". errno: " << errno << std::endl;
     exit(EXIT_FAILURE);
 }
+

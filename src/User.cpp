@@ -30,11 +30,11 @@ void User::setNickName(std::string *nickname) {
     this->nickname = nickname;
 }
 
-std::string User::getUserName() {
+const std::string &User::getUserName() const {
     return *this->username;
 }
 
-std::string User::getNickName() {
+const std::string &User::getNickName() const {
     return *this->username;
 }
 
