@@ -27,8 +27,6 @@ int main(int argc, char **argv) {
     
     std::cout << "Init server, port - " << port << std::endl;
     Server server(port, password);
-    
-    server.mainloop();
-    server.s_close();
+    server.run();
     return 0;
 }

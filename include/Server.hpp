@@ -37,7 +37,7 @@
 class Server {
 public:
     Server(int port, std::string *password);
-    
+    ~Server();
     int port;
     int sockfd;
     int connection;
@@ -51,25 +51,20 @@ public:
     std::vector<User *> users;
     ServerData serverData;
     bool is_debug;
-    std::map<std::string, void (Server::*)(MessageInput *, MessageOutput *)> handleMap;
-
-    void create_socket();
-    void listen_port();
-    void mainloop();
-    void s_close();
+    std::map<std::string, void (Server::*)()> handleMap;
+    void run();
 
 private:
     std::string *password;
     struct sockaddr_in sockaddr;
     Parser parser;
+    MessageInput *messageInput;
+    MessageOutput *messageOutput;
 
     void print_debug(std::string &s);
-    FileDescriptor *getByFd(int fd);
     void create();
     void check_fd();
     void do_select();
-    void wait_connection();
-    void init_env();
     void init_fd();
     void fct_read(int fd);
     void srv_accept(int s);
@@ -77,15 +72,15 @@ private:
     void fct_write(int cs);
     void client_write(int cs);
     MessageOutput *parse(std::string msg);
-    void populatehandleMap();
-    void send_welcome(int i, MessageOutput *messageOutput);
-    int		sendError(const User &user, int err, const std::string &arg1, const std::string &arg2);
+    void populateHandleMap();
+    void send_welcome(int i);
+    int	sendError(const User &user, int err, const std::string &arg1, const std::string &arg2);
 
-    void handleNick(MessageInput *messageInput, MessageOutput *output);
-    void handleUser(MessageInput *messageInput, MessageOutput *output);
-    void handlePass(MessageInput *messageInput, MessageOutput *output);
-    void handleJoin(MessageInput *messageInput, MessageOutput *output);
-    void handlePrivMsg(MessageInput *messageInput, MessageOutput *output);
+    void handleNick();
+    void handleUser();
+    void handlePass();
+    void handleJoin();
+    void handlePrivMsg();
 
 };
 #endif //FT_IRC_SERVER_H

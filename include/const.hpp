@@ -9,6 +9,7 @@
 #define CMD_JOIN "JOIN"
 #define CMD_PRIVMSG "PRIVMSG"
 
-#define SERVERNAME "IRCserv"
+#define SERVER_NAME "IRCserv"
+#define SERVER_MESSAGE_OF_THE_DAY "Welcome to ft_irc server!\r\n"
 
 #endif
