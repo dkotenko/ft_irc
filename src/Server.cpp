@@ -154,17 +154,16 @@ void Server::client_read(int cs)
                 str.erase(std::remove(str.begin(), str.end(), '\n' ), str.end());
                 std::cout << "line received: " << str << std::endl;
                 fd = i;
-                MessageOutput *messageOutput = parse(str);
+				User *currUser = users[fd];
+                currUser->messageOutput = parse(str);
                 if (!users[i]->isConnected) {
                     std::cout << "connect status " << users[i]->connectStatus << std::endl;
                 }
                 //TODO уточнить формат сообщений для клиента
-                
-                
                 for(int i = 0; i < (int)messageOutput->fd_to.size(); i++) {
                     send(messageOutput->fd_to[i], &messageOutput->data[i], messageOutput->data.size(), 0);
                 }
-                delete(messageOutput);
+                delete(currUser->messageOutput);
             } else if (users[i]->type == FD_CLIENT) {
                 send(i, users[cs]->buf_read , r, 0);
             }

@@ -6,6 +6,7 @@
 #define FT_IRC_USER_H
 #include <string>
 #include <vector>
+#include "MessageOutput.hpp"
 
 # define BUF_SIZE	4096
 # define FD_FREE	0
@@ -44,6 +45,7 @@ public:
     const std::string &getUserName() const;
     const std::string &getNickName() const;
     void delUser(std::string username);
+    MessageOutput *messageOutput;
 };
 
 #endif //FT_IRC_USER_H
