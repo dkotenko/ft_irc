@@ -79,3 +79,8 @@ JOIN #22
 PRIVMSG #1 hello!
 :IRCat 401 2 #1 :No such nick/channel
 PRIVMSG #22 HELLO!
+
+
+9. Добавить оператора
+
+10. Добавить Notice
