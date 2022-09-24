@@ -1,4 +1,4 @@
-#include "server.hpp"
+#include "Server.hpp"
 
 void Server::populateHandleMap() {
     handleMap[CMD_NICK] = &Server::handleNick;
@@ -53,7 +53,7 @@ void Server::handleJoin() {
     for (int i = 0; i < (int)messageInput->params.size(); i++) {
         if (messageInput->params[i][0] == '#') {
             serverData.addChannel(messageInput->params[i]);
-            serverData.channels[messageInput->params[0]]->addUser(users[fd]->username);
+            serverData.channels[messageInput->params[0]]->addUser(*users[fd]->username);
             messageOutput->data = "372 :Message of the Day";
             messageOutput->fd_to.push_back(fd);
         }
@@ -66,9 +66,53 @@ void Server::handlePrivMsg() {
         serverData.getChannel(messageInput->params[0])->addMessage
         (
 
-            users[messageInput->fd_from]->username,
+            *users[messageInput->fd_from]->username,
             serverData.getChannel(messageInput->params[0])->getUsers(),
-            &messageInput->params[1]
+            messageInput->params[1]
         );
    }
+}
+
+void Server::handleMode() {
+    if (!users[fd]->isConnected) {
+        return;
+    }
+    
+    if (serverData.getChannel(messageInput->params[0])->getOperatorUsername() == 
+        *users[messageInput->fd_from]->username) {
+        return;
+    }
+}
+
+void Server::handleTopic() {
+    if (!users[fd]->isConnected) {
+        return;
+    }
+    
+    if (serverData.getChannel(messageInput->params[0])->getOperatorUsername() == 
+        *users[messageInput->fd_from]->username) {
+        serverData.getChannel(messageInput->params[0])->setTopic(messageInput->params[1]);
+    }
+}
+
+void Server::handleInvite() {
+    if (!users[fd]->isConnected) {
+        return;
+    }
+
+    if (serverData.getChannel(messageInput->params[0])->getOperatorUsername() == 
+        *users[messageInput->fd_from]->username) {
+        serverData.getChannel(messageInput->params[1])->doInvite(messageInput->params[0]);
+    }
+}
+
+void Server::handleKick() {
+    if (!users[fd]->isConnected) {
+        return;
+    }
+    
+    if (serverData.getChannel(messageInput->params[1])->getOperatorUsername() == 
+        *users[messageInput->fd_from]->username) {
+        serverData.getChannel(messageInput->params[0])->doKick(messageInput->params[1]);
+    } 
 }

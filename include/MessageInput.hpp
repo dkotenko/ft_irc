@@ -26,12 +26,12 @@ public:
     void setCommand(std::string command);
     std::vector<std::string> getParams();
     void setParams(std::vector<std::string> params);
+    int getCountParams();
     //std::string get*Src();
     //void set*Src(std::string *src);
-
-
     MessageInput();
     //~MessageInput();
+    int countParams;
 };
 
 

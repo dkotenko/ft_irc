@@ -81,6 +81,9 @@ private:
     void handlePass();
     void handleJoin();
     void handlePrivMsg();
-
+    void handleMode();
+    void handleTopic();
+    void handleInvite();
+    void handleKick();
 };
 #endif //FT_IRC_SERVER_H

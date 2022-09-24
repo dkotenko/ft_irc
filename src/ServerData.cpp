@@ -16,6 +16,7 @@ ServerData::ServerData()
 
 ServerData::~ServerData()
 {
+    
 }
 
 void ServerData::addChannel(std::string channelName) {
