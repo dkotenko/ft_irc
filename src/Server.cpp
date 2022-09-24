@@ -148,22 +148,19 @@ void Server::client_read(int cs)
         for (int i = 0; i < maxfd; i++) {
             if (users[i]->type == FD_CLIENT && i == cs) {
                 std::stringstream streamData(users[cs]->buf_read);
-                std::string str;
-                std::getline(streamData, str, '\n');
-                str.erase(std::remove(str.begin(), str.end(), '\r' ), str.end());
-                str.erase(std::remove(str.begin(), str.end(), '\n' ), str.end());
-                std::cout << "line received: " << str << std::endl;
-                fd = i;
-				User *currUser = users[fd];
-                currUser->messageOutput = parse(str);
-                if (!users[i]->isConnected) {
-                    std::cout << "connect status " << users[i]->connectStatus << std::endl;
-                }
-                //TODO уточнить формат сообщений для клиента
-                for(int i = 0; i < (int)messageOutput->fd_to.size(); i++) {
-                    send(messageOutput->fd_to[i], &messageOutput->data[i], messageOutput->data.size(), 0);
-                }
-                delete(currUser->messageOutput);
+				std::cout << "line received: " << users[cs]->buf_read << std::endl;
+				fd = i;
+				currUser = users[fd];
+
+				std::string str;
+				while (std::getline(streamData, str, '\n')) {
+					str.erase(std::remove(str.begin(), str.end(), '\r' ), str.end());
+                	str.erase(std::remove(str.begin(), str.end(), '\n' ), str.end());
+					currUser->messageOutput = parse(str);
+					//TODO уточнить формат сообщений для клиента
+					currUser->messageOutput->sendMsg();
+					delete(currUser->messageOutput);
+				}
             } else if (users[i]->type == FD_CLIENT) {
                 send(i, users[cs]->buf_read , r, 0);
             }

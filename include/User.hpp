@@ -29,11 +29,12 @@ enum e_connect_states {
 class User {
 public:
     User(int type, int fd);
+    ~User();
     std::string *username;
     std::string *nickname;
     std::string *password;
     int connectStatus;
-    bool isConnected;
+    bool connected;
     bool welcomeReceived;
     int type;
     int fd;
@@ -46,6 +47,9 @@ public:
     const std::string &getNickName() const;
     void delUser(std::string username);
     MessageOutput *messageOutput;
+
+    bool isConnected();
+    void setConnected(bool b);
 };
 
 #endif //FT_IRC_USER_H

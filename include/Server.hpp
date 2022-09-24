@@ -60,6 +60,7 @@ private:
     Parser parser;
     MessageInput *messageInput;
     MessageOutput *messageOutput;
+    User *currUser;
 
     void print_debug(std::string &s);
     void create();
@@ -81,6 +82,7 @@ private:
     void handlePass();
     void handleJoin();
     void handlePrivMsg();
+    void handleQuit();
 
 };
 #endif //FT_IRC_SERVER_H

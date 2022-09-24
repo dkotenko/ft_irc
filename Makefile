@@ -10,15 +10,18 @@ SRC_FILES =	main.cpp \
 			User.cpp \
 			utils.cpp \
 			MessageInput.cpp \
+			MessageOutput.cpp \
 			Parser.cpp \
 			ServerData.cpp \
 			Channel.cpp \
 			handlers.cpp
 
+
 INC_FILES =	Server.hpp \
 			User.hpp \
 			utils.hpp \
 			MessageInput.hpp \
+			MessageOutput.hpp \
 			Parser.hpp \
 			ServerData.hpp \
 			Channel.hpp \

@@ -14,7 +14,7 @@ User::User(int type, int fd)
 	this->fd = fd;
 	buf_read = new char[BUF_SIZE + 1] ();
 	buf_write = new char[BUF_SIZE + 1] ();
-	isConnected = false;
+	connected = false;
 	welcomeReceived = false;
 }
 
@@ -40,4 +40,16 @@ const std::string &User::getNickName() const {
 
 void User::delUser(std::string username) {
     (void)username;
+}
+
+bool User::isConnected() {
+        return connected;
+}
+
+void User::setConnected(bool b) {
+	connected = b;
+}
+
+User::~User() {
+	this->clean();
 }

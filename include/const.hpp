@@ -8,8 +8,10 @@
 #define CMD_PASS "PASS"
 #define CMD_JOIN "JOIN"
 #define CMD_PRIVMSG "PRIVMSG"
+#define CMD_QUIT "QUIT"
 
 #define SERVER_NAME "IRCserv"
 #define SERVER_MESSAGE_OF_THE_DAY "Welcome to ft_irc server!\r\n"
+//#define SERVER_MESSAGE_OF_THE_DAY ":bar.example.com 001 server :Welcome!\r\n"
 
 #endif
