@@ -87,9 +87,53 @@ void Server::handlePrivMsg() {
     if (serverData.channels.count(messageInput->params[0])) {
         serverData.getChannel(messageInput->params[0])->addMessage
         (
-            users[messageInput->fd_from]->username,
+            *users[messageInput->fd_from]->username,
             serverData.getChannel(messageInput->params[0])->getUsers(),
-            &messageInput->params[1]
+            messageInput->params[1]
         );
    }
+}
+
+void Server::handleMode() {
+    if (!users[fd]->isConnected) {
+        return;
+    }
+    
+    if (serverData.getChannel(messageInput->params[0])->getOperatorUsername() == 
+        *users[messageInput->fd_from]->username) {
+        return;
+    }
+}
+
+void Server::handleTopic() {
+    if (!users[fd]->isConnected) {
+        return;
+    }
+    
+    if (serverData.getChannel(messageInput->params[0])->getOperatorUsername() == 
+        *users[messageInput->fd_from]->username) {
+        serverData.getChannel(messageInput->params[0])->setTopic(messageInput->params[1]);
+    }
+}
+
+void Server::handleInvite() {
+    if (!users[fd]->isConnected) {
+        return;
+    }
+
+    if (serverData.getChannel(messageInput->params[0])->getOperatorUsername() == 
+        *users[messageInput->fd_from]->username) {
+        serverData.getChannel(messageInput->params[1])->doInvite(messageInput->params[0]);
+    }
+}
+
+void Server::handleKick() {
+    if (!users[fd]->isConnected) {
+        return;
+    }
+    
+    if (serverData.getChannel(messageInput->params[1])->getOperatorUsername() == 
+        *users[messageInput->fd_from]->username) {
+        serverData.getChannel(messageInput->params[0])->doKick(messageInput->params[1]);
+    } 
 }

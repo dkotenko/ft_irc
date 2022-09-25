@@ -41,3 +41,6 @@ void MessageInput::setParams(std::vector<std::string> params) {
 	this->params = params;
 }
 
+int MessageInput::getCountParams() {
+	return this->params.size();
+}

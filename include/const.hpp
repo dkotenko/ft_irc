@@ -8,7 +8,14 @@
 #define CMD_PASS "PASS"
 #define CMD_JOIN "JOIN"
 #define CMD_PRIVMSG "PRIVMSG"
+<<<<<<< HEAD
 #define CMD_QUIT "QUIT"
+=======
+#define CMD_MODE "MODE"
+#define CMD_TOPIC "TOPIC"
+#define CMD_INVITE "INVITE"
+#define CMD_KICK "KICK"
+>>>>>>> origin/operator
 
 #define SERVER_NAME "IRCserv"
 #define SERVER_MESSAGE_OF_THE_DAY "Welcome to ft_irc server!\r\n"
