@@ -82,14 +82,11 @@ private:
     void handlePass();
     void handleJoin();
     void handlePrivMsg();
-<<<<<<< HEAD
     void handleQuit();
 
-=======
     void handleMode();
     void handleTopic();
     void handleInvite();
     void handleKick();
->>>>>>> origin/operator
 };
 #endif //FT_IRC_SERVER_H

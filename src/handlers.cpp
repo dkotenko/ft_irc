@@ -75,7 +75,7 @@ void Server::handleJoin() {
     for (int i = 0; i < (int)messageInput->params.size(); i++) {
         if (messageInput->params[i][0] == '#') {
             serverData.addChannel(messageInput->params[i]);
-            serverData.channels[messageInput->params[0]]->addUser(currUser->username);
+            serverData.channels[messageInput->params[0]]->addUser(*currUser->username);
             messageOutput->add("372 :Message of the Day");
             messageOutput->fd_to.push_back(fd);
         }
@@ -95,7 +95,7 @@ void Server::handlePrivMsg() {
 }
 
 void Server::handleMode() {
-    if (!users[fd]->isConnected) {
+    if (!users[fd]->isConnected()) {
         return;
     }
     
@@ -106,7 +106,7 @@ void Server::handleMode() {
 }
 
 void Server::handleTopic() {
-    if (!users[fd]->isConnected) {
+    if (!users[fd]->isConnected()) {
         return;
     }
     
@@ -117,7 +117,7 @@ void Server::handleTopic() {
 }
 
 void Server::handleInvite() {
-    if (!users[fd]->isConnected) {
+    if (!users[fd]->isConnected()) {
         return;
     }
 
@@ -128,7 +128,7 @@ void Server::handleInvite() {
 }
 
 void Server::handleKick() {
-    if (!users[fd]->isConnected) {
+    if (!users[fd]->isConnected()) {
         return;
     }
     
