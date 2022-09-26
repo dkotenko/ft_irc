@@ -34,3 +34,5 @@
 .vscode
 .idea
 ft_irc
+obj
+ircserv
