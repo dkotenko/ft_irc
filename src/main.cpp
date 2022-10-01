@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
     }
     
     int port = atoi(argv[1]);
-    std::string *password = new std::string(argv[2]);
+    std::string password = argv[2);
     // TODO port validation
     
     std::cout << "Init server, port - " << port << std::endl;

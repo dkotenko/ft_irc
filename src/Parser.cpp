@@ -6,9 +6,9 @@
 
 Parser::Parser() {}
 
-MessageInput *Parser::parse(std::string src) {
+InputMessage *Parser::parse(std::string src) {
     const char separator = ' ';
-    MessageInput *messageInput = new MessageInput();
+    InputMessage *inputMessage = new InputMessage();
 
     std::vector<std::string> outputArray;
     std::stringstream streamData(src);
@@ -16,13 +16,13 @@ MessageInput *Parser::parse(std::string src) {
     int i = 0;
     while (std::getline(streamData, val, separator)) {
         if (i == 0)
-            messageInput->command = val;
+            inputMessage->command = val;
         if (i != 0)
-            messageInput->params.push_back(val);
+            inputMessage->params.push_back(val);
         i++;
     }
-    if (!messageInput->command.compare("NICK")) {
+    if (!inputMessage->command.compare("NICK")) {
 
     }
-    return messageInput;
+    return inputMessage;
 }

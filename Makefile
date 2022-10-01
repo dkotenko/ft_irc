@@ -9,8 +9,8 @@ SRC_FILES =	main.cpp \
 			Server.cpp \
 			User.cpp \
 			utils.cpp \
-			MessageInput.cpp \
-			MessageOutput.cpp \
+			InputMessage.cpp \
+			OutputMessage.cpp \
 			Parser.cpp \
 			ServerData.cpp \
 			Channel.cpp \
@@ -20,8 +20,8 @@ SRC_FILES =	main.cpp \
 INC_FILES =	Server.hpp \
 			User.hpp \
 			utils.hpp \
-			MessageInput.hpp \
-			MessageOutput.hpp \
+			InputMessage.hpp \
+			OutputMessage.hpp \
 			Parser.hpp \
 			ServerData.hpp \
 			Channel.hpp \

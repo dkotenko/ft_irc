@@ -9,13 +9,13 @@
 #include <vector>
 #include <string>
 #include "utils.hpp"
-#include "MessageInput.hpp"
+#include "InputMessage.hpp"
 #include "ServerData.hpp"
 
 class Parser {
 public:
     Parser();
-    MessageInput *parse(std::string src);
+    InputMessage *parse(std::string src);
     ServerData serverData;
 };
 

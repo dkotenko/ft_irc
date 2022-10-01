@@ -2,17 +2,17 @@
 // Created by Redwyn Poetess on 04.09.2022.
 //
 
-#include "MessageOutput.hpp"
+#include "OutputMessage.hpp"
 
-MessageOutput::MessageOutput() {
+OutputMessage::OutputMessage() {
     length = 0;
 }
 
-MessageOutput::~MessageOutput() {
+OutputMessage::~OutputMessage() {
     length = 0;
 }
 
-void MessageOutput::add(std::string s) {
+void OutputMessage::add(std::string s) {
 
     if (length >= MESSAGE_MAX_LEN) {
         return ;
@@ -26,7 +26,7 @@ void MessageOutput::add(std::string s) {
     length += s.length();
 }
 
-std::string MessageOutput::toString() {
+std::string OutputMessage::toString() {
     std::stringstream ss;
 
     for(std::vector<std::string>::const_iterator itr = messages.begin();
@@ -37,7 +37,7 @@ std::string MessageOutput::toString() {
     return ss.str();
 }
 
-void MessageOutput::sendMsg() {
+void OutputMessage::sendMsg() {
     std::string s = toString();
     std::cout << "message to send: " << s << std::endl;
     for(int i = 0; i < fd_to.size(); i++) {

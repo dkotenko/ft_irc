@@ -24,7 +24,7 @@
 #include <vector>
 #include "Parser.hpp"
 #include "ServerData.hpp"
-#include "MessageOutput.hpp"
+#include "OutputMessage.hpp"
 #include "const.hpp"
 #include "error.hpp"
 
@@ -58,8 +58,8 @@ private:
     std::string *password;
     struct sockaddr_in sockaddr;
     Parser parser;
-    MessageInput *messageInput;
-    MessageOutput *messageOutput;
+    InputMessage *inputMessage;
+    OutputMessage *outputMessage;
     User *currUser;
 
     void print_debug(std::string &s);
@@ -72,10 +72,9 @@ private:
     void client_read(int cs);
     void fct_write(int cs);
     void client_write(int cs);
-    MessageOutput *parse(std::string msg);
+    OutputMessage *parse(std::string msg);
     void populateHandleMap();
     void send_welcome(int i);
-    int	sendError(const User &user, int err, const std::string &arg1, const std::string &arg2);
 
     void handleNick();
     void handleUser();
@@ -83,10 +82,13 @@ private:
     void handleJoin();
     void handlePrivMsg();
     void handleQuit();
+    
 
     void handleMode();
     void handleTopic();
     void handleInvite();
     void handleKick();
+
+    void handleError(int err, const std::string &arg1, const std::string &arg2);
 };
 #endif //FT_IRC_SERVER_H

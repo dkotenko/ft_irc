@@ -1,20 +1,8 @@
 Список задач для реализации, найденных багов
 
+1. Для IRC_old необходимо реализовать механизм межсерверного взаимодействия
+
 1. участки кода с пометкой TODO
-
-2. Реализовать механизм валидации:
-	под "прекратить обработку" подразумевается возврат пустого MessageOutput, либо MessageOutput с сообщением ошибки, либо с флагом mustBeSent
-
-	- серверу приходит строка
-	- парсер раскладывает сроку в MessageInput
-	- Проверка comand: есть словарь команд. Если в словаре нет команды - прекратить обработку
-	- все функции обработки имеют одинаковый интерфейс: void handle_*название_команды*(MessageInput messageInput);
-	- При создании сервера (парсера) инициализируется словарь функций обработки команд
-	- Обращение к нужной функции: handleMap[messageInput.comand](messageInput);
-	- в каждой handle функции происходит валидация соответствующей команды. Ошибка валидации - прекратить обработку
-	- если парсеру следует сообщить об ошибке клиенту, сообщение ошибки заполняется внутри функции handle_error_message(MessageInput messageInput)
-	- если парсеру следует сообщить об ошибке серверу, сообщение заполняется кодом ошибки в соответствующем поле
-	- при успешной валидации соответствующие действия в логике вызываются из handle_*название_команды*
 
 3. Согласно документации, максимальный размер сообщения клиента 512 байт включая название команды, параметров и символов конца строки \r\n
 4. Channels names are strings (beginning with a '&' or '#' character) of length up to 200 characters.
@@ -25,57 +13,6 @@
 	For debugging console apps LLDB needs to be selected in Preferences/Toolchains.
 	If it is left on GDB, my breakpoints don't work.
 
-6. Segfault в channels
-	UI клиент не отправляет сообщение JOIN, поэтому канал не создается
-
 7. JOIN к несуществующему каналу создает новый, юзер автоматически становится оператором, можно запретить создавать каналы
 
 8. Проверить googletest
-
-NICK 1
-USER
-:IRCat 461 1 USER :Not enough parameters
-USER 1
-:IRCat 461 1 USER :Not enough parameters
-PASS 1234
-USER 1
-:IRCat 461 1 USER :Not enough parameters
-USER 1:test
-:IRCat 461 1 USER :Not enough parameters
-USER 1 :test
-:IRCat 461 1 USER :Not enough parameters
-USER guest tolmoon tolsun :Ronnie Reagan
-:IRCat 375 1 :- IRCat Message of the day -
-:IRCat 376 1 :End of /MOTD command
-:IRCat PING :IRCat
-JOIN #1
-user@DESKTOP-KUR5GV6:/mnt/c/Users/dmitr$ nc 127.0.0.1 1234
-JOIN #1
-:IRCat 451  :You have not registered
-NICK 1
-USER 1
-:IRCat 461 1 USER :Not enough parameters
-USER 1 telmoon telsun :hell
-PASS 1234
-user@DESKTOP-KUR5GV6:/mnt/c/Users/dmitr$ nc 127.0.0.1 1234
-PASS 1234
-NICK 2
-USER 2
-:IRCat 461 2 USER :Not enough parameters
-USER 2 telmoon telsun :gf
-:IRCat 375 2 :- IRCat Message of the day -
-:IRCat 376 2 :End of /MOTD command
-PRIVMSG #1
-:IRCat 412 2 :No text to send
-PRIVMSG #1 2
-:IRCat 401 2 #1 :No such nick/channel
-/JOIN #1
-:IRCat 421 2 /JOIN :Unknown command
-JOIN #22
-:2!2@127.0.0.1 JOIN :#22
-:IRCat 331 2 #22 :No topic is set
-:IRCat 353 2 = #22 :@2
-:IRCat 366 2 #22 :End of /NAMES list
-PRIVMSG #1 hello!
-:IRCat 401 2 #1 :No such nick/channel
-PRIVMSG #22 HELLO!

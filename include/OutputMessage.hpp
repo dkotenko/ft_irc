@@ -13,18 +13,18 @@
 #include "const.hpp"
 
 
-class MessageOutput {
+class OutputMessage {
     public:
         std::string data;
         int fd_from;
         std::vector<int> fd_to;
 
-        MessageOutput();
-        ~MessageOutput();
+        OutputMessage();
+        ~OutputMessage();
         void add(std::string s);
         void sendMsg();
         std::string toString();
-        //~MessageOutput();
+        //~OutputMessage();
     private:
         int length;
         std::vector<std::string> messages;

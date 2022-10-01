@@ -9,12 +9,12 @@
 User::User(int type, int fd)
 {
 	this->clean();
-    connectStatus = NOT_CONNECTED;
+    connectStatus = NOT_REGISTERED;
 	this->type = type;
 	this->fd = fd;
 	buf_read = new char[BUF_SIZE + 1] ();
 	buf_write = new char[BUF_SIZE + 1] ();
-	connected = false;
+	registered = false;
 	welcomeReceived = false;
 }
 
@@ -42,12 +42,12 @@ void User::delUser(std::string username) {
     (void)username;
 }
 
-bool User::isConnected() {
-        return connected;
+bool User::isRegistered() {
+        return registered;
 }
 
-void User::setConnected(bool b) {
-	connected = b;
+void User::setRegistered(bool b) {
+	registered = b;
 }
 
 User::~User() {

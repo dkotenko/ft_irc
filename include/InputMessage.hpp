@@ -10,7 +10,7 @@
 #include <vector>
 #include <string>
 
-class MessageInput {
+class InputMessage {
 public:
     int fd_from;
     std::vector<int> fd_to;
@@ -29,8 +29,8 @@ public:
     int getCountParams();
     //std::string get*Src();
     //void set*Src(std::string *src);
-    MessageInput();
-    //~MessageInput();
+    InputMessage();
+    //~InputMessage();
     int countParams;
 };
 
