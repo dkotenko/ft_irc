@@ -6,6 +6,9 @@ Channel::Channel(std::string chname) {
 }
 
 void Channel::addUser(std::string username) {
+    if (users.size() == 0) {
+        operator_username = username;
+    }
     users.push_back(username);
 }
 
@@ -42,8 +45,17 @@ std::string Channel::getOperatorUsername() {
     return this->operator_username;
 }
 
+bool Channel::checkUserInChannel(std::string username) {
+    for (int i = 0; i < this->users.size(); i++) {
+        if (this->users[i] == username)
+            return true;
+    }
+    return false;
+}
+
 void Channel::doKick(std::string username) {
-    this->delUser(username);
+    if (checkUserInChannel(username))
+        this->delUser(username);
 }
 
 void Channel::setTopic(std::string topic) {

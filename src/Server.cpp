@@ -1,7 +1,7 @@
 #include "Server.hpp"
 #include "utils.hpp"
 
-Server::Server(int port, std::string *password) {
+Server::Server(int port, std::string password) {
     struct rlimit rlp;
     parser = Parser();
     this->port = port;

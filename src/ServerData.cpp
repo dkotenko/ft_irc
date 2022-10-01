@@ -40,3 +40,29 @@ Channel *ServerData::getChannel(std::string channelName) {
     else
         return NULL;
 }
+
+
+
+void ServerData::doNames(std::vector<std::string> channelsList) {
+    std::map<std::string ,Channel*> :: iterator it;
+    for(it=channels.begin(); it != channels.end(); ++it) {
+        std::cout<<"OPERATOR "<<it->second->getOperatorUsername()<<"\n";
+        if (channelsList.size() != 0) {
+            bool checkChannel = false;
+            for(int i = 0; i < channels.size(); i++) {
+                if (channelsList[i] == it->first)
+                    checkChannel = true;
+            }
+            if (!checkChannel)
+                continue;
+        }
+        std::vector<std::string> users = it->second->getUsers();
+        std::cout<<it->first<<": ";
+        for (int i = 0; i < users.size(); i++) {
+            if (i != 0)
+                std::cout<<", ";
+            std::cout<<users[i];
+        }
+        std::cout<<std::endl;
+    }
+}

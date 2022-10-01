@@ -36,7 +36,7 @@
 
 class Server {
 public:
-    Server(int port, std::string *password);
+    Server(int port, std::string password);
     ~Server();
     int port;
     int sockfd;
@@ -55,7 +55,7 @@ public:
     void run();
 
 private:
-    std::string *password;
+    std::string password;
     struct sockaddr_in sockaddr;
     Parser parser;
     MessageInput *messageInput;
@@ -85,5 +85,6 @@ private:
     void handleTopic();
     void handleInvite();
     void handleKick();
+    void handleNames();
 };
 #endif //FT_IRC_SERVER_H

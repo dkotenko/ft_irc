@@ -19,6 +19,7 @@ class ServerData
         std::map<std::string, Channel*> channels;
         void printAllChannels();
         Channel* getChannel(std::string channelName);
+        void doNames(std::vector<std::string> channelsList);
 private:
 
 };
