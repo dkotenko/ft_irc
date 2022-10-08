@@ -37,16 +37,23 @@ Channel *ServerData::getChannel(std::string channelName) {
     if (channels.count(channelName)) {
         return channels[channelName];
     }
-    else
+    else {
+        std::cout << "NULL\n";
         return NULL;
+    }
 }
 
+bool ServerData::checkChannel(std::string channelName) {
+    if (channels.count(channelName))
+        return true;
+    return false;
+}
 
-
-void ServerData::doNames(std::vector<std::string> channelsList) {
+std::string ServerData::doNames(std::vector<std::string> channelsList) {
     std::map<std::string ,Channel*> :: iterator it;
+    std::string answer;
     for(it=channels.begin(); it != channels.end(); ++it) {
-        std::cout<<"OPERATOR "<<it->second->getOperatorUsername()<<"\n";
+        //std::cout<<"OPERATOR "<<it->second->getOperatorUsername()<<"\n";
         if (channelsList.size() != 0) {
             bool checkChannel = false;
             for(int i = 0; i < channels.size(); i++) {
@@ -57,12 +64,23 @@ void ServerData::doNames(std::vector<std::string> channelsList) {
                 continue;
         }
         std::vector<std::string> users = it->second->getUsers();
-        std::cout<<it->first<<": ";
+        answer += it->first;
+        answer += " :";
+        //std::cout<<it->first<<": ";
         for (int i = 0; i < users.size(); i++) {
-            if (i != 0)
-                std::cout<<", ";
-            std::cout<<users[i];
+            if (i != 0) {
+                //std::cout<<", ";
+                answer += " ";
+            }
+            if (it->second->getOperatorUsername() == users[i]) {
+                std::cout << it->second->getOperatorUsername() << " " << users[i] << "\n";
+                answer += "@";
+            }
+            answer += users[i];
+            //std::cout<<users[i];
         }
-        std::cout<<std::endl;
+        answer += "\n";
+        //std::cout<<std::endl;
     }
+    return answer;
 }
