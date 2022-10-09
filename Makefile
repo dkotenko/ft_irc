@@ -33,7 +33,7 @@ OBJS_FILES	= $(SRC_FILES:%.cpp=%.o)
 OBJS		:= $(addprefix $(OBJDIR)/, $(OBJS_FILES))
 INCLUDES	:= $(addprefix $(INCDIR)/, $(INC_FILES))
 
-FLAGS	=	-Wall -Wextra -Werror -std=c++98 -g
+FLAGS	=	-Wall -Wextra -Werror -std=c++98
 CC		= clang++
 
 all:

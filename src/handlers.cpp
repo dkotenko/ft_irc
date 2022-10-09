@@ -46,20 +46,26 @@ void Server::handleUser() {
 
 void Server::handlePass() {
     //std::cout << "connect status " << currUser->connectStatus << std::endl;
-    //std::cout << "here" << std::endl;
-    std::cout << "Password passed: " << inputMessage->params[0] << std::endl << "Password required: " << password << std::endl;
-
+    std::cout << password << std::endl;
+	
+	std::cout << "Password required: " << password << std::endl;
+	
     if (inputMessage->getParams().size() == 0) {
-        handleError(ERR_NEEDMOREPARAMS, inputMessage->getCommand(), NULL);
-    } else if (currUser->isRegistered()) {
-        handleError(ERR_ALREADYREGISTRED, NULL, NULL);
-    } else if (inputMessage->params[0] != password) {
-        handleError(ERR_PASSWDMISMATCH, NULL, NULL);
-    } else {
-        currUser->connectStatus |= PASS_PASSED;
-        currUser->setRegistered(currUser->connectStatus == REGISTERED);
-        send_welcome(fd);
+        handleError(ERR_NEEDMOREPARAMS, "PASS" , "");
+		return ;
+	}
+	std::cout << "Password passed: " << inputMessage->params[0] << std::endl;
+    if (currUser->isRegistered()) {
+        handleError(ERR_ALREADYREGISTRED, "", "");
+		return ;
     }
+	if (inputMessage->params[0] != password) {
+        handleError(ERR_PASSWDMISMATCH, "", "");
+		return ;
+	}
+	currUser->connectStatus |= PASS_PASSED;
+	currUser->setRegistered(currUser->connectStatus == REGISTERED);
+	send_welcome(fd);
 }
 
 #define WELCOME_REPL "001"

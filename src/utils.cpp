@@ -19,3 +19,6 @@ void printError(std::string s) {
     exit(EXIT_FAILURE);
 }
 
+void here(int n) {
+	std::cout << "here: " << n << std::endl;
+}

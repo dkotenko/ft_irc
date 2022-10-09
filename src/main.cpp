@@ -17,15 +17,20 @@ int validation(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
+    
     if (validation(argc, argv)) {
         exit(0);
     }
     
     int port = atoi(argv[1]);
-    std::string password = argv[2];
+    if (port < 1024 || port > 0xffff) {
+        std::cout << "Error: port must be in range [1024:65535]" <<std::endl;
+        exit(0);
+    }
+    std::string password(argv[2]);
     // TODO port validation
-    
     std::cout << "Init server, port - " << port << std::endl;
+    
     Server server(port, password);
     server.run();
     return 0;
