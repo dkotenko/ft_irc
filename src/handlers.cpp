@@ -73,7 +73,6 @@ void Server::handlePrivMsg() {
     if (serverData.channels.count(messageInput->params[0])) {
         serverData.getChannel(messageInput->params[0])->addMessage
         (
-
             users[messageInput->fd_from]->username,
             serverData.getChannel(messageInput->params[0])->getUsers(),
             messageInput->params[1]
@@ -119,8 +118,8 @@ void Server::handleKick() {
         return;
     }
     if (messageInput->params.size() == 2) {
-        if (serverData.getChannel(messageInput->params[0])->getOperatorUsername() == 
-            users[messageInput->fd_from]->username) {
+        if (serverData.checkChannel(messageInput->params[0]) && 
+        serverData.getChannel(messageInput->params[0])->getOperatorUsername() == users[messageInput->fd_from]->username) {
             //std::cout<<"1: "<<messageInput->params[0]<<" 2: "<<messageInput->params[1]<<"\n";
             serverData.getChannel(messageInput->params[0])->doKick(messageInput->params[1]);
         }
@@ -144,5 +143,6 @@ void Server::handleNames() {
     if (messageInput->params.size() == 1) {
         channelsList = split(messageInput->params[0], channelsList, ',');
     }
-    serverData.doNames(channelsList);
+    messageOutput->data = serverData.doNames(channelsList);
+    messageOutput->fd_to.push_back(fd);
 }

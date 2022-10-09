@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     } //grab the IP address and port number 
     char *serverIp = argv[1]; int port = atoi(argv[2]); 
     //create a message buffer 
-    char msg[1500]; 
+    char msg[1500];
     //setup a socket and connection tools 
     struct hostent* host = gethostbyname(serverIp); 
     sockaddr_in sendSockAddr;   
