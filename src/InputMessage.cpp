@@ -33,8 +33,8 @@ void InputMessage::setCommand(std::string command) {
 	this->command = command;
 }
 
-std::vector<std::string> InputMessage::getParams() {
-	return this->params;
+std::vector<std::string> &InputMessage::getParams() {
+	return params;
 }
 
 void InputMessage::setParams(std::vector<std::string> params) {
@@ -42,5 +42,5 @@ void InputMessage::setParams(std::vector<std::string> params) {
 }
 
 int InputMessage::getCountParams() {
-	return this->params.size();
+	return params.size();
 }

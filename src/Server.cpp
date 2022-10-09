@@ -190,7 +190,7 @@ OutputMessage *Server::parse(std::string src) {
             inputMessage->command = val;
         }
         if (i != 0) {
-            inputMessage->params.push_back(val);
+            inputMessage->getParams().push_back(val);
         }
         i++;
     }

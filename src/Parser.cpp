@@ -18,7 +18,7 @@ InputMessage *Parser::parse(std::string src) {
         if (i == 0)
             inputMessage->command = val;
         if (i != 0)
-            inputMessage->params.push_back(val);
+            inputMessage->getParams().push_back(val);
         i++;
     }
     if (!inputMessage->command.compare("NICK")) {
