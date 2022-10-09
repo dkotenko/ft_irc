@@ -23,6 +23,7 @@ class Channel {
         void setTopic(std::string topic);
         void editMode();
         void doInvite(std::string nickname);
+        bool checkUserInChannel(std::string username);
 
         std::string getOperatorUsername();
 

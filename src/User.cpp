@@ -22,20 +22,20 @@ void User::clean() {
 	this->type = FD_FREE;
 }
 
-void User::setUserName(std::string *username) {
+void User::setUserName(std::string username) {
     this->username = username;
 }
 
-void User::setNickName(std::string *nickname) {
+void User::setNickName(std::string nickname) {
     this->nickname = nickname;
 }
 
 const std::string &User::getUserName() const {
-    return *this->username;
+    return this->username;
 }
 
 const std::string &User::getNickName() const {
-    return *this->username;
+    return this->username;
 }
 
 void User::delUser(std::string username) {

@@ -6,25 +6,18 @@ void Server::populateHandleMap() {
     handleMap[CMD_PASS] = &Server::handlePass;
     handleMap[CMD_JOIN] = &Server::handleJoin;
     handleMap[CMD_PRIVMSG] = &Server::handlePrivMsg;
-    handleMap[CMD_QUIT] = &Server::handleQuit;
-
-}
-
-void Server::handleQuit() {
-    currUser->setRegistered(false);
-    /*
-    delete(currUser);
-    users[fd] = new User(FD_FREE, fd);
-    */
-    //quit
+    handleMap[CMD_MODE] = &Server::handleMode;
+    handleMap[CMD_TOPIC] = &Server::handleTopic;
+    handleMap[CMD_INVITE] = &Server::handleInvite;
+    handleMap[CMD_KICK] = &Server::handleKick;
+    handleMap[CMD_NAMES] = &Server::handleNames;
 }
 
 void Server::handleNick() {
     if (!currUser->isRegistered()) {
-        std::cout << "connect status " << currUser->connectStatus << std::endl;
         currUser->connectStatus |= NICK_PASSED;
         currUser->setRegistered(currUser->connectStatus == REGISTERED);
-        currUser->nickname = &inputMessage->params[1];
+        currUser->nickname = inputMessage->params[0];
         send_welcome(fd);
         return ;
     }
@@ -37,7 +30,7 @@ void Server::handleUser() {
         std::cout << "connect status " << currUser->connectStatus << std::endl;
         currUser->connectStatus |= USER_PASSED;
         currUser->setRegistered(currUser->connectStatus == REGISTERED);
-        currUser->username = &inputMessage->params[0];
+        currUser->username = inputMessage->params[0];
         send_welcome(fd);
         return ;
     }
@@ -45,10 +38,10 @@ void Server::handleUser() {
 
 void Server::handlePass() {
     std::cout << "connect status " << currUser->connectStatus << std::endl;
-    std::cout << "Password passed: " << inputMessage->params[0] << std::endl << "Password required: " << *password << std::endl;
+    std::cout << "Password passed: " << inputMessage->params[0] << std::endl << "Password required: " << password << std::endl;
 
-    if (inputMessage.getParams().size() == 0) {
-        handleError(ERR_NEEDMOREPARAMS, inputMessage.getCommand(), NULL);
+    if (inputMessage->getParams().size() == 0) {
+        handleError(ERR_NEEDMOREPARAMS, inputMessage->getCommand(), NULL);
     } else if (currUser->isRegistered()) {
         handleError(ERR_ALREADYREGISTRED, NULL, NULL);
     } else if (inputMessage->params[0] != password) {
@@ -80,7 +73,7 @@ void Server::handleJoin() {
     for (int i = 0; i < (int)inputMessage->params.size(); i++) {
         if (inputMessage->params[i][0] == '#') {
             serverData.addChannel(inputMessage->params[i]);
-            serverData.channels[inputMessage->params[0]]->addUser(*currUser->username);
+            serverData.channels[inputMessage->params[0]]->addUser(currUser->username);
             outputMessage->add("372 :Message of the Day");
             outputMessage->fd_to.push_back(fd);
         }
@@ -92,7 +85,7 @@ void Server::handlePrivMsg() {
     if (serverData.channels.count(inputMessage->params[0])) {
         serverData.getChannel(inputMessage->params[0])->addMessage
         (
-            *users[inputMessage->fd_from]->username,
+            users[inputMessage->fd_from]->username,
             serverData.getChannel(inputMessage->params[0])->getUsers(),
             inputMessage->params[1]
         );
@@ -100,47 +93,55 @@ void Server::handlePrivMsg() {
 }
 
 void Server::handleMode() {
-    if (!users[fd]->isRegistered()) {
+    if (!currUser->isRegistered()) {
         return;
     }
     
     if (serverData.getChannel(inputMessage->params[0])->getOperatorUsername() == 
-        *users[inputMessage->fd_from]->username) {
+        users[inputMessage->fd_from]->username) {
         return;
     }
 }
 
 void Server::handleTopic() {
-    if (!users[fd]->isRegistered()) {
+    if (!currUser->isRegistered()) {
         return;
     }
     
     if (serverData.getChannel(inputMessage->params[0])->getOperatorUsername() == 
-        *users[inputMessage->fd_from]->username) {
+        users[inputMessage->fd_from]->username) {
         serverData.getChannel(inputMessage->params[0])->setTopic(inputMessage->params[1]);
     }
 }
 
 void Server::handleInvite() {
-    if (!users[fd]->isRegistered()) {
+    if (!currUser->isRegistered()) {
         return;
     }
 
     if (serverData.getChannel(inputMessage->params[0])->getOperatorUsername() == 
-        *users[inputMessage->fd_from]->username) {
+        users[inputMessage->fd_from]->username) {
         serverData.getChannel(inputMessage->params[1])->doInvite(inputMessage->params[0]);
     }
 }
 
 void Server::handleKick() {
-    if (!users[fd]->isRegistered()) {
+    if (!currUser->isRegistered()) {
         return;
     }
     
     if (serverData.getChannel(inputMessage->params[1])->getOperatorUsername() == 
-        *users[inputMessage->fd_from]->username) {
+        users[inputMessage->fd_from]->username) {
         serverData.getChannel(inputMessage->params[0])->doKick(inputMessage->params[1]);
-    } 
+    }
+	
+    if (inputMessage->params.size() == 2) {
+        if (serverData.checkChannel(inputMessage->params[0]) && 
+        serverData.getChannel(inputMessage->params[0])->getOperatorUsername() == users[inputMessage->fd_from]->username) {
+            //std::cout<<"1: "<<inputMessage->params[0]<<" 2: "<<inputMessage->params[1]<<"\n";
+            serverData.getChannel(inputMessage->params[0])->doKick(inputMessage->params[1]);
+        }
+    }
 }
 
 void Server::handleError(int err, const std::string &arg1, const std::string &arg2)
@@ -287,4 +288,26 @@ void Server::handleError(int err, const std::string &arg1, const std::string &ar
 			break;
 	}
 	//send(currUser->fd, msg.c_str(), msg.size(), IRC_NOSIGNAL);
+}
+
+
+std::vector<std::string> split(const std::string& s, std::vector<std::string>& res, char delim) {
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim)) {
+        res.push_back(item);
+    }
+    return res;
+}
+
+void Server::handleNames() {
+    if (!currUser->isRegistered()) {
+        return;
+    }
+    std::vector<std::string> channelsList;
+    if (inputMessage->params.size() == 1) {
+        channelsList = split(inputMessage->params[0], channelsList, ',');
+    }
+    outputMessage->data = serverData.doNames(channelsList);
+    outputMessage->fd_to.push_back(fd);
 }

@@ -30,9 +30,10 @@ class User {
 public:
     User(int type, int fd);
     ~User();
-    std::string *username;
-    std::string *nickname;
-    std::string *password;
+    
+    std::string username;
+    std::string nickname;
+    std::string password;
     int connectStatus;
     bool registered;
     bool welcomeReceived;
@@ -41,13 +42,13 @@ public:
     char *buf_read;
     char *buf_write;
     void clean();
-    void setUserName(std::string *username);
-    void setNickName(std::string *nickname);
+    void setUserName(std::string username);
+    void setNickName(std::string nickname);
     const std::string &getUserName() const;
     const std::string &getNickName() const;
     void delUser(std::string username);
     OutputMessage *outputMessage;
-
+    
     bool isRegistered();
     void setRegistered(bool b);
 };
