@@ -34,6 +34,9 @@ public:
     std::string username;
     std::string nickname;
     std::string password;
+    std::string realusername;
+    std::string hostname;
+    std::string servername;
     int connectStatus;
     bool registered;
     bool welcomeReceived;
