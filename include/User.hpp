@@ -44,8 +44,8 @@ public:
     void clean();
     void setUserName(std::string username);
     void setNickName(std::string nickname);
-    const std::string &getUserName() const;
-    const std::string &getNickName() const;
+    const std::string &getUsername() const;
+    const std::string &getNickname() const;
     void delUser(std::string username);
     OutputMessage *outputMessage;
     

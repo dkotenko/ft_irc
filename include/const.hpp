@@ -19,4 +19,6 @@
 #define SERVER_MESSAGE_OF_THE_DAY "Welcome to ft_irc server!\r\n"
 //#define SERVER_MESSAGE_OF_THE_DAY ":bar.example.com 001 server :Welcome!\r\n"
 
+#define PING_FREQ 120
+
 #endif

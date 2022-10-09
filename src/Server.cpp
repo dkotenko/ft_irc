@@ -122,8 +122,11 @@ void Server::srv_accept(int s)
 
   csin_len = sizeof(csin);
   cs = accept(s, (struct sockaddr*)&csin, &csin_len);
-  printf("New client #%d from %s:%d\n", cs,
+  std::cout << "New client # " << cs << " from " << inet_ntoa(csin.sin_addr) << ":" << ntohs(csin.sin_port) << std::endl;
+  /*
+  printf("New client #%d from %s:%d\n", cs, 
 	 inet_ntoa(csin.sin_addr), ntohs(csin.sin_port));
+  */
   users[cs]->type = FD_CLIENT;
 }
 

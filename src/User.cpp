@@ -8,18 +8,21 @@
 
 User::User(int type, int fd)
 {
-	this->clean();
-    connectStatus = NOT_REGISTERED;
 	this->type = type;
 	this->fd = fd;
 	buf_read = new char[BUF_SIZE + 1] ();
 	buf_write = new char[BUF_SIZE + 1] ();
-	registered = false;
-	welcomeReceived = false;
+	this->clean();
+	this->nickname = "";
 }
 
 void User::clean() {
 	this->type = FD_FREE;
+	connectStatus = NOT_REGISTERED;
+	registered = false;
+	welcomeReceived = false;
+	std::memset(buf_read, 0, BUF_SIZE + 1);
+	std::memset(buf_write, 0, BUF_SIZE + 1);
 }
 
 void User::setUserName(std::string username) {
@@ -30,11 +33,11 @@ void User::setNickName(std::string nickname) {
     this->nickname = nickname;
 }
 
-const std::string &User::getUserName() const {
+const std::string &User::getUsername() const {
     return this->username;
 }
 
-const std::string &User::getNickName() const {
+const std::string &User::getNickname() const {
     return this->username;
 }
 
@@ -43,7 +46,7 @@ void User::delUser(std::string username) {
 }
 
 bool User::isRegistered() {
-        return registered;
+    return registered;
 }
 
 void User::setRegistered(bool b) {

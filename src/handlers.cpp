@@ -11,6 +11,14 @@ void Server::populateHandleMap() {
     handleMap[CMD_INVITE] = &Server::handleInvite;
     handleMap[CMD_KICK] = &Server::handleKick;
     handleMap[CMD_NAMES] = &Server::handleNames;
+	handleMap[CMD_QUIT] = &Server::handleQuit;
+}
+
+void Server::handleQuit() {
+	if (currUser->isRegistered()) {
+		close(currUser->fd);
+		currUser->clean();
+	}
 }
 
 void Server::handleNick() {
@@ -37,7 +45,8 @@ void Server::handleUser() {
 }
 
 void Server::handlePass() {
-    std::cout << "connect status " << currUser->connectStatus << std::endl;
+    //std::cout << "connect status " << currUser->connectStatus << std::endl;
+    //std::cout << "here" << std::endl;
     std::cout << "Password passed: " << inputMessage->params[0] << std::endl << "Password required: " << password << std::endl;
 
     if (inputMessage->getParams().size() == 0) {
@@ -149,7 +158,7 @@ void Server::handleError(int err, const std::string &arg1, const std::string &ar
 	std::string	msg = ":" + serverName + " ";
 	std::stringstream	ss;
 	ss << err;
-	msg += ss.str() + " " + currUser->getNickName();
+	msg += ss.str() + " " + currUser->getNickname();
 	switch (err) {
 		case ERR_NOSUCHNICK:
 			msg += " " + arg1 + " :No such nick/channel\n";
