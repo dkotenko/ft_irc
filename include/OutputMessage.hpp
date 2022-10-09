@@ -22,6 +22,8 @@ class OutputMessage {
         OutputMessage();
         ~OutputMessage();
         void add(std::string s);
+        void add(std::string s, int fd);
+        void addFd(int fd);
         void sendMsg();
         std::string toString();
         //~OutputMessage();

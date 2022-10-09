@@ -15,7 +15,7 @@
 #define CMD_KICK "KICK"
 #define CMD_NAMES "NAMES"
 
-#define SERVER_NAME "IRCserv"
+#define SERVER_NAME "FT_IRC"
 #define SERVER_MESSAGE_OF_THE_DAY "Welcome to ft_irc server!\r\n"
 //#define SERVER_MESSAGE_OF_THE_DAY ":bar.example.com 001 server :Welcome!\r\n"
 

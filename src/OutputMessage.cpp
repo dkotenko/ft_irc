@@ -12,6 +12,15 @@ OutputMessage::~OutputMessage() {
     length = 0;
 }
 
+void OutputMessage::addFd(int fd) {
+    fd_to.push_back(fd);
+}
+
+void OutputMessage::add(std::string s, int fd) {
+    addFd(fd);
+    add(s);
+}
+
 void OutputMessage::add(std::string s) {
 
     if (length >= MESSAGE_MAX_LEN) {

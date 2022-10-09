@@ -54,6 +54,7 @@ void Server::handlePass() {
         handleError(ERR_NEEDMOREPARAMS, "PASS" , "");
 		return ;
 	}
+
 	std::cout << "Password passed: " << inputMessage->params[0] << std::endl;
     if (currUser->isRegistered()) {
         handleError(ERR_ALREADYREGISTRED, "", "");
@@ -302,7 +303,7 @@ void Server::handleError(int err, const std::string &arg1, const std::string &ar
 			msg += "UNKNOWN ERROR\n";
 			break;
 	}
-	//send(currUser->fd, msg.c_str(), msg.size(), IRC_NOSIGNAL);
+	outputMessage->add(msg, fd);
 }
 
 
@@ -323,6 +324,9 @@ void Server::handleNames() {
     if (inputMessage->params.size() == 1) {
         channelsList = split(inputMessage->params[0], channelsList, ',');
     }
-    outputMessage->data = serverData.doNames(channelsList);
+	/*
+    outputMessage->data = ;
     outputMessage->fd_to.push_back(fd);
+	*/
+	outputMessage->add(serverData.doNames(channelsList), fd);
 }

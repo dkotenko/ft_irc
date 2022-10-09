@@ -183,11 +183,15 @@ OutputMessage *Server::parse(std::string src) {
     int i = 0;
     inputMessage->fd_from = this->fd;
     while (std::getline(streamData, val, separator)) {
-        
-        if (i == 0)
+        if (val[0] == ':') {
+            val = val.substr(1, val.size() - 1);
+        }
+        if (i == 0) {
             inputMessage->command = val;
-        if (i != 0)
+        }
+        if (i != 0) {
             inputMessage->params.push_back(val);
+        }
         i++;
     }
 
