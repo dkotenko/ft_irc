@@ -4,8 +4,10 @@
 
 #ifndef FT_IRC_USER_H
 #define FT_IRC_USER_H
-#include <string>
 #include <vector>
+#include <string>
+#include <cstring>
+#include <map>
 #include "OutputMessage.hpp"
 
 # define BUF_SIZE	4096
@@ -34,6 +36,9 @@ public:
     std::string username;
     std::string nickname;
     std::string password;
+    std::string realusername;
+    std::string hostname;
+    std::string servername;
     int connectStatus;
     bool registered;
     bool welcomeReceived;

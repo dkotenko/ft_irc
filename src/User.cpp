@@ -3,8 +3,6 @@
 //
 
 #include "User.hpp"
-#include <string>
-#include <map>
 
 User::User(int type, int fd)
 {

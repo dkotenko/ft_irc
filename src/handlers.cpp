@@ -25,7 +25,7 @@ void Server::handleNick() {
     if (!currUser->isRegistered()) {
         currUser->connectStatus |= NICK_PASSED;
         currUser->setRegistered(currUser->connectStatus == REGISTERED);
-        currUser->nickname = inputMessage->getParams[0];
+        currUser->nickname = inputMessage->getParams()[0];
         send_welcome(fd);
         return ;
     }
@@ -33,13 +33,27 @@ void Server::handleNick() {
 
 void Server::handleUser() {
     //TODO check user logic
-    
-    if (!currUser->isRegistered()) {
+    std::cout<<"SIZE "<<inputMessage->params.size()<<" "<<inputMessage->params[0]<<" "<<inputMessage->params[1]<<" "<<inputMessage->params[2]<<" "<< inputMessage->params[3]<<"\n";
+    if (!currUser->isRegistered() && inputMessage->params.size() >= 4 
+		&& inputMessage->params[3][0] == ':' && inputMessage->params[3].size() > 1) {
         std::cout << "connect status " << currUser->connectStatus << std::endl;
         currUser->connectStatus |= USER_PASSED;
         currUser->setRegistered(currUser->connectStatus == REGISTERED);
-        currUser->username = inputMessage->getParams[0];
-        send_welcome(fd);
+        currUser->username = inputMessage->params[0];
+		currUser->hostname = inputMessage->params[1];
+		currUser->hostname = inputMessage->params[2];
+		for (int i = 3; i < inputMessage->params.size(); ++i) {
+			if (i == 3) {
+				currUser->realusername += inputMessage->params[i];
+				currUser->realusername.erase(1, currUser->realusername.size() - 1);
+			}
+			else {
+				currUser->realusername += " ";
+				currUser->realusername += inputMessage->params[i];
+			}
+		}
+		std::cout<<"REAL: "<<currUser->realusername<<"\n";
+		send_welcome(fd);
         return ;
     }
 }
@@ -55,12 +69,12 @@ void Server::handlePass() {
 		return ;
 	}
 
-	std::cout << "Password passed: " << inputMessage->getParams[0] << std::endl;
+	std::cout << "Password passed: " << inputMessage->getParams()[0] << std::endl;
     if (currUser->isRegistered()) {
         handleError(ERR_ALREADYREGISTRED, "", "");
 		return ;
     }
-	if (inputMessage->getParams[0] != password) {
+	if (inputMessage->getParams()[0] != password) {
         handleError(ERR_PASSWDMISMATCH, "", "");
 		return ;
 	}
@@ -86,10 +100,10 @@ void Server::handleJoin() {
     if (!currUser->isRegistered()) {
         return ;
     }
-    for (int i = 0; i < (int)inputMessage->getParams.size(); i++) {
-        if (inputMessage->getParams[i][0] == '#') {
-            serverData.addChannel(inputMessage->getParams[i]);
-            serverData.channels[inputMessage->getParams[0]]->addUser(currUser->username);
+    for (int i = 0; i < (int)inputMessage->getParams().size(); i++) {
+        if (inputMessage->getParams()[i][0] == '#') {
+            serverData.addChannel(inputMessage->getParams()[i]);
+            serverData.channels[inputMessage->getParams()[0]]->addUser(currUser->username);
             outputMessage->add("372 :Message of the Day");
             outputMessage->fd_to.push_back(fd);
         }
@@ -98,12 +112,12 @@ void Server::handleJoin() {
 
 void Server::handlePrivMsg() {
    serverData.printAllChannels();
-    if (serverData.channels.count(inputMessage->getParams[0])) {
-        serverData.getChannel(inputMessage->getParams[0])->addMessage
+    if (serverData.channels.count(inputMessage->getParams()[0])) {
+        serverData.getChannel(inputMessage->getParams()[0])->addMessage
         (
             users[inputMessage->fd_from]->username,
-            serverData.getChannel(inputMessage->getParams[0])->getUsers(),
-            inputMessage->getParams[1]
+            serverData.getChannel(inputMessage->getParams()[0])->getUsers(),
+            inputMessage->getParams()[1]
         );
    }
 }
@@ -113,7 +127,7 @@ void Server::handleMode() {
         return;
     }
     
-    if (serverData.getChannel(inputMessage->getParams[0])->getOperatorUsername() == 
+    if (serverData.getChannel(inputMessage->getParams()[0])->getOperatorUsername() == 
         users[inputMessage->fd_from]->username) {
         return;
     }
@@ -124,9 +138,9 @@ void Server::handleTopic() {
         return;
     }
     
-    if (serverData.getChannel(inputMessage->getParams[0])->getOperatorUsername() == 
+    if (serverData.getChannel(inputMessage->getParams()[0])->getOperatorUsername() == 
         users[inputMessage->fd_from]->username) {
-        serverData.getChannel(inputMessage->getParams[0])->setTopic(inputMessage->getParams[1]);
+        serverData.getChannel(inputMessage->getParams()[0])->setTopic(inputMessage->getParams()[1]);
     }
 }
 
@@ -135,9 +149,9 @@ void Server::handleInvite() {
         return;
     }
 
-    if (serverData.getChannel(inputMessage->getParams[0])->getOperatorUsername() == 
+    if (serverData.getChannel(inputMessage->getParams()[0])->getOperatorUsername() == 
         users[inputMessage->fd_from]->username) {
-        serverData.getChannel(inputMessage->getParams[1])->doInvite(inputMessage->getParams[0]);
+        serverData.getChannel(inputMessage->getParams()[1])->doInvite(inputMessage->getParams()[0]);
     }
 }
 
@@ -146,16 +160,16 @@ void Server::handleKick() {
         return;
     }
     
-    if (serverData.getChannel(inputMessage->getParams[1])->getOperatorUsername() == 
+    if (serverData.getChannel(inputMessage->getParams()[1])->getOperatorUsername() == 
         users[inputMessage->fd_from]->username) {
-        serverData.getChannel(inputMessage->getParams[0])->doKick(inputMessage->getParams[1]);
+        serverData.getChannel(inputMessage->getParams()[0])->doKick(inputMessage->getParams()[1]);
     }
 	
-    if (inputMessage->getParams.size() == 2) {
-        if (serverData.checkChannel(inputMessage->getParams[0]) && 
-        serverData.getChannel(inputMessage->getParams[0])->getOperatorUsername() == users[inputMessage->fd_from]->username) {
+    if (inputMessage->getParams().size() == 2) {
+        if (serverData.checkChannel(inputMessage->getParams()[0]) && 
+        serverData.getChannel(inputMessage->getParams()[0])->getOperatorUsername() == users[inputMessage->fd_from]->username) {
             //std::cout<<"1: "<<inputMessage->getParams[0]<<" 2: "<<inputMessage->getParams[1]<<"\n";
-            serverData.getChannel(inputMessage->getParams[0])->doKick(inputMessage->getParams[1]);
+            serverData.getChannel(inputMessage->getParams()[0])->doKick(inputMessage->getParams()[1]);
         }
     }
 }
@@ -321,8 +335,8 @@ void Server::handleNames() {
         return;
     }
     std::vector<std::string> channelsList;
-    if (inputMessage->getParams.size() == 1) {
-        channelsList = split(inputMessage->getParams[0], channelsList, ',');
+    if (inputMessage->getParams().size() == 1) {
+        channelsList = split(inputMessage->getParams()[0], channelsList, ',');
     }
 	/*
     outputMessage->data = ;
