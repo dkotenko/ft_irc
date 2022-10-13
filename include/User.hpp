@@ -9,6 +9,7 @@
 #include <cstring>
 #include <map>
 #include "OutputMessage.hpp"
+#include "PingTimer.hpp"
 
 # define BUF_SIZE	4096
 # define FD_FREE	0
@@ -52,10 +53,13 @@ public:
     const std::string &getUsername() const;
     const std::string &getNickname() const;
     void delUser(std::string username);
-    OutputMessage *outputMessage;
+    
     
     bool isRegistered();
     void setRegistered(bool b);
+
+    OutputMessage *outputMessage;
+    PingTimer timer;
 };
 
 #endif //FT_IRC_USER_H

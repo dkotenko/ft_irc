@@ -11,10 +11,10 @@ SRC_FILES =	main.cpp \
 			utils.cpp \
 			InputMessage.cpp \
 			OutputMessage.cpp \
-			Parser.cpp \
 			ServerData.cpp \
 			Channel.cpp \
-			handlers.cpp
+			handlers.cpp \
+			PingTimer.cpp
 
 
 INC_FILES =	Server.hpp \
@@ -22,11 +22,11 @@ INC_FILES =	Server.hpp \
 			utils.hpp \
 			InputMessage.hpp \
 			OutputMessage.hpp \
-			Parser.hpp \
 			ServerData.hpp \
 			Channel.hpp \
 			const.hpp \
-			error.hpp
+			error.hpp \
+			PingTimer.hpp
 
 OBJS_FILES	= $(SRC_FILES:%.cpp=%.o)
 

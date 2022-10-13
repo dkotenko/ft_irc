@@ -3,7 +3,6 @@
 
 Server::Server(int port, std::string password) {
     struct rlimit rlp;
-    parser = Parser();
     this->port = port;
     this->password = password;
     serverName = SERVER_NAME;
@@ -96,6 +95,7 @@ void	Server::check_fd()
 
 void Server::run() {
     while (true) {
+        disconnectDeadUsers();
         init_fd();
         do_select();
         check_fd();
@@ -216,5 +216,18 @@ void Server::client_write(int cs)
 void Server::print_debug(std::string &s) {
     if (is_debug) {
         std::cout << "debug : " << s << std::endl;
+    }
+}
+
+void Server::disconnectDeadUsers() {
+    for (int i = 0; i < ServerData.users.size(); i++) {
+        if 
+
+    }
+
+    map<std::string, User*>::iterator it;
+    for (it = symbolTable.begin(); it != symbolTable.end(); it++)
+    {
+        std::cout << it->first << ' ' << it->second << '\n';
     }
 }
