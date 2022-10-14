@@ -95,8 +95,6 @@ void	Server::check_fd()
 
 void Server::run() {
     while (true) {
-        disconnectDeadUsers();
-        pingUsers();
         init_fd();
         do_select();
         check_fd();
@@ -151,6 +149,9 @@ void Server::client_read(int cs)
         i = 0;
         for (int i = 0; i < maxfd; i++) {
             if (users[i]->type == FD_CLIENT && i == cs) {
+                disconnectDeadUsers();
+                pingUsers();
+
                 std::stringstream streamData(users[cs]->buf_read);
 				std::cout << "line received: " << users[cs]->buf_read << std::endl;
 				fd = i;
