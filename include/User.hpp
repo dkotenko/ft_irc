@@ -54,6 +54,9 @@ public:
     const std::string &getNickname() const;
     void delUser(std::string username);
     bool isDisconnected();
+    void doPing();
+    void updatePing();
+    bool isNeedsPing();
     
     bool isRegistered();
     void setRegistered(bool b);

@@ -26,6 +26,7 @@ class OutputMessage {
         void addFd(int fd);
         void sendMsg();
         std::string toString();
+        void clear();
         //~OutputMessage();
     private:
         int length;

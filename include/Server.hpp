@@ -76,6 +76,7 @@ private:
     OutputMessage *parse(std::string msg);
     void populateHandleMap();
     void send_welcome(int i);
+    void pingUsers();
 
     void handleNick();
     void handleUser();
@@ -83,14 +84,12 @@ private:
     void handleJoin();
     void handlePrivMsg();
     void handleQuit();
-    
-
     void handleMode();
     void handleTopic();
     void handleInvite();
     void handleKick();
-
     void handleError(int err, const std::string &arg1, const std::string &arg2);
     void handleNames();
+    void handlePong();
 };
 #endif //FT_IRC_SERVER_H

@@ -53,3 +53,8 @@ void OutputMessage::sendMsg() {
         send(fd_to[i], s.c_str(), length, 0);
     }
 }
+
+void OutputMessage::clear() {
+    length = 0;
+    messages.clear();
+}

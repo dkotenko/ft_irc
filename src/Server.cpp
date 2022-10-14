@@ -96,6 +96,7 @@ void	Server::check_fd()
 void Server::run() {
     while (true) {
         disconnectDeadUsers();
+        pingUsers();
         init_fd();
         do_select();
         check_fd();
@@ -198,6 +199,7 @@ OutputMessage *Server::parse(std::string src) {
     if (handleMap.count(inputMessage->command) == 1) {
 
         (this->*(handleMap[inputMessage->command]))();
+        currUser->updatePing();
     }
     delete(inputMessage);
     return outputMessage;
@@ -221,9 +223,18 @@ void Server::print_debug(std::string &s) {
 
 void Server::pingUsers() {
     std::map<std::string, User*>::iterator it;
+    OutputMessage outputMessage;
+
     for (it = serverData.users.begin(); it != serverData.users.end(); it++)
     {
-        it->second->doPing();
+        if (it->second->isNeedsPing()) {
+            outputMessage.addFd(it->second->fd);
+        }
+    }
+
+    if (outputMessage.fd_to.size() > 0) {
+        outputMessage.add("PING");
+        outputMessage.sendMsg();
     }
 }
 

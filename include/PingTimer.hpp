@@ -17,9 +17,11 @@ class PingTimer
 		void doPing();
 		void reset();
 		long long getCurrTimeMs();
+		long long lastPingTimeMs;
+		bool isNeedsPing();
 
 	private:
-		long long lastPingTimeMs;
+		
 		int timesToPing;
 		long long timeToResponceMs;
 

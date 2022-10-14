@@ -14,6 +14,7 @@
 #define CMD_INVITE "INVITE"
 #define CMD_KICK "KICK"
 #define CMD_NAMES "NAMES"
+#define CMD_PONG "PONG"
 
 #define SERVER_NAME "FT_IRC"
 #define SERVER_MESSAGE_OF_THE_DAY "Welcome to ft_irc server!\r\n"

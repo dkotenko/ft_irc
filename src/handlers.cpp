@@ -12,6 +12,11 @@ void Server::populateHandleMap() {
     handleMap[CMD_KICK] = &Server::handleKick;
     handleMap[CMD_NAMES] = &Server::handleNames;
 	handleMap[CMD_QUIT] = &Server::handleQuit;
+	handleMap[CMD_PONG] = &Server::handlePong;
+}
+
+void Server::handlePong() {
+	;
 }
 
 void Server::handleQuit() {

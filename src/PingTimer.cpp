@@ -1,4 +1,5 @@
 #include "PingTimer.hpp"
+#include <iostream>
 
 /*
 ** ------------------------------- CONSTRUCTOR --------------------------------
@@ -25,12 +26,14 @@ void PingTimer::reset() {
 	timesToPing = PING_TIMES;
 }
 
+bool PingTimer::isNeedsPing() {
+	std::cout << "needs ping in " << lastPingTimeMs + timeToResponceMs - getCurrTimeMs() << " ms" << std::cout;
+	return timesToPing > 0 && lastPingTimeMs + timeToResponceMs < getCurrTimeMs();
+}
+
 void PingTimer::doPing() {
-	if (timesToPing > 0 && lastPingTimeMs + timeToResponceMs < getCurrTimeMs()) {
-		timesToPing--;
-		lastPingTimeMs = getCurrTimeMs();
-	}
-	
+	timesToPing--;
+	lastPingTimeMs = getCurrTimeMs();
 }
 
 long long	PingTimer::getCurrTimeMs(void)

@@ -67,3 +67,7 @@ void User::updatePing() {
 	std::cout << timer.lastPingTimeMs << " " << username << " : ping updated" << std::endl;
 	timer.reset();
 }
+
+bool User::isNeedsPing() {
+	return timer.isNeedsPing();
+}
