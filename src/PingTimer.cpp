@@ -6,6 +6,7 @@
 
 PingTimer::PingTimer()
 {
+	timeToResponceMs = PING_TIMEOUT * 1000;
 	reset();
 }
 
@@ -19,13 +20,17 @@ PingTimer::~PingTimer()
 }
 
 void PingTimer::reset() {
+	
 	lastPingTimeMs = getCurrTimeMs();
-	timesToPing = mustPingTimes;
+	timesToPing = PING_TIMES;
 }
 
 void PingTimer::doPing() {
-	timesToPing--;
-	lastPingTimeMs = getCurrTimeMs();
+	if (timesToPing > 0 && lastPingTimeMs + timeToResponceMs < getCurrTimeMs()) {
+		timesToPing--;
+		lastPingTimeMs = getCurrTimeMs();
+	}
+	
 }
 
 long long	PingTimer::getCurrTimeMs(void)
@@ -41,3 +46,4 @@ long long	PingTimer::getCurrTimeMs(void)
 bool PingTimer::isNoResponce() {
 	return timesToPing <= 0 && lastPingTimeMs + timeToResponceMs < getCurrTimeMs();
 }
+

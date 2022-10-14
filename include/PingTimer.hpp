@@ -4,6 +4,7 @@
 # include <iostream>
 # include <string>
 # include <sys/time.h>
+# include "const.hpp"
 
 class PingTimer
 {
@@ -19,7 +20,6 @@ class PingTimer
 
 	private:
 		long long lastPingTimeMs;
-		int mustPingTimes;
 		int timesToPing;
 		long long timeToResponceMs;
 

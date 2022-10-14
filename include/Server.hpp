@@ -22,9 +22,9 @@
 #include "User.hpp"
 #include "utils.hpp"
 #include <vector>
-#include "Parser.hpp"
 #include "ServerData.hpp"
 #include "OutputMessage.hpp"
+#include "InputMessage.hpp"
 #include "const.hpp"
 #include "error.hpp"
 
@@ -57,10 +57,11 @@ public:
 private:
     std::string password;
     struct sockaddr_in sockaddr;
-    Parser parser;
     InputMessage *inputMessage;
     OutputMessage *outputMessage;
     User *currUser;
+
+    void disconnectDeadUsers();
 
     void print_debug(std::string &s);
     void create();

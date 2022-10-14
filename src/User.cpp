@@ -54,3 +54,16 @@ void User::setRegistered(bool b) {
 User::~User() {
 	this->clean();
 }
+
+bool User::isDisconnected() {
+	return timer.isNoResponce();
+}
+
+void User::doPing() {
+	timer.doPing();
+}
+
+void User::updatePing() {
+	std::cout << timer.lastPingTimeMs << " " << username << " : ping updated" << std::endl;
+	timer.reset();
+}

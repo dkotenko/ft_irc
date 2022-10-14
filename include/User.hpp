@@ -53,7 +53,7 @@ public:
     const std::string &getUsername() const;
     const std::string &getNickname() const;
     void delUser(std::string username);
-    
+    bool isDisconnected();
     
     bool isRegistered();
     void setRegistered(bool b);

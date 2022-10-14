@@ -219,15 +219,22 @@ void Server::print_debug(std::string &s) {
     }
 }
 
-void Server::disconnectDeadUsers() {
-    for (int i = 0; i < ServerData.users.size(); i++) {
-        if 
-
-    }
-
-    map<std::string, User*>::iterator it;
-    for (it = symbolTable.begin(); it != symbolTable.end(); it++)
+void Server::pingUsers() {
+    std::map<std::string, User*>::iterator it;
+    for (it = serverData.users.begin(); it != serverData.users.end(); it++)
     {
-        std::cout << it->first << ' ' << it->second << '\n';
+        it->second->doPing();
+    }
+}
+
+void Server::disconnectDeadUsers() {
+
+    std::map<std::string, User*>::iterator it;
+    for (it = serverData.users.begin(); it != serverData.users.end(); it++)
+    {
+        if (it->second->isDisconnected()) {
+            std::cout << it->second->username << " disconnected" << std::endl;
+            it->second->clean();
+        }
     }
 }
