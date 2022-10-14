@@ -38,8 +38,12 @@ void Server::handleNick() {
 
 void Server::handleUser() {
     //TODO check user logic
-    std::cout<<"SIZE "<<inputMessage->params.size()<<" "<<inputMessage->params[0]<<" "<<inputMessage->params[1]<<" "<<inputMessage->params[2]<<" "<< inputMessage->params[3]<<"\n";
-    if (!currUser->isRegistered() && inputMessage->params.size() >= 4 
+    /*
+	std::cout<<"SIZE "<<inputMessage->params.size()<<" "
+		<<inputMessage->params[0]<<" "<<inputMessage->params[1]<<" "
+		<<inputMessage->params[2]<<" "<< inputMessage->params[3]<<"\n";
+	*/
+	if (!currUser->isRegistered() && inputMessage->params.size() >= 4 
 		&& inputMessage->params[3][0] == ':' && inputMessage->params[3].size() > 1) {
         std::cout << "connect status " << currUser->connectStatus << std::endl;
         currUser->connectStatus |= USER_PASSED;
@@ -57,10 +61,12 @@ void Server::handleUser() {
 				currUser->realusername += inputMessage->params[i];
 			}
 		}
-		std::cout<<"REAL: "<<currUser->realusername<<"\n";
+		//std::cout<<"REAL: "<<currUser->realusername<<"\n";
 		send_welcome(fd);
-        return ;
     }
+	else
+		handleError(ERR_NEEDMOREPARAMS, "USER", "");
+		return ;
 }
 
 void Server::handlePass() {
