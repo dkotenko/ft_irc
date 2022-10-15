@@ -44,25 +44,18 @@ int main(int argc, char *argv[])
         cout<<"Error connecting to socket!"<<endl;
         return -1;
     }
-    cout << "Connected to the server!" << endl;
+    string message = "USER bot localhost localhost :bot\n";
+    send(clientSd, message.c_str(), message.size(), 0);
+    message = "NICK bot\n";
+    send(clientSd, message.c_str(), message.size(), 0);
+    message = "PASS 1234\n";
+    send(clientSd, message.c_str(), message.size(), 0);
     while(1)
     {
-        cout << ">";
         char msg[1500];
-        string data;
-        getline(cin, data);
         memset(&msg, 0, sizeof(msg));//clear the buffer
-        strcpy(msg, data.c_str());
-        if (data == "login") {
-            string message = "USER bot localhost localhost :bot\n";
-            send(clientSd, message.c_str(), message.size(), 0);
-            message = "NICK bot\n";
-            send(clientSd, message.c_str(), message.size(), 0);
-            message = "PASS 1234\n";
-            send(clientSd, message.c_str(), message.size(), 0);
-        }
         recv(clientSd, (char*)&msg, sizeof(msg), 0);
-        if(!strcmp(msg, "fact")) {
+        if(!strcmp(msg, "fact\n")) {
             std::srand(std::time(nullptr)); // use current time as seed for random generator
             int random_variable = std::rand() % 5;
             std::string message;
@@ -83,9 +76,9 @@ int main(int argc, char *argv[])
                     message = "На Юпитере регулярно идут алмазные дожди.\n";
                     break;
             }
+            cout << "Server: " << msg;
             send(clientSd, message.c_str(), message.size(), 0);
         }
-        cout << "Server: " << msg;
         memset(&msg, 0, sizeof(msg));//clear the buffer
     }
     close(clientSd);

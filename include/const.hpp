@@ -8,6 +8,7 @@
 #define CMD_PASS "PASS"
 #define CMD_JOIN "JOIN"
 #define CMD_PRIVMSG "PRIVMSG"
+#define CMD_NOTICE "NOTICE"
 #define CMD_QUIT "QUIT"
 #define CMD_MODE "MODE"
 #define CMD_TOPIC "TOPIC"

@@ -91,5 +91,6 @@ private:
 
     void handleError(int err, const std::string &arg1, const std::string &arg2);
     void handleNames();
+    void handleNotice();
 };
 #endif //FT_IRC_SERVER_H
