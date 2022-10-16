@@ -27,8 +27,11 @@ void PingTimer::reset() {
 }
 
 bool PingTimer::isNeedsPing() {
-	std::cout << "needs ping in " << lastPingTimeMs + timeToResponceMs - getCurrTimeMs() << " ms" << std::endl;
-	return timesToPing > 0 && lastPingTimeMs + timeToResponceMs < getCurrTimeMs();
+	bool needsPing = timesToPing > 0 && lastPingTimeMs + timeToResponceMs < getCurrTimeMs();
+	if (needsPing) {
+		std::cout << "needs ping in " << lastPingTimeMs + timeToResponceMs - getCurrTimeMs() << " ms" << std::endl;
+	}
+	return needsPing;
 }
 
 void PingTimer::doPing() {

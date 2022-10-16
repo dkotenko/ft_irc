@@ -74,7 +74,8 @@ void	Server::init_fd()
 
 void	Server::do_select()
 {
-  r = select(max + 1, &fd_read, &fd_write, NULL, NULL);
+  struct timeval timeout = {0, 0};
+  r = select(max + 1, &fd_read, &fd_write, NULL, &timeout);
 }
 
 void	Server::check_fd()
@@ -95,6 +96,8 @@ void	Server::check_fd()
 
 void Server::run() {
     while (true) {
+        disconnectDeadUsers();
+        pingUsers();
         init_fd();
         do_select();
         check_fd();
@@ -149,8 +152,6 @@ void Server::client_read(int cs)
         i = 0;
         for (int i = 0; i < maxfd; i++) {
             if (users[i]->type == FD_CLIENT && i == cs) {
-                disconnectDeadUsers();
-                pingUsers();
 
                 std::stringstream streamData(users[cs]->buf_read);
 				std::cout << "line received: " << users[cs]->buf_read << std::endl;
@@ -185,11 +186,7 @@ OutputMessage *Server::parse(std::string src) {
     int i = 0;
     inputMessage->fd_from = this->fd;
     while (std::getline(streamData, val, separator)) {
-/*        if (val[0] == ':') {
-            val = val.substr(1, val.size() - 1);
-        }
-        */
-        if (i == 0) {
+        if (i == 0 && val[0] != ':') {
             inputMessage->command = val;
         }
         if (i != 0) {
@@ -227,10 +224,13 @@ void Server::pingUsers() {
     std::map<std::string, User*>::iterator it;
     OutputMessage outputMessage;
 
+    //std::cout << serverData.users.size() << std::endl;
     for (it = serverData.users.begin(); it != serverData.users.end(); it++)
     {
+        //std::cout << it->second->username << std::endl;
         if (it->second->isNeedsPing()) {
             outputMessage.addFd(it->second->fd);
+            it->second->doPing();
         }
     }
 
@@ -241,13 +241,17 @@ void Server::pingUsers() {
 }
 
 void Server::disconnectDeadUsers() {
+    std::vector<User *> to_delete;
 
-    std::map<std::string, User*>::iterator it;
-    for (it = serverData.users.begin(); it != serverData.users.end(); it++)
-    {
-        if (it->second->isDisconnected()) {
+    for (std::map<std::string, User*>::iterator it = serverData.users.begin(); it != serverData.users.end(); ) {
+        if (it->second->isRegistered() && it->second->isLost()) {
             std::cout << it->second->username << " disconnected" << std::endl;
-            it->second->clean();
+            to_delete.push_back(it->second);
         }
+        it++;
+    }
+
+    for (int i = 0; i < to_delete.size(); i++) {
+        doQuit(to_delete[i]);
     }
 }

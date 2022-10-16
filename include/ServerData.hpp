@@ -21,6 +21,8 @@ class ServerData
         Channel* getChannel(std::string channelName);
         std::string doNames(std::vector<std::string> channelsList);
         bool checkChannel(std::string channelName);
+        void addUser(User *user);
+        void deleteUser(User *user);
 private:
 
 };

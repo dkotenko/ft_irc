@@ -19,11 +19,21 @@ void Server::handlePong() {
 	;
 }
 
-void Server::handleQuit() {
-	if (currUser->isRegistered()) {
-		close(currUser->fd);
-		currUser->clean();
+void Server::doQuit(User *user) {
+	if (user->isRegistered()) {
+		serverData.deleteUser(user);
+		close(user->fd);
+		user->clean();
 	}
+}
+
+void Server::handleQuit() {
+	doQuit(currUser);
+}
+
+void Server::registerNewUser(User *user) {
+	serverData.addUser(user);
+	sendWelcome(user->fd);
 }
 
 void Server::handleNick() {
@@ -31,7 +41,7 @@ void Server::handleNick() {
         currUser->connectStatus |= NICK_PASSED;
         currUser->setRegistered(currUser->connectStatus == REGISTERED);
         currUser->nickname = inputMessage->getParams()[0];
-        send_welcome(fd);
+		registerNewUser(currUser);
         return ;
     }
 }
@@ -41,7 +51,7 @@ void Server::handleUser() {
     /*
 	std::cout<<"SIZE "<<inputMessage->params.size()<<" "
 		<<inputMessage->params[0]<<" "<<inputMessage->params[1]<<" "
-		<<inputMessage->params[2]<<" "<< inputMessage->params[3]<<"\n";
+		<<inputMessage->params[2]<<" "<< inputMessage->params[3]<<"";
 	*/
 	if (!currUser->isRegistered() && inputMessage->params.size() >= 4 
 		&& inputMessage->params[3][0] == ':' && inputMessage->params[3].size() > 1) {
@@ -61,8 +71,8 @@ void Server::handleUser() {
 				currUser->realusername += inputMessage->params[i];
 			}
 		}
-		//std::cout<<"REAL: "<<currUser->realusername<<"\n";
-		send_welcome(fd);
+		//std::cout<<"REAL: "<<currUser->realusername<<"";
+		registerNewUser(currUser);
     }
 	else
 		handleError(ERR_NEEDMOREPARAMS, "USER", "");
@@ -75,28 +85,35 @@ void Server::handlePass() {
 	
 	std::cout << "Password required: " << password << std::endl;
 	
+	if (currUser->isRegistered()) {
+        handleError(ERR_ALREADYREGISTRED, "", "");
+		return ;
+    }
+
     if (inputMessage->getParams().size() == 0) {
         handleError(ERR_NEEDMOREPARAMS, "PASS" , "");
 		return ;
 	}
+	std::string passed = inputMessage->getParams()[0];
+	if (passed[0] == ':') {
+		passed = passed.substr(1, passed.size() - 1);
+	}
 
-	std::cout << "Password passed: " << inputMessage->getParams()[0] << std::endl;
-    if (currUser->isRegistered()) {
-        handleError(ERR_ALREADYREGISTRED, "", "");
-		return ;
-    }
-	if (inputMessage->getParams()[0] != password) {
+	std::cout << "Password passed: " << passed << std::endl;
+    
+	
+	if (passed != password) {
         handleError(ERR_PASSWDMISMATCH, "", "");
 		return ;
 	}
 	currUser->connectStatus |= PASS_PASSED;
 	currUser->setRegistered(currUser->connectStatus == REGISTERED);
-	send_welcome(fd);
+	registerNewUser(currUser);
 }
 
 #define WELCOME_REPL "001"
 
-void Server::send_welcome(int i) {
+void Server::sendWelcome(int i) {
     if (currUser->isRegistered() && !currUser->welcomeReceived) {
         std::stringstream ss;
         ss << WELCOME_REPL << " " << serverName << " :" << SERVER_MESSAGE_OF_THE_DAY;
@@ -179,7 +196,7 @@ void Server::handleKick() {
     if (inputMessage->getParams().size() == 2) {
         if (serverData.checkChannel(inputMessage->getParams()[0]) && 
         serverData.getChannel(inputMessage->getParams()[0])->getOperatorUsername() == users[inputMessage->fd_from]->username) {
-            //std::cout<<"1: "<<inputMessage->getParams[0]<<" 2: "<<inputMessage->getParams[1]<<"\n";
+            //std::cout<<"1: "<<inputMessage->getParams[0]<<" 2: "<<inputMessage->getParams[1]<<"";
             serverData.getChannel(inputMessage->getParams()[0])->doKick(inputMessage->getParams()[1]);
         }
     }
@@ -193,139 +210,139 @@ void Server::handleError(int err, const std::string &arg1, const std::string &ar
 	msg += ss.str() + " " + currUser->getNickname();
 	switch (err) {
 		case ERR_NOSUCHNICK:
-			msg += " " + arg1 + " :No such nick/channel\n";
+			msg += " " + arg1 + " :No such nick/channel";
 			break;
 		case ERR_NOSUCHSERVER:
-			msg += " " + arg1 + " :No such server\n";
+			msg += " " + arg1 + " :No such server";
 			break;
 		case ERR_NOSUCHCHANNEL:
-			msg += " " + arg1 + " :No such channel\n";
+			msg += " " + arg1 + " :No such channel";
 			break;
 		case ERR_CANNOTSENDTOCHAN:
-			msg += " " + arg1 + " :Cannot send to channel\n";
+			msg += " " + arg1 + " :Cannot send to channel";
 			break;
 		case ERR_TOOMANYCHANNELS:
-			msg += " " + arg1 + " :You have joined too many channels\n";
+			msg += " " + arg1 + " :You have joined too many channels";
 			break;
 		case ERR_WASNOSUCHNICK:
-			msg += " " + arg1 + " :There was no such nickname\n";
+			msg += " " + arg1 + " :There was no such nickname";
 			break;
 		case ERR_TOOMANYTARGETS:
-			msg += " " + arg1 + " :Duplicate recipients. No arg1 delivered\n";
+			msg += " " + arg1 + " :Duplicate recipients. No arg1 delivered";
 			break;
 		case ERR_NOORIGIN:
-			msg += " :No origin specified\n";
+			msg += " :No origin specified";
 			break;
 		case ERR_NORECIPIENT:
-			msg += " :No recipient given (" + arg1 + ")\n";
+			msg += " :No recipient given (" + arg1 + ")";
 			break;
 		case ERR_NOTEXTTOSEND:
-			msg += " :No text to send\n";
+			msg += " :No text to send";
 			break;
 		case ERR_NOTOPLEVEL:
-			msg += " " + arg1 + " :No toplevel domain specified\n";
+			msg += " " + arg1 + " :No toplevel domain specified";
 			break;
 		case ERR_WILDTOPLEVEL:
-			msg += " " + arg1 + " :Wildcard in toplevel domain\n";
+			msg += " " + arg1 + " :Wildcard in toplevel domain";
 			break;
 		case ERR_UNKNOWNCOMMAND:
-			msg += " " + arg1 + " :Unknown command\n";
+			msg += " " + arg1 + " :Unknown command";
 			break;
 		case ERR_NOMOTD:
-			msg += " :MOTD File is missing\n";
+			msg += " :MOTD File is missing";
 			break;
 		case ERR_NOADMININFO:
-			msg += " " + arg1 + " :No administrative info available\n";
+			msg += " " + arg1 + " :No administrative info available";
 			break;
 		case ERR_FILEERROR:
-			msg += " :File error doing \n" + arg1 + " on " + arg2 + "\n";
+			msg += " :File error doing " + arg1 + " on " + arg2 + "";
 			break;
 		case ERR_NONICKNAMEGIVEN:
-			msg += " :No nickname given\n";
+			msg += " :No nickname given";
 			break;
 		case ERR_ERRONEUSNICKNAME:
-			msg += " " + arg1 + " :Erroneus nickname\n";
+			msg += " " + arg1 + " :Erroneus nickname";
 			break;
 		case ERR_NICKNAMEINUSE:
-			msg += " " + arg1 + " :Nickname is already in use\n";
+			msg += " " + arg1 + " :Nickname is already in use";
 			break;
 		case ERR_NICKCOLLISION:
-			msg += " " + arg1 + " :Nickname collision KILL\n";
+			msg += " " + arg1 + " :Nickname collision KILL";
 			break;
 		case ERR_USERNOTINCHANNEL:
-			msg += " " + arg1 + " " + arg2 + " :They aren't on that channel\n";
+			msg += " " + arg1 + " " + arg2 + " :They aren't on that channel";
 			break;
 		case ERR_NOTONCHANNEL:
-			msg += " " + arg1 + " :You're not on that channel\n";
+			msg += " " + arg1 + " :You're not on that channel";
 			break;
 		case ERR_USERONCHANNEL:
-			msg += " " + arg1 + " " + arg2 + " :is already on channel\n";
+			msg += " " + arg1 + " " + arg2 + " :is already on channel";
 			break;
 		case ERR_NOLOGIN:
-			msg += " " + arg1 + " :User not logged in\n";
+			msg += " " + arg1 + " :User not logged in";
 			break;
 		case ERR_SUMMONDISABLED:
-			msg += " :SUMMON has been disabled\n";
+			msg += " :SUMMON has been disabled";
 			break;
 		case ERR_USERSDISABLED:
-			msg += " :USERS has been disabled\n";
+			msg += " :USERS has been disabled";
 			break;
 		case ERR_NOTREGISTERED:
-			msg += " :You have not registered\n";
+			msg += " :You have not registered";
 			break;
 		case ERR_NEEDMOREPARAMS:
-			msg += " " + arg1 + " :Not enough parameters\n";
+			msg += " " + arg1 + " :Not enough parameters";
 			break;
 		case ERR_ALREADYREGISTRED:
-			msg += " :You may not reregister\n";
+			msg += " :You may not reregister";
 			break;
 		case ERR_NOPERMFORHOST:
-			msg += " :Your host isn't among the privileged\n";
+			msg += " :Your host isn't among the privileged";
 			break;
 		case ERR_PASSWDMISMATCH:
-			msg += " :Password incorrect\n";
+			msg += " :Password incorrect";
 			break;
 		case ERR_YOUREBANNEDCREEP:
-			msg += " :You are banned from this server\n";
+			msg += " :You are banned from this server";
 			break;
 		case ERR_KEYSET:
-			msg += " " + arg1 + " :Channel key already set\n";
+			msg += " " + arg1 + " :Channel key already set";
 			break;
 		case ERR_CHANNELISFULL:
-			msg += " " + arg1 + " :Cannot join channel (+l)\n";
+			msg += " " + arg1 + " :Cannot join channel (+l)";
 			break;
 		case ERR_UNKNOWNMODE:
-			msg += " " + arg1 + " :is unknown mode char to me\n";
+			msg += " " + arg1 + " :is unknown mode char to me";
 			break;
 		case ERR_INVITEONLYCHAN:
-			msg += " " + arg1 + " :Cannot join channel (+i)\n";
+			msg += " " + arg1 + " :Cannot join channel (+i)";
 			break;
 		case ERR_BANNEDFROMCHAN:
-			msg += " " + arg1 + " :Cannot join channel (+b)\n";
+			msg += " " + arg1 + " :Cannot join channel (+b)";
 			break;
 		case ERR_BADCHANNELKEY:
-			msg += " " + arg1 + " :Cannot join channel (+k)\n";
+			msg += " " + arg1 + " :Cannot join channel (+k)";
 			break;
 		case ERR_NOPRIVILEGES:
-			msg += " :Permission Denied- You're not an IRC operator\n";
+			msg += " :Permission Denied- You're not an IRC operator";
 			break;
 		case ERR_CHANOPRIVSNEEDED:
-			msg += " " + arg1 + " :You're not channel operator\n";
+			msg += " " + arg1 + " :You're not channel operator";
 			break;
 		case ERR_CANTKILLSERVER:
-			msg += " :You cant kill a server!\n";
+			msg += " :You cant kill a server!";
 			break;
 		case ERR_NOOPERHOST:
-			msg += " :No O-lines for your host\n";
+			msg += " :No O-lines for your host";
 			break;
 		case ERR_UMODEUNKNOWNFLAG:
-			msg += " :Unknown MODE flag\n";
+			msg += " :Unknown MODE flag";
 			break;
 		case ERR_USERSDONTMATCH:
-			msg += " :Cant change mode for other users\n";
+			msg += " :Cant change mode for other users";
 			break;
 		default:
-			msg += "UNKNOWN ERROR\n";
+			msg += "UNKNOWN ERROR";
 			break;
 	}
 	outputMessage->add(msg, fd);

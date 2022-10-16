@@ -55,7 +55,7 @@ User::~User() {
 	this->clean();
 }
 
-bool User::isDisconnected() {
+bool User::isLost() {
 	return timer.isNoResponce();
 }
 

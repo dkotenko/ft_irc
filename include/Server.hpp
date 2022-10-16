@@ -75,8 +75,10 @@ private:
     void client_write(int cs);
     OutputMessage *parse(std::string msg);
     void populateHandleMap();
-    void send_welcome(int i);
+    void sendWelcome(int i);
     void pingUsers();
+    void registerNewUser(User *user);
+    void doQuit(User *user);
 
     void handleNick();
     void handleUser();

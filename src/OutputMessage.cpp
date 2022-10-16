@@ -47,6 +47,7 @@ std::string OutputMessage::toString() {
 }
 
 void OutputMessage::sendMsg() {
+    add("\r\n");
     std::string s = toString();
     std::cout << "message to send: " << s << std::endl;
     for(int i = 0; i < fd_to.size(); i++) {

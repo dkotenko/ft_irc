@@ -84,3 +84,13 @@ std::string ServerData::doNames(std::vector<std::string> channelsList) {
     }
     return answer;
 }
+
+void ServerData::addUser(User *user) {
+    if (users.count(user->username) == 0) {
+        users[user->username] = user;
+    }
+}
+
+void ServerData::deleteUser(User *user) {
+    users.erase(user->username);
+}
