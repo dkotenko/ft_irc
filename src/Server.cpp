@@ -233,10 +233,15 @@ void Server::pingUsers() {
             it->second->doPing();
         }
     }
-
+    
     if (outputMessage.fd_to.size() > 0) {
-        outputMessage.add("PING");
-        outputMessage.sendMsg();
+        for (int i = 0; i < outputMessage.fd_to.size(); i++) {
+            int fd_to = outputMessage.fd_to[i];
+        //    std::cout<<"FD_TO"<<fd_to<<"\n";
+        //    std::cout<<"USERNAME"<<serverData.getUsernameByFd(fd_to)<<"\n";
+            outputMessage.add("PING " + serverData.getUsernameByFd(fd_to));
+            outputMessage.sendMsg();
+        }
     }
 }
 
