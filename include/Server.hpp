@@ -26,7 +26,7 @@
 #include "OutputMessage.hpp"
 #include "InputMessage.hpp"
 #include "const.hpp"
-#include "error.hpp"
+#include "replies.hpp"
 
 #ifdef __APPLE__
 #define IRC_NOSIGNAL SO_NOSIGPIPE

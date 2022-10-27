@@ -162,10 +162,9 @@ void Server::client_read(int cs)
 				while (std::getline(streamData, str, '\n')) {
 					str.erase(std::remove(str.begin(), str.end(), '\r' ), str.end());
                 	str.erase(std::remove(str.begin(), str.end(), '\n' ), str.end());
-					currUser->outputMessage = parse(str);
-					//TODO уточнить формат сообщений для клиента
-					currUser->outputMessage->sendMsg();
-					delete(currUser->outputMessage);
+					outputMessage = parse(str);
+					outputMessage->sendMsg();
+					delete(outputMessage);
 				}
             } else if (users[i]->type == FD_CLIENT) {
                 send(i, users[cs]->buf_read , r, 0);
@@ -178,7 +177,7 @@ void Server::client_read(int cs)
 OutputMessage *Server::parse(std::string src) {
     const char separator = ' ';
     inputMessage = new InputMessage();
-    outputMessage = new OutputMessage();
+    outputMessage = new OutputMessage(serverName, currUser->getNickname());
 
     std::vector<std::string> outputArray;
     std::stringstream streamData(src);
@@ -222,21 +221,30 @@ void Server::print_debug(std::string &s) {
 
 void Server::pingUsers() {
     std::map<std::string, User*>::iterator it;
-    OutputMessage outputMessage;
+    
 
     //std::cout << serverData.users.size() << std::endl;
     for (it = serverData.users.begin(); it != serverData.users.end(); it++)
     {
         //std::cout << it->second->username << std::endl;
         if (it->second->isNeedsPing()) {
-            outputMessage.addFd(it->second->fd);
             it->second->doPing();
+
+            OutputMessage outputMessage(serverName, "");
+            std::string toAdd("PING :");
+            toAdd += serverName;
+            outputMessage.add(toAdd, it->second->nickname);
+            outputMessage.sendMsg();
+            
+            //outputMessage.addFd(it->second->fd);
         }
     }
 
     if (outputMessage.fd_to.size() > 0) {
-        outputMessage.add("PING");
-        outputMessage.sendMsg();
+        
+        
+        
+        
     }
 }
 

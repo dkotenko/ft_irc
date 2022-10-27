@@ -60,8 +60,7 @@ public:
     
     bool isRegistered();
     void setRegistered(bool b);
-
-    OutputMessage *outputMessage;
+    
     PingTimer timer;
 };
 

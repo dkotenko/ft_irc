@@ -18,8 +18,8 @@
 #define CMD_PONG "PONG"
 
 #define SERVER_NAME "FT_IRC"
+#define ENDLINE "\r\n"
 #define SERVER_MESSAGE_OF_THE_DAY "Welcome to ft_irc server!"
-//#define SERVER_MESSAGE_OF_THE_DAY ":bar.example.com 001 server :Welcome!\r\n"
 
 #define PING_TIMEOUT 5
 #define PING_TIMES 5

@@ -22,3 +22,9 @@ void printError(std::string s) {
 void here(int n) {
 	std::cout << "here: " << n << std::endl;
 }
+
+std::string ft_itoa(int n) {
+	std::stringstream ss;
+	ss << n;
+	return ss.str();
+}

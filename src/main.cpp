@@ -28,7 +28,6 @@ int main(int argc, char **argv) {
         exit(0);
     }
     std::string password(argv[2]);
-    // TODO port validation
     std::cout << "Init server, port - " << port << std::endl;
     
     Server server(port, password);

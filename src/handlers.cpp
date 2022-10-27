@@ -116,10 +116,17 @@ void Server::handlePass() {
 
 void Server::sendWelcome(int i) {
     if (currUser->isRegistered() && !currUser->welcomeReceived) {
-        std::stringstream ss;
-        ss << WELCOME_REPL << " " << serverName << " :" << SERVER_MESSAGE_OF_THE_DAY;
-        std::cout << "Welcome was sent, curr status " << currUser->connectStatus << std::endl;
-        outputMessage->add(ss.str());
+		
+		//:FT_IRC 375 pidgin
+		outputMessage->add(std::string("FT_IRC Message of the day"), RPL_MOTDSTART);
+        
+		//toAdd += ":FT_IRC 372 pidgin ";
+		outputMessage->add(SERVER_MESSAGE_OF_THE_DAY, RPL_MOTD);
+
+		//:FT_IRC 376 pidgin 
+        outputMessage->add(std::string(":End of /MOTD command"), RPL_ENDOFMOTD);
+
+		std::cout << "Welcome was sent, curr status \n" << currUser->connectStatus << std::endl;
         outputMessage->fd_to.push_back(i);
         currUser->welcomeReceived = true;
     }
@@ -133,7 +140,7 @@ void Server::handleJoin() {
         if (inputMessage->getParams()[i][0] == '#') {
             serverData.addChannel(inputMessage->getParams()[i]);
             serverData.channels[inputMessage->getParams()[0]]->addUser(currUser->username);
-            outputMessage->add("372 :Message of the Day");
+            outputMessage->add("Message of the Day", RPL_MOTD);
             outputMessage->fd_to.push_back(fd);
         }
     }

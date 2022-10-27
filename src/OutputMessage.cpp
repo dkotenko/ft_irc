@@ -4,58 +4,46 @@
 
 #include "OutputMessage.hpp"
 
-OutputMessage::OutputMessage() {
-    length = 0;
+OutputMessage::OutputMessage(std::string serverName, std::string nickName) {
+    this->serverName = serverName;
+    this->nickName = nickName;
 }
 
 OutputMessage::~OutputMessage() {
-    length = 0;
+    clear();
 }
 
-void OutputMessage::addFd(int fd) {
-    fd_to.push_back(fd);
+void OutputMessage::add(std::string s, int replyCode, int fd) {
+    add(s, replyCode);
 }
 
-void OutputMessage::add(std::string s, int fd) {
-    addFd(fd);
-    add(s);
-}
-
-void OutputMessage::add(std::string s) {
-
-    if (length >= MESSAGE_MAX_LEN) {
-        return ;
-    }
-
-    if (length + s.length() > MESSAGE_MAX_LEN) {
-        s = s.substr(0, MESSAGE_MAX_LEN - length);
-    }
-
-    messages.push_back(s);
-    length += s.length();
-}
-
-std::string OutputMessage::toString() {
+std::string getPrefix(int replyCode) {
     std::stringstream ss;
 
-    for(std::vector<std::string>::const_iterator itr = messages.begin();
-        itr != messages.end();
-        ++itr) {
-        ss << *itr;
-    }
+    ss << ":" << serverName << " " << replyCode << " " << nickName << " :";
     return ss.str();
 }
 
+void OutputMessage::add(std::string s, int replyCode) {
+    std::string line = getPrefix(replyCode);
+    int maxLength = MESSAGE_MAX_LEN - std::strlen(ENDLINE) - line.length();
+    if (s.length() > maxLength) {
+        s = s.substr(0, maxLength);
+    }
+    line += s;
+    line += ENDLINE;
+    lines.push_back(s);
+}
+
 void OutputMessage::sendMsg() {
-    add("\r\n");
-    std::string s = toString();
-    std::cout << "message to send: " << s << std::endl;
     for(int i = 0; i < fd_to.size(); i++) {
-        send(fd_to[i], s.c_str(), length, 0);
+        for (int line = 0; line < lines.size(); line++) {
+            send(fd_to[i], lines[line].c_str(), lines[line].length(), 0);
+            std::cout << "message to fd " << fd_to[i] << " was sent: " << lines[line].c_str();
+        }
     }
 }
 
 void OutputMessage::clear() {
-    length = 0;
-    messages.clear();
+    lines.clear();
 }
