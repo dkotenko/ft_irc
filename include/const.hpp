@@ -18,7 +18,7 @@
 #define CMD_PONG "PONG"
 
 #define SERVER_NAME "FT_IRC"
-#define SERVER_MESSAGE_OF_THE_DAY "Welcome to ft_irc server!"
+#define SERVER_MESSAGE_OF_THE_DAY ":IRCat 376 1 :End of /MOTD command\n"
 //#define SERVER_MESSAGE_OF_THE_DAY ":bar.example.com 001 server :Welcome!\r\n"
 
 #define PING_TIMEOUT 5
