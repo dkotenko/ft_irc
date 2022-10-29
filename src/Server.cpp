@@ -229,14 +229,11 @@ void Server::pingUsers() {
         //std::cout << it->second->username << std::endl;
         if (it->second->isNeedsPing()) {
             it->second->doPing();
-
             OutputMessage outputMessage(serverName, "");
             std::string toAdd("PING :");
             toAdd += serverName;
             outputMessage.add(toAdd, RPL_NONE, it->second->fd);
             outputMessage.sendMsg();
-            
-            //outputMessage.addFd(it->second->fd);
         }
     }
 }

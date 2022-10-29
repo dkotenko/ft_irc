@@ -126,7 +126,7 @@ void Server::sendWelcome(int i) {
 		//:FT_IRC 376 pidgin 
         outputMessage->add(std::string(":End of /MOTD command"), RPL_ENDOFMOTD);
 
-		std::cout << "Welcome was sent, curr status \n" << currUser->connectStatus << std::endl;
+		    std::cout << "Welcome was sent, curr status \n" << currUser->connectStatus << std::endl;
         outputMessage->fd_to.push_back(i);
         currUser->welcomeReceived = true;
     }
@@ -187,15 +187,42 @@ void Server::handlePrivMsg() {
 }
 
 void Server::handleNotice() {
-	//serverData.printAllChannels();
-    if (serverData.channels.count(inputMessage->getParams()[0])) {
-        serverData.getChannel(inputMessage->getParams()[0])->addMessage
-        (
-            users[inputMessage->fd_from]->username,
-            serverData.getChannel(inputMessage->getParams()[0])->getUsers(),
-            inputMessage->getParams()[1]
-        );
-   }
+	if (inputMessage->getParams().size() < 2)
+		return;
+	if (inputMessage->getParams()[0][0] == '#') {
+		if (serverData.channels.count(inputMessage->getParams()[0])) {
+			std::string message;
+			for (int i = 1; i < inputMessage->getParams().size(); i++) {
+				if (i != 1) 
+					message += " ";
+				message += inputMessage->getParams()[i];
+			}
+	        serverData.getChannel(inputMessage->getParams()[0])->addMessage
+			(
+				users[inputMessage->fd_from]->username,
+				serverData.getChannel(inputMessage->getParams()[0])->getUsers(),
+				message
+			);
+   		}
+		else {
+			handleError(ERR_CANNOTSENDTOCHAN, "", "");
+		}
+	}
+	else {
+		if (serverData.users.count(inputMessage->getParams()[0])) {
+			std::string message;
+			outputMessage->fd_to.push_back(serverData.users[inputMessage->getParams()[0]]->fd);
+			for (int i = 1; i < inputMessage->getParams().size(); i++) {
+				if (i != 1) 
+					message += " ";
+				message += inputMessage->getParams()[i];
+			}
+			outputMessage->data = message;
+		}
+		else {
+			handleError(ERR_NOSUCHNICK, inputMessage->getParams()[0], "");
+		}
+	}
 }
 
 void Server::handleMode() {

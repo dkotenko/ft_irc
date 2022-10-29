@@ -23,6 +23,7 @@ class ServerData
         bool checkChannel(std::string channelName);
         void addUser(User *user);
         void deleteUser(User *user);
+        std::string getUsernameByFd(int fd);
 private:
 
 };

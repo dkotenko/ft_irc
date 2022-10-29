@@ -43,6 +43,16 @@ Channel *ServerData::getChannel(std::string channelName) {
     }
 }
 
+std::string ServerData::getUsernameByFd(int fd) {
+    std::map<std::string, User*> :: iterator it;
+    for (it=users.begin(); it != users.end(); ++it) {
+        if (fd == it->second->fd) {
+            return it->second->username;
+        }
+    }
+    return NULL;
+}
+
 bool ServerData::checkChannel(std::string channelName) {
     if (channels.count(channelName))
         return true;
