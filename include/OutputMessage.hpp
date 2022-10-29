@@ -9,9 +9,9 @@
 #include <sstream>
 #include <sys/socket.h>
 #include <iostream>
-
+#include <cstring>
 #include "const.hpp"
-
+#include "replies.hpp"
 
 class OutputMessage {
     public:
@@ -19,19 +19,20 @@ class OutputMessage {
         int fd_from;
         std::vector<int> fd_to;
 
-        OutputMessage();
+        OutputMessage(std::string serverName, std::string nickName);
         ~OutputMessage();
-        void add(std::string s);
-        void add(std::string s, int fd);
+        void add(std::string s, int replyCode);
+        void add(std::string s, int replyCode, int fd);
         void addFd(int fd);
         void sendMsg();
-        std::string toString();
         void clear();
         //~OutputMessage();
     private:
         int length;
-        std::vector<std::string> messages;
-
+        std::vector<std::string> lines;
+        std::string serverName;
+        std::string nickName;
+        std::string getReplyCodeAsString(int replyCode);
 };
 
 

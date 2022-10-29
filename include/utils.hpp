@@ -17,7 +17,7 @@
 #include <cstdlib>
 #include <netdb.h>
 #include <arpa/inet.h>
-#include "FileDescriptor.hpp"
+#include <sstream>
 
 
 # define Xv(err,res,str)	(x_void(err,res,str,__FILE__,__LINE__))
@@ -27,10 +27,11 @@
 # define USAGE		"Usage: %s port\n"
 
 
-int		xassert(int value, const std::string& input);
-void	sigh(int n);
-void    printError(std::string s);
-void    here(int n);
+int			xassert(int value, const std::string& input);
+void		sigh(int n);
+void    	printError(std::string s);
+void    	here(int n);
+std::string ft_itoa(int n);
 
 
 #endif
