@@ -16,6 +16,7 @@
 #define CMD_KICK "KICK"
 #define CMD_NAMES "NAMES"
 #define CMD_PONG "PONG"
+#define CMD_LIST "LIST"
 
 #define SERVER_NAME "FT_IRC"
 #define ENDLINE "\r\n"

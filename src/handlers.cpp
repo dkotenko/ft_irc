@@ -14,6 +14,7 @@ void Server::populateHandleMap() {
     handleMap[CMD_NAMES] = &Server::handleNames;
 	handleMap[CMD_QUIT] = &Server::handleQuit;
 	handleMap[CMD_PONG] = &Server::handlePong;
+	handleMap[CMD_LIST] = &Server::handleList;
 }
 
 void Server::handlePong() {
@@ -445,5 +446,31 @@ void Server::handleNames() {
     outputMessage->data = ;
     outputMessage->fd_to.push_back(fd);
 	*/
-	outputMessage->add(serverData.doNames(channelsList), fd);
+	outputMessage->add(serverData.doNames(channelsList), RPL_NAMREPLY, fd);
+	outputMessage->add(std::string(":End of /NAMES list"), RPL_ENDOFNAMES, fd);
 }
+
+void Server::handleList() {
+	if (!currUser->isRegistered()) {
+        return;
+    }
+	if (inputMessage->getCountParams() == 0) {
+		std::map<std::string ,Channel*> :: iterator it;
+		outputMessage->add(std::string("Channel :Users  Name"), RPL_LISTSTART, fd);
+    	for(it=serverData.channels.begin(); it != serverData.channels.end(); ++it) {
+			std::string res = it->first + " :";
+        	for (int i = 0; i < it->second->getUsers().size(); ++i) {
+				if (i != 0)
+					res += " ";
+				if (it->second->getUsers()[i] == it->second->getOperatorUsername()) {
+					res += "@";
+				}
+				res += it->second->getUsers()[i];
+			}
+			outputMessage->add(res, RPL_LIST, fd);
+    	}
+		outputMessage->add(std::string(":End of /LIST"), RPL_LISTEND, fd);
+	}
+}
+
+void W

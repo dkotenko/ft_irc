@@ -17,11 +17,6 @@ void OutputMessage::addFd(int fd) {
     fd_to.push_back(fd);
 }
 
-void OutputMessage::add(std::string s, int replyCode, int fd) {
-    addFd(fd);
-    add(s, replyCode);
-}
-
 std::string OutputMessage::getReplyCodeAsString(int replyCode) {
     std::stringstream ss;
 
@@ -41,6 +36,11 @@ void OutputMessage::add(std::string s, int replyCode) {
     line += s;
     line += ENDLINE;
     lines.push_back(line);
+}
+
+void OutputMessage::add(std::string s, int replyCode, int fd) {
+    addFd(fd);
+    add(s, replyCode);
 }
 
 void OutputMessage::sendMsg() {
