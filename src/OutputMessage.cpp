@@ -13,26 +13,34 @@ OutputMessage::~OutputMessage() {
     clear();
 }
 
+void OutputMessage::addFd(int fd) {
+    fd_to.push_back(fd);
+}
+
 void OutputMessage::add(std::string s, int replyCode, int fd) {
+    addFd(fd);
     add(s, replyCode);
 }
 
-std::string getPrefix(int replyCode) {
+std::string OutputMessage::getReplyCodeAsString(int replyCode) {
     std::stringstream ss;
 
+    if (replyCode == RPL_NONE) {
+        return std::string("");
+    }
     ss << ":" << serverName << " " << replyCode << " " << nickName << " :";
     return ss.str();
 }
 
 void OutputMessage::add(std::string s, int replyCode) {
-    std::string line = getPrefix(replyCode);
+    std::string line = getReplyCodeAsString(replyCode);
     int maxLength = MESSAGE_MAX_LEN - std::strlen(ENDLINE) - line.length();
     if (s.length() > maxLength) {
         s = s.substr(0, maxLength);
     }
     line += s;
     line += ENDLINE;
-    lines.push_back(s);
+    lines.push_back(line);
 }
 
 void OutputMessage::sendMsg() {

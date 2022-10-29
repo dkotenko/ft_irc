@@ -393,7 +393,7 @@ void Server::handleError(int err, const std::string &arg1, const std::string &ar
 			msg += "UNKNOWN ERROR";
 			break;
 	}
-	outputMessage->add(msg, fd);
+	outputMessage->add(msg, RPL_NONE, fd);
 }
 
 

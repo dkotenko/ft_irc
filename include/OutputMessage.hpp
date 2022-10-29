@@ -11,6 +11,7 @@
 #include <iostream>
 #include <cstring>
 #include "const.hpp"
+#include "replies.hpp"
 
 class OutputMessage {
     public:
@@ -22,6 +23,7 @@ class OutputMessage {
         ~OutputMessage();
         void add(std::string s, int replyCode);
         void add(std::string s, int replyCode, int fd);
+        void addFd(int fd);
         void sendMsg();
         void clear();
         //~OutputMessage();
@@ -30,7 +32,7 @@ class OutputMessage {
         std::vector<std::string> lines;
         std::string serverName;
         std::string nickName;
-        std::string prefix();
+        std::string getReplyCodeAsString(int replyCode);
 };
 
 

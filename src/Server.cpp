@@ -233,18 +233,11 @@ void Server::pingUsers() {
             OutputMessage outputMessage(serverName, "");
             std::string toAdd("PING :");
             toAdd += serverName;
-            outputMessage.add(toAdd, it->second->nickname);
+            outputMessage.add(toAdd, RPL_NONE, it->second->fd);
             outputMessage.sendMsg();
             
             //outputMessage.addFd(it->second->fd);
         }
-    }
-
-    if (outputMessage.fd_to.size() > 0) {
-        
-        
-        
-        
     }
 }
 
