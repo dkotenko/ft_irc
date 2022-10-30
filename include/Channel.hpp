@@ -21,6 +21,7 @@ class Channel {
         endmessage getMessage();
         void doKick(std::string username);
         void setTopic(std::string topic);
+        std::string getTopic();
         void editMode();
         void doInvite(std::string nickname);
         bool checkUserInChannel(std::string username);

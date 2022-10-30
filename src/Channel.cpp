@@ -3,6 +3,7 @@
 
 Channel::Channel(std::string chname) {
     chname = chname;
+    topic = "";
 }
 
 void Channel::addUser(std::string username) {
@@ -60,6 +61,10 @@ void Channel::doKick(std::string username) {
 
 void Channel::setTopic(std::string topic) {
     this->topic = topic;
+}
+
+std::string Channel::getTopic() {
+    return this->topic;
 }
 
 void Channel::editMode() {
