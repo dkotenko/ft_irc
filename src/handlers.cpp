@@ -456,7 +456,7 @@ void Server::handleList() {
     }
 	if (inputMessage->getCountParams() == 0) {
 		std::map<std::string ,Channel*> :: iterator it;
-		outputMessage->add(std::string("Channel :Users  Name"), RPL_LISTSTART, fd);
+		outputMessage->add(std::string("Channel :Users Name"), RPL_LISTSTART, fd);
 		
     	for(it=serverData.channels.begin(); it != serverData.channels.end(); ++it) {
 			std::string res = it->first + " :";
@@ -470,11 +470,11 @@ void Server::handleList() {
 			}
 			outputMessage->add(res, RPL_LIST, fd);
     	}
-		outputMessage->add(std::string(":End of /LIST"), RPL_LISTEND, fd);
+		outputMessage->add(std::string(":End of /LIST"), RPL_LISTEND);
 	}
 	else if (inputMessage->getCountParams() == 1) {
 		std::vector<std::string> channelsVector = split(inputMessage->params[0], '#');
-		outputMessage->add(std::string("Channel :Users  Name"), RPL_LISTSTART, fd);
+		outputMessage->add(std::string("Channel :Users Name"), RPL_LISTSTART, fd);
 		for (int i = 0; i < channelsVector.size(); ++i) {
 			if (serverData.checkChannel(channelsVector[i])) {
 				std::string res = channelsVector[i] + " :";
@@ -485,7 +485,7 @@ void Server::handleList() {
 					if (usersVector[j] == serverData.channels[channelsVector[i]]->getOperatorUsername()) {
 						res += "@";
 					}
-					res += serverData.channels[channelsVector[i]]->getUsers()[j];
+					res += usersVector[j];
 				}
 				outputMessage->add(res, RPL_LIST, fd);
 			}
@@ -493,4 +493,3 @@ void Server::handleList() {
 		outputMessage->add(std::string(":End of /LIST"), RPL_LISTEND, fd);
 	}
 }
-
