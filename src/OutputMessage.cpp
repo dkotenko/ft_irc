@@ -14,6 +14,11 @@ OutputMessage::~OutputMessage() {
 }
 
 void OutputMessage::addFd(int fd) {
+    for (int i = 0; i < fd_to.size(); i++) {
+        if (fd_to[i] == fd) {
+            return ;
+        }
+    }
     fd_to.push_back(fd);
 }
 
