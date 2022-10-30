@@ -95,5 +95,6 @@ private:
     void handlePong();
     void handleNotice();
     void handleList();
+    void handleWhoIs();
 };
 #endif //FT_IRC_SERVER_H

@@ -23,7 +23,7 @@ std::string OutputMessage::getReplyCodeAsString(int replyCode) {
     if (replyCode == RPL_NONE) {
         return std::string("");
     }
-    ss << ":" << serverName << " " << replyCode << " " << nickName << " :";
+    ss << ":" << serverName << " " << replyCode << " " << nickName << " ";
     return ss.str();
 }
 

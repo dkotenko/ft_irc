@@ -424,8 +424,8 @@ void Server::handleError(int err, const std::string &arg1, const std::string &ar
 	outputMessage->add(msg, RPL_NONE, fd);
 }
 
-
-std::vector<std::string> split(const std::string& s, std::vector<std::string>& res, char delim) {
+std::vector<std::string> split(const std::string& s, char delim) {
+	std::vector<std::string> res;
     std::stringstream ss(s);
     std::string item;
     while (std::getline(ss, item, delim)) {
@@ -440,7 +440,7 @@ void Server::handleNames() {
     }
     std::vector<std::string> channelsList;
     if (inputMessage->getParams().size() == 1) {
-        channelsList = split(inputMessage->getParams()[0], channelsList, ',');
+        channelsList = split(inputMessage->getParams()[0], ',');
     }
 	/*
     outputMessage->data = ;
@@ -457,6 +457,7 @@ void Server::handleList() {
 	if (inputMessage->getCountParams() == 0) {
 		std::map<std::string ,Channel*> :: iterator it;
 		outputMessage->add(std::string("Channel :Users  Name"), RPL_LISTSTART, fd);
+		
     	for(it=serverData.channels.begin(); it != serverData.channels.end(); ++it) {
 			std::string res = it->first + " :";
         	for (int i = 0; i < it->second->getUsers().size(); ++i) {
@@ -471,6 +472,25 @@ void Server::handleList() {
     	}
 		outputMessage->add(std::string(":End of /LIST"), RPL_LISTEND, fd);
 	}
+	else if (inputMessage->getCountParams() == 1) {
+		std::vector<std::string> channelsVector = split(inputMessage->params[0], '#');
+		outputMessage->add(std::string("Channel :Users  Name"), RPL_LISTSTART, fd);
+		for (int i = 0; i < channelsVector.size(); ++i) {
+			if (serverData.checkChannel(channelsVector[i])) {
+				std::string res = channelsVector[i] + " :";
+				std::vector<std::string> usersVector = serverData.channels[channelsVector[i]]->getUsers();
+				for (int j = 0; j < usersVector.size(); ++j) {
+					if (j != 0)
+						res += " ";
+					if (usersVector[j] == serverData.channels[channelsVector[i]]->getOperatorUsername()) {
+						res += "@";
+					}
+					res += serverData.channels[channelsVector[i]]->getUsers()[j];
+				}
+				outputMessage->add(res, RPL_LIST, fd);
+			}
+		}
+		outputMessage->add(std::string(":End of /LIST"), RPL_LISTEND, fd);
+	}
 }
 
-void W
