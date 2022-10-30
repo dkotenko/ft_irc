@@ -27,3 +27,34 @@ USER 1 1 1 :1
 privmsg - сообщения отравляются всем пользователям, может быть несколько получателей
 
 Pidgin: При подключении к серверу через Pidgin, клиент не понимает, что соединение установилось. Возможно, до него не доходит приветственное сообщение.
+
+
+LIST
+:IRCat 321 333 Channel :Users  Name
+:IRCat 322 333 #gen 1 :[+n]
+:IRCat 323 333 :End of /LIST
+NAMES
+:IRCat 353 333 = #gen :@user111
+:IRCat 353 333 * * :333
+:IRCat 366 333 * :End of /NAMES list
+WHOIS user111
+:IRCat 311 333 user111 user111 127.0.0.1 * :user111
+:IRCat 319 333 user111 :@#gen @#gen @#gen
+:IRCat 312 333 user111 IRCat :IRC server based on TCP/IP protocol to rfc1459 standard
+:IRCat 317 333 user111 1741 1667067839 :seconds idle
+:IRCat 318 333 user111 :End of /WHOIS list
+JOIN #gen
+:qwert!qwe@127.0.0.1 JOIN :#gen
+:IRCat 331 qwert #gen :No topic is set
+:IRCat 353 qwert = #gen :@user111 qwert
+:IRCat 366 qwert #gen :End of /NAMES list
+JOIN #test
+:qwert!qwe@127.0.0.1 JOIN :#test
+:IRCat 331 qwert #test :No topic is set
+:IRCat 353 qwert = #test :@qwert
+:IRCat 366 qwert #test :End of /NAMES list
+NAMES
+:IRCat 353 qwert = #gen :@user111 qwert
+:IRCat 353 qwert = #test :@qwert
+:IRCat 353 qwert * * :
+:IRCat 366 qwert * :End of /NAMES list
