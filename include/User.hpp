@@ -40,6 +40,8 @@ public:
     std::string realusername;
     std::string hostname;
     std::string servername;
+    std::string ipAddress;
+    int port;
     int connectStatus;
     bool registered;
     bool welcomeReceived;

@@ -118,18 +118,23 @@ void Server::fct_read(int fd) {
 
 void Server::srv_accept(int s)
 {
-  int			cs;
-  struct sockaddr_in	csin;
-  socklen_t		csin_len;
+    int			cs;
+    struct sockaddr_in	csin;
+    socklen_t		csin_len;
 
-  csin_len = sizeof(csin);
-  cs = accept(s, (struct sockaddr*)&csin, &csin_len);
-  std::cout << "New client # " << cs << " from " << inet_ntoa(csin.sin_addr) << ":" << ntohs(csin.sin_port) << std::endl;
-  /*
-  printf("New client #%d from %s:%d\n", cs, 
-	 inet_ntoa(csin.sin_addr), ntohs(csin.sin_port));
-  */
-  users[cs]->type = FD_CLIENT;
+    csin_len = sizeof(csin);
+    cs = accept(s, (struct sockaddr*)&csin, &csin_len);
+    std::string ipAddress = inet_ntoa(csin.sin_addr);
+    int port = ntohs(csin.sin_port);
+    std::cout << "New client # " << cs << " from " << ipAddress << ":" << port << std::endl;
+
+    /*
+    printf("New client #%d from %s:%d\n", cs, 
+        inet_ntoa(csin.sin_addr), ntohs(csin.sin_port));
+    */
+    users[cs]->type = FD_CLIENT;
+    users[cs]->ipAddress = ipAddress;
+    users[cs]->port = port;
 }
 
 

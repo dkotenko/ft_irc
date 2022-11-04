@@ -493,3 +493,25 @@ void Server::handleList() {
 		outputMessage->add(std::string(":End of /LIST"), RPL_LISTEND, fd);
 	}
 }
+
+void Server::handleWhoIs() {
+
+	if (!currUser->isRegistered()) {
+        return;
+    }
+
+	if ((inputMessage->getCountParams() == 0)) {
+		handleError(ERR_CANNOTSENDTOCHAN, "", "");
+		return ;
+	}
+	
+
+	std::map<std::string, User*> :: iterator it;
+    for (it=users.begin(); it != users.end(); ++it) {
+		User *user = it->second;
+
+        
+    }
+	
+
+}
