@@ -137,14 +137,26 @@ void Server::handleJoin() {
     if (!currUser->isRegistered()) {
         return ;
     }
-    for (int i = 0; i < (int)inputMessage->getParams().size(); i++) {
-        if (inputMessage->getParams()[i][0] == '#') {
-            serverData.addChannel(inputMessage->getParams()[i]);
-            serverData.channels[inputMessage->getParams()[0]]->addUser(currUser->username);
-            outputMessage->add("Message of the Day", RPL_MOTD);
-            outputMessage->fd_to.push_back(fd);
-        }
-    }
+	for (int i = 0; i < (int)inputMessage->getParams().size(); i++) {
+		if (inputMessage->getParams()[i][0] == '#') {
+			serverData.addChannel(inputMessage->getParams()[i]);
+			if (!serverData.channels[inputMessage->getParams()[i]]->checkUserInChannel(currUser->username)) {
+				serverData.channels[inputMessage->getParams()[0]]->addUser(currUser->username);
+				std::string res = inputMessage->getParams()[i];
+				res += " :";
+				if (serverData.channels[inputMessage->getParams()[0]]->getTopic() == "") {
+					res += "No topic is set";
+					outputMessage->add(res, RPL_NOTOPIC);
+				}
+				else {
+					res += serverData.channels[inputMessage->getParams()[0]]->getTopic();
+					outputMessage->add(res, RPL_TOPIC);
+				}
+				outputMessage->fd_to.push_back(fd);
+			}
+			handleNames();
+		}
+	}
 }
 
 void Server::handlePrivMsg() {
@@ -447,7 +459,12 @@ void Server::handleNames() {
     outputMessage->fd_to.push_back(fd);
 	*/
 	outputMessage->add(serverData.doNames(channelsList), RPL_NAMREPLY, fd);
-	outputMessage->add(std::string(":End of /NAMES list"), RPL_ENDOFNAMES, fd);
+	std::string res;
+	if (channelsList.size() > 0) {
+		res += channelsList[0] + " ";
+	}
+	res += ":End of /NAMES list";
+	outputMessage->add(res, RPL_ENDOFNAMES, fd);
 }
 
 void Server::handleList() {
@@ -459,7 +476,7 @@ void Server::handleList() {
 		outputMessage->add(std::string("Channel :Users Name"), RPL_LISTSTART, fd);
 		
     	for(it=serverData.channels.begin(); it != serverData.channels.end(); ++it) {
-			std::string res = it->first + " :";
+			std::string res = it->first + " ";
         	for (int i = 0; i < it->second->getUsers().size(); ++i) {
 				if (i != 0)
 					res += " ";
@@ -468,16 +485,17 @@ void Server::handleList() {
 				}
 				res += it->second->getUsers()[i];
 			}
+			res += " :[+n]";
 			outputMessage->add(res, RPL_LIST, fd);
     	}
 		outputMessage->add(std::string(":End of /LIST"), RPL_LISTEND);
 	}
 	else if (inputMessage->getCountParams() == 1) {
-		std::vector<std::string> channelsVector = split(inputMessage->params[0], '#');
+		std::vector<std::string> channelsVector = split(inputMessage->params[0], ',');
 		outputMessage->add(std::string("Channel :Users Name"), RPL_LISTSTART, fd);
 		for (int i = 0; i < channelsVector.size(); ++i) {
 			if (serverData.checkChannel(channelsVector[i])) {
-				std::string res = channelsVector[i] + " :";
+				std::string res = channelsVector[i] + " ";
 				std::vector<std::string> usersVector = serverData.channels[channelsVector[i]]->getUsers();
 				for (int j = 0; j < usersVector.size(); ++j) {
 					if (j != 0)
@@ -487,6 +505,7 @@ void Server::handleList() {
 					}
 					res += usersVector[j];
 				}
+				res += " :[+n]";
 				outputMessage->add(res, RPL_LIST, fd);
 			}
 		}

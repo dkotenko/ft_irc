@@ -74,6 +74,7 @@ std::string ServerData::doNames(std::vector<std::string> channelsList) {
                 continue;
         }
         std::vector<std::string> users = it->second->getUsers();
+        answer += "= ";
         answer += it->first;
         answer += " :";
         //std::cout<<it->first<<": ";
@@ -89,7 +90,6 @@ std::string ServerData::doNames(std::vector<std::string> channelsList) {
             answer += users[i];
             //std::cout<<users[i];
         }
-        answer += "\n";
         //std::cout<<std::endl;
     }
     return answer;
