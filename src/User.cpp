@@ -31,12 +31,28 @@ void User::setNickName(std::string nickname) {
     this->nickname = nickname;
 }
 
+void User::setAwayStatus(bool awaystatus) {
+	this->awaystatus = awaystatus;
+}
+
+void User::setAwayText(std::string awaytext) {
+	this->awaytext = awaytext;
+}
+
 const std::string &User::getUsername() const {
     return this->username;
 }
 
 const std::string &User::getNickname() const {
     return this->username;
+}
+
+bool User::getAwayStatus() {
+	return this->awaystatus;
+}
+
+std::string User::getAwayText() {
+	return this->awaytext;
 }
 
 void User::delUser(std::string username) {
@@ -64,7 +80,7 @@ void User::doPing() {
 }
 
 void User::updatePing() {
-	std::cout << timer.lastPingTimeMs << " " << username << " : ping updated" << std::endl;
+	//std::cout << timer.lastPingTimeMs << " " << username << " : ping updated" << std::endl;
 	timer.reset();
 }
 
