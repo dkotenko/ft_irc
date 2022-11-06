@@ -45,7 +45,7 @@ public:
     int		max;
     int		r;
     int fd;
-    std::string serverName;
+    std::string servername;
     fd_set	fd_read;
     fd_set	fd_write;
     std::vector<User *> users;
@@ -96,5 +96,6 @@ private:
     void handleNotice();
     void handleList();
     void handleWhoIs();
+    std::vector<User *> getUsersByWildcard(std::string wildcard);
 };
 #endif //FT_IRC_SERVER_H

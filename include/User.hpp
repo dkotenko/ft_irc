@@ -39,9 +39,9 @@ public:
     std::string password;
     std::string realusername;
     std::string hostname;
-    std::string servername;
     std::string ipAddress;
     int port;
+    std::string servername;
     int connectStatus;
     bool registered;
     bool welcomeReceived;

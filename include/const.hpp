@@ -23,7 +23,7 @@
 #define ENDLINE "\r\n"
 #define SERVER_MESSAGE_OF_THE_DAY "Welcome to ft_irc server!"
 
-#define PING_TIMEOUT 5
+#define PING_TIMEOUT 120
 #define PING_TIMES 5
 
 #endif

@@ -5,7 +5,7 @@ Server::Server(int port, std::string password) {
     struct rlimit rlp;
     this->port = port;
     this->password = password;
-    serverName = SERVER_NAME;
+    servername = SERVER_NAME;
     xassert(getrlimit(RLIMIT_NOFILE, &rlp) != -1, "getrlimit");
     maxfd = FD_SETSIZE - 1;
     is_debug = false;
@@ -137,10 +137,6 @@ void Server::srv_accept(int s)
     users[cs]->port = port;
 }
 
-
-
-
-
 void Server::client_read(int cs)
 {
     int	r;
@@ -182,7 +178,7 @@ void Server::client_read(int cs)
 OutputMessage *Server::parse(std::string src) {
     const char separator = ' ';
     inputMessage = new InputMessage();
-    outputMessage = new OutputMessage(serverName, currUser->getNickname());
+    outputMessage = new OutputMessage(servername, currUser->getNickname());
 
     std::vector<std::string> outputArray;
     std::stringstream streamData(src);
@@ -234,9 +230,9 @@ void Server::pingUsers() {
         //std::cout << it->second->username << std::endl;
         if (it->second->isNeedsPing()) {
             it->second->doPing();
-            OutputMessage outputMessage(serverName, "");
+            OutputMessage outputMessage(servername, "");
             std::string toAdd("PING :");
-            toAdd += serverName;
+            toAdd += servername;
             outputMessage.add(toAdd, RPL_NONE, it->second->fd);
             outputMessage.sendMsg();
         }
