@@ -547,7 +547,7 @@ std::vector<User *> Server::getUsersByWildcard(std::string wildcard) {
 }
 
 void Server::handleWhoIs() {
-	std::cout << "WHOIS LIST:" << std::endl;
+	
 	if (!currUser->isRegistered()) {
         return;
     }
@@ -556,6 +556,8 @@ void Server::handleWhoIs() {
 		handleError(ERR_NONICKNAMEGIVEN, "", "");
 		return ;
 	}
+
+	std::cout << "WHOIS LIST:" << std::endl;
 
 	std::string wildcard = inputMessage->getParams()[0];
 	std::vector<User *> v = getUsersByWildcard(wildcard);

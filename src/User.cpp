@@ -12,6 +12,7 @@ User::User(int type, int fd)
 	buf_write = new char[BUF_SIZE + 1] ();
 	this->clean();
 	this->nickname = "";
+	this->username = "";
 }
 
 void User::clean() {
