@@ -513,6 +513,17 @@ void Server::handleList() {
 	}
 }
 
+std::vector<User *> Server::getUsersByWildcard(std::string wildcard) {
+	std::vector<User *> users;
+
+	std::map<std::string, User*>::iterator it;
+    for (it = serverData.users.begin(); it != serverData.users.end(); ++it) {
+		User *user = it->second;        
+    }
+
+
+}
+
 void Server::handleWhoIs() {
 
 	if (!currUser->isRegistered()) {
@@ -523,14 +534,10 @@ void Server::handleWhoIs() {
 		handleError(ERR_CANNOTSENDTOCHAN, "", "");
 		return ;
 	}
-	
 
-	std::map<std::string, User*> :: iterator it;
-    for (it=users.begin(); it != users.end(); ++it) {
-		User *user = it->second;
+	std::string wildcard = inputMessage->getParams()[0];
+	std::vector<User *> users = getUsersByWildcard(wildcard);
 
-        
-    }
 	
 
 }
