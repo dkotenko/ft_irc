@@ -23,6 +23,7 @@ class OutputMessage {
         ~OutputMessage();
         void add(std::string s, int replyCode);
         void add(std::string s, int replyCode, int fd);
+        void addPrivmsg(std::string s, int fd, std::string fromusername, std::string fromhostname, std::string tousername);
         void addFd(int fd);
         void sendMsg();
         void clear();

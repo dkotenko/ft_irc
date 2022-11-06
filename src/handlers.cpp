@@ -192,16 +192,16 @@ void Server::handlePrivMsg() {
 					message += " ";
 				message += inputMessage->getParams()[i];
 			}
-			outputMessage->data = message;
-			outputMessage->add(message, 0);
+			//outputMessage->data = message;
+			//outputMessage->add(message, 0);
 			//TODO как правильно отправлять сообщения??? Не приходят сообщения клиенту
+			outputMessage->addPrivmsg(message, inputMessage->fd_from, serverData.getUsernameByFd(inputMessage->fd_from), "127.0.0.1", inputMessage->getParams()[0]);
 		}
 		else {
 			handleError(ERR_NOSUCHNICK, inputMessage->getParams()[0], "");
 		}
 	}
-	// TODO Дописать автоответ
-/*
+
 	if (serverData.users[users[inputMessage->fd_from]->username]->getAwayStatus()) {
 		std::string msg;
 		msg += inputMessage->getParams()[0];
@@ -210,7 +210,6 @@ void Server::handlePrivMsg() {
 		//TODO дописать отправку msg
 	}
 
-*/
 }
 
 void Server::handleNotice() {

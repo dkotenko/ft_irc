@@ -48,6 +48,28 @@ void OutputMessage::add(std::string s, int replyCode, int fd) {
     add(s, replyCode);
 }
 
+void OutputMessage::addPrivmsg(std::string s, int fd, std::string fromusername, std::string fromhostname, std::string tousername) {
+    addFd(fd);
+    std::string line = ":";
+    line += fromusername;
+    line += "!";
+    line += fromusername;
+    line += "@";
+    line += fromhostname;
+    line += " PRIVMSG ";
+    line += tousername;
+    line += " ";
+    line += s;
+    line += ENDLINE;
+    lines.push_back(line);
+
+/*
+    std::string line;
+    line + s;
+    lines.push_back(line);
+*/
+}
+
 void OutputMessage::sendMsg() {
     for(int i = 0; i < fd_to.size(); i++) {
         for (int line = 0; line < lines.size(); line++) {
