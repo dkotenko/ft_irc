@@ -514,8 +514,6 @@ void Server::handleList() {
 	}
 }
 
-#include <stdbool.h>
-
 bool match(const char *pattern, const char *candidate, int p, int c) {
   if (pattern[p] == '\0') {
     return candidate[c] == '\0';
@@ -549,6 +547,7 @@ std::vector<User *> Server::getUsersByWildcard(std::string wildcard) {
 void Server::handleWhoIs() {
 	
 	if (!currUser->isRegistered()) {
+		handleError(ERR_NOTREGISTERED, "", "");
         return;
     }
 
@@ -557,12 +556,26 @@ void Server::handleWhoIs() {
 		return ;
 	}
 
-	std::cout << "WHOIS LIST:" << std::endl;
+	//std::cout << "WHOIS LIST:" << std::endl;
 
 	std::string wildcard = inputMessage->getParams()[0];
 	std::vector<User *> v = getUsersByWildcard(wildcard);
-	
+	outputMessage.addFd(currUser.fd);
 	for(std::vector<User *>::iterator it = v.begin(); it != v.end(); ++it) {
+		User *user = *it;
+		outputMessage.add(user->getNickname() + " "  + \
+			user->username + " " + \
+			user->ipAddress + " * :" + \
+			user->realname, RPL_WHOISUSER);
+
+		std::string channelsResponse = user->getNickname() + " :";
+
+		outputMessage.add(channelsResponse, RPL_WHOISCHANNELS);
+		outputMessage.add(user->getNickname() + " "  + \
+			user->servername + " :" + \
+			SERVER_INFO, RPL_WHOISSERVER);
+		outputMessage.add("todo", RPL_WHOISIDLE);
     	std::cout << (*it)->getNickname() << std::endl;
  	}
+	outputMessage.add(wildcard + " :End of /WHOIS list", RPL_ENDOFWHOIS);
 }

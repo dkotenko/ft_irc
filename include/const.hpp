@@ -20,6 +20,7 @@
 #define CMD_WHOIS "WHOIS"
 
 #define SERVER_NAME "FT_IRC"
+#define SERVER_INFO "School 42 IRC server implementation project"
 #define ENDLINE "\r\n"
 #define SERVER_MESSAGE_OF_THE_DAY "Welcome to ft_irc server!"
 

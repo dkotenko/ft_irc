@@ -19,6 +19,7 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <algorithm>
+#include <stdbool.h>
 #include "User.hpp"
 #include "utils.hpp"
 #include <vector>
