@@ -19,7 +19,7 @@ class OutputMessage {
         int fd_from;
         std::vector<int> fd_to;
 
-        OutputMessage(std::string serverName, std::string nickName);
+        OutputMessage(std::string servername, std::string nickName);
         ~OutputMessage();
         void add(std::string s, int replyCode);
         void add(std::string s, int replyCode, int fd);
@@ -31,7 +31,7 @@ class OutputMessage {
     private:
         int length;
         std::vector<std::string> lines;
-        std::string serverName;
+        std::string servername;
         std::string nickName;
         std::string getReplyCodeAsString(int replyCode);
 };

@@ -12,6 +12,7 @@ User::User(int type, int fd)
 	buf_write = new char[BUF_SIZE + 1] ();
 	this->clean();
 	this->nickname = "";
+	this->username = "";
 }
 
 void User::clean() {
@@ -19,6 +20,8 @@ void User::clean() {
 	connectStatus = NOT_REGISTERED;
 	registered = false;
 	welcomeReceived = false;
+	ipAddress.clear();
+	port = 0;
 	std::memset(buf_read, 0, BUF_SIZE + 1);
 	std::memset(buf_write, 0, BUF_SIZE + 1);
 }

@@ -4,8 +4,8 @@
 
 #include "OutputMessage.hpp"
 
-OutputMessage::OutputMessage(std::string serverName, std::string nickName) {
-    this->serverName = serverName;
+OutputMessage::OutputMessage(std::string servername, std::string nickName) {
+    this->servername = servername;
     this->nickName = nickName;
 }
 
@@ -28,7 +28,7 @@ std::string OutputMessage::getReplyCodeAsString(int replyCode) {
     if (replyCode == RPL_NONE) {
         return std::string("");
     }
-    ss << ":" << serverName << " " << replyCode << " " << nickName << " ";
+    ss << ":" << servername << " " << replyCode << " " << nickName << " ";
     return ss.str();
 }
 

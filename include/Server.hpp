@@ -19,6 +19,7 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <algorithm>
+#include <stdbool.h>
 #include "User.hpp"
 #include "utils.hpp"
 #include <vector>
@@ -45,7 +46,7 @@ public:
     int		max;
     int		r;
     int fd;
-    std::string serverName;
+    std::string servername;
     fd_set	fd_read;
     fd_set	fd_write;
     std::vector<User *> users;
@@ -96,6 +97,6 @@ private:
     void handleNotice();
     void handleList();
     void handleWhoIs();
-    void handleAway();
+    std::vector<User *> getUsersByWildcard(std::string wildcard);
 };
 #endif //FT_IRC_SERVER_H

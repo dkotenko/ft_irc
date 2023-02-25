@@ -5,7 +5,7 @@ Server::Server(int port, std::string password) {
     struct rlimit rlp;
     this->port = port;
     this->password = password;
-    serverName = SERVER_NAME;
+    servername = SERVER_NAME;
     xassert(getrlimit(RLIMIT_NOFILE, &rlp) != -1, "getrlimit");
     maxfd = FD_SETSIZE - 1;
     is_debug = false;
@@ -118,23 +118,24 @@ void Server::fct_read(int fd) {
 
 void Server::srv_accept(int s)
 {
-  int			cs;
-  struct sockaddr_in	csin;
-  socklen_t		csin_len;
+    int			cs;
+    struct sockaddr_in	csin;
+    socklen_t		csin_len;
 
-  csin_len = sizeof(csin);
-  cs = accept(s, (struct sockaddr*)&csin, &csin_len);
-  std::cout << "New client # " << cs << " from " << inet_ntoa(csin.sin_addr) << ":" << ntohs(csin.sin_port) << std::endl;
-  /*
-  printf("New client #%d from %s:%d\n", cs, 
-	 inet_ntoa(csin.sin_addr), ntohs(csin.sin_port));
-  */
-  users[cs]->type = FD_CLIENT;
+    csin_len = sizeof(csin);
+    cs = accept(s, (struct sockaddr*)&csin, &csin_len);
+    std::string ipAddress = inet_ntoa(csin.sin_addr);
+    int port = ntohs(csin.sin_port);
+    std::cout << "New client # " << cs << " from " << ipAddress << ":" << port << std::endl;
+
+    /*
+    printf("New client #%d from %s:%d\n", cs, 
+        inet_ntoa(csin.sin_addr), ntohs(csin.sin_port));
+    */
+    users[cs]->type = FD_CLIENT;
+    users[cs]->ipAddress = ipAddress;
+    users[cs]->port = port;
 }
-
-
-
-
 
 void Server::client_read(int cs)
 {
@@ -177,7 +178,7 @@ void Server::client_read(int cs)
 OutputMessage *Server::parse(std::string src) {
     const char separator = ' ';
     inputMessage = new InputMessage();
-    outputMessage = new OutputMessage(serverName, currUser->getNickname());
+    outputMessage = new OutputMessage(servername, currUser->getNickname());
 
     std::vector<std::string> outputArray;
     std::stringstream streamData(src);
@@ -229,9 +230,9 @@ void Server::pingUsers() {
         //std::cout << it->second->username << std::endl;
         if (it->second->isNeedsPing()) {
             it->second->doPing();
-            OutputMessage outputMessage(serverName, "");
+            OutputMessage outputMessage(servername, "");
             std::string toAdd("PING :");
-            toAdd += serverName;
+            toAdd += servername;
             outputMessage.add(toAdd, RPL_NONE, it->second->fd);
             outputMessage.sendMsg();
         }

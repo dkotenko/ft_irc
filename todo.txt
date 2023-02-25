@@ -59,6 +59,17 @@ NAMES
 :IRCat 353 qwert * * :
 :IRCat 366 qwert * :End of /NAMES list
 
+WHOIS
+:IRCat 311 nick nick username 127.0.0.1 * :realname
+:IRCat 319 nick nick :
+:IRCat 312 nick nick IRCat :IRC server based on TCP/IP protocol to rfc1459 standard
+:IRCat 317 nick nick 160 1667873182 :seconds idle
+:IRCat 311 nick pidgin pidgin 127.0.0.1 * :pidgin
+:IRCat 319 nick pidgin :
+:IRCat 312 nick pidgin IRCat :IRC server based on TCP/IP protocol to rfc1459 standard
+:IRCat 317 nick pidgin 75 1667873267 :seconds idle
+:IRCat 318 nick *i* :End of /WHOIS list
+
 
 
 

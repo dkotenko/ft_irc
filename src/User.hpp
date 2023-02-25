@@ -38,6 +38,8 @@ public:
     std::string nickname;
     std::string realusername;
     std::string hostname;
+    std::string ipAddress;
+    int port;
     std::string servername;
     std::string awaytext;
     bool awaystatus;

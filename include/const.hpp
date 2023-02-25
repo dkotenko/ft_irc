@@ -17,13 +17,14 @@
 #define CMD_NAMES "NAMES"
 #define CMD_PONG "PONG"
 #define CMD_LIST "LIST"
-#define CMD_AWAY "AWAY"
+#define CMD_WHOIS "WHOIS"
 
 #define SERVER_NAME "FT_IRC"
+#define SERVER_INFO "School 42 IRC server implementation project"
 #define ENDLINE "\r\n"
 #define SERVER_MESSAGE_OF_THE_DAY "Welcome to ft_irc server!"
 
-#define PING_TIMEOUT 5
+#define PING_TIMEOUT 120
 #define PING_TIMES 5
 
 #endif

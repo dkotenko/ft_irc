@@ -15,6 +15,7 @@ void Server::populateHandleMap() {
 	handleMap[CMD_QUIT] = &Server::handleQuit;
 	handleMap[CMD_PONG] = &Server::handlePong;
 	handleMap[CMD_LIST] = &Server::handleList;
+	handleMap[CMD_WHOIS] = &Server::handleWhoIs;
 	handleMap[CMD_AWAY] = &Server::handleAway;
 }
 
@@ -63,7 +64,7 @@ void Server::handleUser() {
         currUser->setRegistered(currUser->connectStatus == REGISTERED);
         currUser->username = inputMessage->params[0];
 		currUser->hostname = inputMessage->params[1];
-		currUser->hostname = inputMessage->params[2];
+		currUser->servername = inputMessage->params[2];
 		for (int i = 3; i < inputMessage->params.size(); ++i) {
 			if (i == 3) {
 				currUser->realusername += inputMessage->params[i];
@@ -305,7 +306,7 @@ void Server::handleKick() {
 
 void Server::handleError(int err, const std::string &arg1, const std::string &arg2)
 {
-	std::string	msg = ":" + serverName + " ";
+	std::string	msg = ":" + servername + " ";
 	std::stringstream	ss;
 	ss << err;
 	msg += ss.str() + " " + currUser->getNickname();
@@ -526,6 +527,70 @@ void Server::handleList() {
 	}
 }
 
+bool match(const char *pattern, const char *candidate, int p, int c) {
+  if (pattern[p] == '\0') {
+    return candidate[c] == '\0';
+  } else if (pattern[p] == '*') {
+    for (; candidate[c] != '\0'; c++) {
+      if (match(pattern, candidate, p+1, c))
+        return true;
+    }
+    return match(pattern, candidate, p+1, c);
+  } else if (pattern[p] != '?' && pattern[p] != candidate[c]) {
+    return false;
+  }  else {
+    return match(pattern, candidate, p+1, c+1);
+  }
+}
+
+std::vector<User *> Server::getUsersByWildcard(std::string wildcard) {
+	std::vector<User *> filteredUsers;
+
+	std::map<std::string, User*>::iterator it;
+    for (it = serverData.users.begin(); it != serverData.users.end(); ++it) {
+		User *user = it->second;
+
+		if (match(wildcard.c_str(), user->getNickname().c_str(), 0, 0)) {
+			filteredUsers.push_back(user);
+		}
+    }
+	return filteredUsers;
+}
+
+void Server::handleWhoIs() {
+	
+	if (!currUser->isRegistered()) {
+		handleError(ERR_NOTREGISTERED, "", "");
+        return;
+    }
+
+	if ((inputMessage->getCountParams() == 0)) {
+		handleError(ERR_NONICKNAMEGIVEN, "", "");
+		return ;
+	}
+
+	//std::cout << "WHOIS LIST:" << std::endl;
+
+	std::string wildcard = inputMessage->getParams()[0];
+	std::vector<User *> v = getUsersByWildcard(wildcard);
+	outputMessage.addFd(currUser.fd);
+	for(std::vector<User *>::iterator it = v.begin(); it != v.end(); ++it) {
+		User *user = *it;
+		outputMessage.add(user->getNickname() + " "  + \
+			user->username + " " + \
+			user->ipAddress + " * :" + \
+			user->realname, RPL_WHOISUSER);
+
+		std::string channelsResponse = user->getNickname() + " :";
+
+		outputMessage.add(channelsResponse, RPL_WHOISCHANNELS);
+		outputMessage.add(user->getNickname() + " "  + \
+			user->servername + " :" + \
+			SERVER_INFO, RPL_WHOISSERVER);
+		outputMessage.add("todo", RPL_WHOISIDLE);
+    	std::cout << (*it)->getNickname() << std::endl;
+ 	}
+	outputMessage.add(wildcard + " :End of /WHOIS list", RPL_ENDOFWHOIS);
 
 void Server::handleAway() {
 	std::string username = serverData.getUsernameByFd(inputMessage->fd_from);
