@@ -281,7 +281,7 @@ void Server::handleInvite() {
 
     if (serverData.getChannel(inputMessage->getParams()[0])->getOperatorUsername() == 
         users[inputMessage->fd_from]->username) {
-        serverData.getChannel(inputMessage->getParams()[1])->doInvite(inputMessage->getParams()[0]);
+        serverData.getChannel(inputMessage->getParams()[1])->inviteUser(inputMessage->getParams()[0]);
     }
 }
 
@@ -292,14 +292,14 @@ void Server::handleKick() {
     
     if (serverData.getChannel(inputMessage->getParams()[1])->getOperatorUsername() == 
         users[inputMessage->fd_from]->username) {
-        serverData.getChannel(inputMessage->getParams()[0])->doKick(inputMessage->getParams()[1]);
+        serverData.getChannel(inputMessage->getParams()[0])->kickUser(inputMessage->getParams()[1]);
     }
 	
     if (inputMessage->getParams().size() == 2) {
         if (serverData.checkChannel(inputMessage->getParams()[0]) && 
         serverData.getChannel(inputMessage->getParams()[0])->getOperatorUsername() == users[inputMessage->fd_from]->username) {
             //std::cout<<"1: "<<inputMessage->getParams[0]<<" 2: "<<inputMessage->getParams[1]<<"";
-            serverData.getChannel(inputMessage->getParams()[0])->doKick(inputMessage->getParams()[1]);
+            serverData.getChannel(inputMessage->getParams()[0])->kickUser(inputMessage->getParams()[1]);
         }
     }
 }
@@ -485,7 +485,7 @@ void Server::handleList() {
 	if (!currUser->isRegistered()) {
         return;
     }
-	if (inputMessage->getCountParams() == 0) {
+	if (inputMessage->getParamsSize() == 0) {
 		std::map<std::string ,Channel*> :: iterator it;
 		outputMessage->add(std::string("Channel :Users Name"), RPL_LISTSTART, fd);
 		
@@ -504,7 +504,7 @@ void Server::handleList() {
     	}
 		outputMessage->add(std::string(":End of /LIST"), RPL_LISTEND);
 	}
-	else if (inputMessage->getCountParams() == 1) {
+	else if (inputMessage->getParamsSize() == 1) {
 		std::vector<std::string> channelsVector = split(inputMessage->params[0], ',');
 		outputMessage->add(std::string("Channel :Users Name"), RPL_LISTSTART, fd);
 		for (int i = 0; i < channelsVector.size(); ++i) {
@@ -564,7 +564,7 @@ void Server::handleWhoIs() {
         return;
     }
 
-	if ((inputMessage->getCountParams() == 0)) {
+	if ((inputMessage->getParamsSize() == 0)) {
 		handleError(ERR_NONICKNAMEGIVEN, "", "");
 		return ;
 	}
@@ -595,13 +595,13 @@ void Server::handleWhoIs() {
 
 void Server::handleAway() {
 	std::string username = serverData.getUsernameByFd(inputMessage->fd_from);
-	if (inputMessage->getCountParams() == 0) {
+	if (inputMessage->getParamsSize() == 0) {
 		serverData.users[username]->setAwayStatus(false);
 		return;
 	}
 	else {
 		std::string message;
-		for (int i = 0; i < inputMessage->getCountParams(); ++i) {
+		for (int i = 0; i < inputMessage->getParamsSize(); ++i) {
 			if (i != 0)
 				message += " ";
 			message += inputMessage->params[i];

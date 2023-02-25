@@ -26,13 +26,6 @@ void User::clean() {
 	std::memset(buf_write, 0, BUF_SIZE + 1);
 }
 
-void User::setUserName(std::string username) {
-    this->username = username;
-}
-
-void User::setNickName(std::string nickname) {
-    this->nickname = nickname;
-}
 
 void User::setAwayStatus(bool awaystatus) {
 	this->awaystatus = awaystatus;
@@ -58,7 +51,7 @@ std::string User::getAwayText() {
 	return this->awaytext;
 }
 
-void User::delUser(std::string username) {
+void User::deleteUser(std::string username) {
     (void)username;
 }
 

@@ -11,9 +11,6 @@ class ServerData
 {
 
 	public:
-		ServerData();
-        ~ServerData();
-        
         void addChannel(std::string channelName);
         std::map<std::string, User*> users;
         std::map<std::string, Channel*> channels;
@@ -24,7 +21,7 @@ class ServerData
         void addUser(User *user);
         void deleteUser(User *user);
         std::string getUsernameByFd(int fd);
-private:
+    private:
 
 };
 

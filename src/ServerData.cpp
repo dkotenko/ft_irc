@@ -1,24 +1,5 @@
 #include "ServerData.hpp"
 
-/*
-** ------------------------------- CONSTRUCTOR --------------------------------
-*/
-
-ServerData::ServerData()
-{
-
-}
-
-
-/*
-** -------------------------------- DESTRUCTOR --------------------------------
-*/
-
-ServerData::~ServerData()
-{
-    
-}
-
 void ServerData::addChannel(std::string channelName) {
     if (channels.count(channelName) == 0) {
         Channel *channel = new Channel(channelName);

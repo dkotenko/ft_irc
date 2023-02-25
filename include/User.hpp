@@ -51,15 +51,14 @@ public:
     char *buf_read;
     char *buf_write;
     void clean();
-    void setUserName(std::string username);
-    void setNickName(std::string nickname);
+    
     void setAwayText(std::string awaytext);
     void setAwayStatus(bool awaystatus);
     const std::string &getUsername() const;
     const std::string &getNickname() const;
     bool getAwayStatus();
     std::string getAwayText();
-    void delUser(std::string username);
+    void deleteUser(std::string username);
     bool isLost();
     void doPing();
     void updatePing();
