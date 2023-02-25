@@ -36,12 +36,13 @@ public:
     
     std::string username;
     std::string nickname;
-    std::string password;
     std::string realusername;
     std::string hostname;
     std::string ipAddress;
     int port;
     std::string servername;
+    std::string awaytext;
+    bool awaystatus;
     int connectStatus;
     bool registered;
     bool welcomeReceived;
@@ -52,8 +53,12 @@ public:
     void clean();
     void setUserName(std::string username);
     void setNickName(std::string nickname);
+    void setAwayText(std::string awaytext);
+    void setAwayStatus(bool awaystatus);
     const std::string &getUsername() const;
     const std::string &getNickname() const;
+    bool getAwayStatus();
+    std::string getAwayText();
     void delUser(std::string username);
     bool isLost();
     void doPing();
@@ -64,6 +69,8 @@ public:
     void setRegistered(bool b);
     
     PingTimer timer;
+private:
+    std::string password;
 };
 
 #endif //FT_IRC_USER_H

@@ -16,6 +16,7 @@ void Server::populateHandleMap() {
 	handleMap[CMD_PONG] = &Server::handlePong;
 	handleMap[CMD_LIST] = &Server::handleList;
 	handleMap[CMD_WHOIS] = &Server::handleWhoIs;
+	handleMap[CMD_AWAY] = &Server::handleAway;
 }
 
 void Server::handlePong() {
@@ -193,11 +194,24 @@ void Server::handlePrivMsg() {
 				message += inputMessage->getParams()[i];
 			}
 			outputMessage->data = message;
+			outputMessage->add(message, 0);
+			//TODO как правильно отправлять сообщения??? Не приходят сообщения клиенту
 		}
 		else {
 			handleError(ERR_NOSUCHNICK, inputMessage->getParams()[0], "");
 		}
 	}
+	// TODO Дописать автоответ
+/*
+	if (serverData.users[users[inputMessage->fd_from]->username]->getAwayStatus()) {
+		std::string msg;
+		msg += inputMessage->getParams()[0];
+		msg += " :";
+		msg += serverData.users[inputMessage->getParams()[0]]->getAwayText();
+		//TODO дописать отправку msg
+	}
+
+*/
 }
 
 void Server::handleNotice() {
@@ -578,4 +592,21 @@ void Server::handleWhoIs() {
     	std::cout << (*it)->getNickname() << std::endl;
  	}
 	outputMessage.add(wildcard + " :End of /WHOIS list", RPL_ENDOFWHOIS);
+
+void Server::handleAway() {
+	std::string username = serverData.getUsernameByFd(inputMessage->fd_from);
+	if (inputMessage->getCountParams() == 0) {
+		serverData.users[username]->setAwayStatus(false);
+		return;
+	}
+	else {
+		std::string message;
+		for (int i = 0; i < inputMessage->getCountParams(); ++i) {
+			if (i != 0)
+				message += " ";
+			message += inputMessage->params[i];
+		}
+		serverData.users[username]->setAwayText(message);
+		serverData.users[username]->setAwayStatus(true);
+	}
 }
