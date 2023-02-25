@@ -18,6 +18,7 @@
 #define CMD_PONG "PONG"
 #define CMD_LIST "LIST"
 #define CMD_WHOIS "WHOIS"
+#define CMD_AWAY "AWAY"
 
 #define SERVER_NAME "FT_IRC"
 #define SERVER_INFO "School 42 IRC server implementation project"

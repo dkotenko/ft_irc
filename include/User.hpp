@@ -36,7 +36,7 @@ public:
     
     std::string username;
     std::string nickname;
-    std::string realusername;
+    std::string realname;
     std::string hostname;
     std::string ipAddress;
     int port;

@@ -67,15 +67,15 @@ void Server::handleUser() {
 		currUser->servername = inputMessage->params[2];
 		for (int i = 3; i < inputMessage->params.size(); ++i) {
 			if (i == 3) {
-				currUser->realusername += inputMessage->params[i];
-				currUser->realusername.erase(1, currUser->realusername.size() - 1);
+				currUser->realname += inputMessage->params[i];
+				currUser->realname.erase(1, currUser->realname.size() - 1);
 			}
 			else {
-				currUser->realusername += " ";
-				currUser->realusername += inputMessage->params[i];
+				currUser->realname += " ";
+				currUser->realname += inputMessage->params[i];
 			}
 		}
-		//std::cout<<"REAL: "<<currUser->realusername<<"";
+		//std::cout<<"REAL: "<<currUser->realname<<"";
 		registerNewUser(currUser);
     }
 	else
@@ -543,7 +543,7 @@ bool match(const char *pattern, const char *candidate, int p, int c) {
   }
 }
 
-std::vector<User *> Server::getUsersByWildcard(std::string wildcard) {
+std::vector<User *> Server::getUsersByWildcard(std::string &wildcard) {
 	std::vector<User *> filteredUsers;
 
 	std::map<std::string, User*>::iterator it;
@@ -573,24 +573,25 @@ void Server::handleWhoIs() {
 
 	std::string wildcard = inputMessage->getParams()[0];
 	std::vector<User *> v = getUsersByWildcard(wildcard);
-	outputMessage.addFd(currUser.fd);
+	outputMessage->addFd(currUser->fd);
 	for(std::vector<User *>::iterator it = v.begin(); it != v.end(); ++it) {
 		User *user = *it;
-		outputMessage.add(user->getNickname() + " "  + \
+		outputMessage->add(user->getNickname() + " "  + \
 			user->username + " " + \
 			user->ipAddress + " * :" + \
 			user->realname, RPL_WHOISUSER);
 
 		std::string channelsResponse = user->getNickname() + " :";
 
-		outputMessage.add(channelsResponse, RPL_WHOISCHANNELS);
-		outputMessage.add(user->getNickname() + " "  + \
+		outputMessage->add(channelsResponse, RPL_WHOISCHANNELS);
+		outputMessage->add(user->getNickname() + " "  + \
 			user->servername + " :" + \
 			SERVER_INFO, RPL_WHOISSERVER);
-		outputMessage.add("todo", RPL_WHOISIDLE);
+		outputMessage->add("todo", RPL_WHOISIDLE);
     	std::cout << (*it)->getNickname() << std::endl;
  	}
-	outputMessage.add(wildcard + " :End of /WHOIS list", RPL_ENDOFWHOIS);
+	outputMessage->add(wildcard + " :End of /WHOIS list", RPL_ENDOFWHOIS);
+}
 
 void Server::handleAway() {
 	std::string username = serverData.getUsernameByFd(inputMessage->fd_from);

@@ -97,6 +97,7 @@ private:
     void handleNotice();
     void handleList();
     void handleWhoIs();
-    std::vector<User *> getUsersByWildcard(std::string wildcard);
+    void handleAway();
+    std::vector<User *> getUsersByWildcard(std::string &wildcard);
 };
 #endif //FT_IRC_SERVER_H
