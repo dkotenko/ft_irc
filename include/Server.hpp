@@ -19,15 +19,17 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <algorithm>
+#include <vector>
 #include <stdbool.h>
 #include "User.hpp"
 #include "utils.hpp"
-#include <vector>
+
 #include "ServerData.hpp"
 #include "OutputMessage.hpp"
 #include "InputMessage.hpp"
 #include "const.hpp"
 #include "replies.hpp"
+#include "logger.hpp"
 
 #ifdef __APPLE__
 #define IRC_NOSIGNAL SO_NOSIGPIPE

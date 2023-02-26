@@ -84,10 +84,6 @@ void Server::handleUser() {
 }
 
 void Server::handlePass() {
-    //std::cout << "connect status " << currUser->connectStatus << std::endl;
-    std::cout << password << std::endl;
-	
-	std::cout << "Password required: " << password << std::endl;
 	
 	if (currUser->isRegistered()) {
         handleError(ERR_ALREADYREGISTRED, "", "");
@@ -102,8 +98,6 @@ void Server::handlePass() {
 	if (passed[0] == ':') {
 		passed = passed.substr(1, passed.size() - 1);
 	}
-
-	std::cout << "Password passed: " << passed << std::endl;
     
 	
 	if (passed != password) {
@@ -128,8 +122,6 @@ void Server::sendWelcome(int i) {
 
 		//:FT_IRC 376 pidgin 
         outputMessage->add(std::string(":End of /MOTD command"), RPL_ENDOFMOTD);
-
-		    std::cout << "Welcome was sent, curr status \n" << currUser->connectStatus << std::endl;
         outputMessage->fd_to.push_back(i);
         currUser->welcomeReceived = true;
     }
@@ -137,6 +129,7 @@ void Server::sendWelcome(int i) {
 
 void Server::handleJoin() {
     if (!currUser->isRegistered()) {
+		log_debug("User %s is not registered", currUser->username.c_str());
         return ;
     }
 	for (int i = 0; i < (int)inputMessage->getParams().size(); i++) {
@@ -157,6 +150,8 @@ void Server::handleJoin() {
 				outputMessage->fd_to.push_back(fd);
 			}
 			handleNames();
+		} else {
+			handleError(ERR_NOSUCHCHANNEL, "", "");
 		}
 	}
 }

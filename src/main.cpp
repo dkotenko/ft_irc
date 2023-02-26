@@ -21,6 +21,8 @@ int main(int argc, char **argv) {
     if (validation(argc, argv)) {
         exit(0);
     }
+
+    log_init();
     
     int port = atoi(argv[1]);
     if (port < 1024 || port > 0xffff) {
