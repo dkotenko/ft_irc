@@ -486,6 +486,10 @@ void Server::handleList() {
 		
     	for(it=serverData.channels.begin(); it != serverData.channels.end(); ++it) {
 			std::string res = it->first + " ";
+
+			res += SSTR(it->second->getUsers().size()) + " ";
+			res += it->second->getTopic();
+			/*
         	for (int i = 0; i < it->second->getUsers().size(); ++i) {
 				if (i != 0)
 					res += " ";
@@ -494,6 +498,7 @@ void Server::handleList() {
 				}
 				res += it->second->getUsers()[i];
 			}
+			*/
 			res += " :[+n]";
 			outputMessage->add(res, RPL_LIST, fd);
     	}

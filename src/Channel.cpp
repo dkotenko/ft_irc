@@ -3,7 +3,7 @@
 
 Channel::Channel(std::string &chname) {
     m_name = chname;
-    topic = "";
+    topic = "NO_TOPIC";
 }
 
 void Channel::addUser(std::string &username) {
