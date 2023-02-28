@@ -51,15 +51,9 @@ void Server::handleNick() {
 }
 
 void Server::handleUser() {
-    //TODO check user logic
-    /*
-	std::cout<<"SIZE "<<inputMessage->params.size()<<" "
-		<<inputMessage->params[0]<<" "<<inputMessage->params[1]<<" "
-		<<inputMessage->params[2]<<" "<< inputMessage->params[3]<<"";
-	*/
 	if (!currUser->isRegistered() && inputMessage->params.size() >= 4 
 		&& inputMessage->params[3][0] == ':' && inputMessage->params[3].size() > 1) {
-        std::cout << "connect status " << currUser->connectStatus << std::endl;
+		log_debug("connect status %d", currUser->connectStatus);
         currUser->connectStatus |= USER_PASSED;
         currUser->setRegistered(currUser->connectStatus == REGISTERED);
         currUser->username = inputMessage->params[0];
@@ -75,7 +69,6 @@ void Server::handleUser() {
 				currUser->realname += inputMessage->params[i];
 			}
 		}
-		//std::cout<<"REAL: "<<currUser->realname<<"";
 		registerNewUser(currUser);
     }
 	else
@@ -293,7 +286,6 @@ void Server::handleKick() {
     if (inputMessage->getParams().size() == 2) {
         if (serverData.checkChannel(inputMessage->getParams()[0]) && 
         serverData.getChannel(inputMessage->getParams()[0])->getOperatorUsername() == users[inputMessage->fd_from]->username) {
-            //std::cout<<"1: "<<inputMessage->getParams[0]<<" 2: "<<inputMessage->getParams[1]<<"";
             serverData.getChannel(inputMessage->getParams()[0])->kickUser(inputMessage->getParams()[1]);
         }
     }
@@ -463,10 +455,6 @@ void Server::handleNames() {
     if (inputMessage->getParams().size() == 1) {
         channelsList = split(inputMessage->getParams()[0], ',');
     }
-	/*
-    outputMessage->data = ;
-    outputMessage->fd_to.push_back(fd);
-	*/
 	outputMessage->add(serverData.doNames(channelsList), RPL_NAMREPLY, fd);
 	std::string res;
 	if (channelsList.size() > 0) {
@@ -489,16 +477,6 @@ void Server::handleList() {
 
 			res += SSTR(it->second->getUsers().size()) + " ";
 			res += it->second->getTopic();
-			/*
-        	for (int i = 0; i < it->second->getUsers().size(); ++i) {
-				if (i != 0)
-					res += " ";
-				if (it->second->getUsers()[i] == it->second->getOperatorUsername()) {
-					res += "@";
-				}
-				res += it->second->getUsers()[i];
-			}
-			*/
 			res += " :[+n]";
 			outputMessage->add(res, RPL_LIST, fd);
     	}
@@ -569,8 +547,6 @@ void Server::handleWhoIs() {
 		return ;
 	}
 
-	//std::cout << "WHOIS LIST:" << std::endl;
-
 	std::string wildcard = inputMessage->getParams()[0];
 	std::vector<User *> v = getUsersByWildcard(wildcard);
 	outputMessage->addFd(currUser->fd);
@@ -588,7 +564,6 @@ void Server::handleWhoIs() {
 			user->servername + " :" + \
 			SERVER_INFO, RPL_WHOISSERVER);
 		outputMessage->add("todo", RPL_WHOISIDLE);
-    	std::cout << (*it)->getNickname() << std::endl;
  	}
 	outputMessage->add(wildcard + " :End of /WHOIS list", RPL_ENDOFWHOIS);
 }

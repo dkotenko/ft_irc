@@ -25,6 +25,8 @@
 # define MAX(a,b)	((a > b) ? a : b)
 
 # define USAGE		"Usage: %s port\n"
+# define SSTR( x ) static_cast< std::ostringstream & >( \
+        ( std::ostringstream() << std::dec << x ) ).str()
 
 
 int			xassert(int value, const std::string& input);

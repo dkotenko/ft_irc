@@ -58,8 +58,8 @@ static void log_print(FILE *f, const char *format, va_list ap, const char *prefi
 void log_init(void)
 {
 	if (g_cfg.d) {
-		log_file = fopen("/tmp/zappy_server.log", "w");
-		xassert(log_file != NULL, "fopen(\"zappy_server.log\", \"w\")");
+		log_file = fopen("/tmp/irc_server.log", "w");
+		xassert(log_file != NULL, "fopen(\"irc_server.log\", \"w\")");
 		log_file_error = log_file;
 	} else {
 		log_file = stdout;
