@@ -1,9 +1,8 @@
-
 #include "Channel.hpp"
 
 Channel::Channel(std::string &chname) {
     m_name = chname;
-    topic = "NO_TOPIC";
+    topic = "";
 }
 
 void Channel::addUser(std::string &username) {
@@ -46,7 +45,7 @@ std::string Channel::getOperatorUsername() {
     return this->operator_username;
 }
 
-bool Channel::checkUserInChannel(std::string username) {
+bool Channel::containsUser(std::string username) {
     for (int i = 0; i < this->users.size(); i++) {
         if (this->users[i] == username)
             return true;
@@ -55,7 +54,7 @@ bool Channel::checkUserInChannel(std::string username) {
 }
 
 void Channel::kickUser(std::string username) {
-    if (checkUserInChannel(username))
+    if (containsUser(username))
         this->deleteUser(username);
 }
 

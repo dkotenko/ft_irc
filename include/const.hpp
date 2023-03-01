@@ -28,4 +28,6 @@
 #define PING_TIMEOUT 120
 #define PING_TIMES 5
 
+# define DEBUG
+
 #endif

@@ -126,12 +126,7 @@ void Server::srv_accept(int s)
     cs = accept(s, (struct sockaddr*)&csin, &csin_len);
     std::string ipAddress = inet_ntoa(csin.sin_addr);
     int port = ntohs(csin.sin_port);
-    std::cout << "New client # " << cs << " from " << ipAddress << ":" << port << std::endl;
-
-    /*
-    printf("New client #%d from %s:%d\n", cs, 
-        inet_ntoa(csin.sin_addr), ntohs(csin.sin_port));
-    */
+    log_info("New client #%d from %s:%d", cs, ipAddress.c_str(), port);
     users[cs]->type = FD_CLIENT;
     users[cs]->ipAddress = ipAddress;
     users[cs]->port = port;
@@ -147,36 +142,33 @@ void Server::client_read(int cs)
     if (r <= 0) {
       close(cs);
       users[cs]->clean();
-      printf("client #%d gone away\n", cs);
+      log_info("client #%d gone away", cs);
     }
     else {
-        i = 0;
-        for (int i = 0; i < maxfd; i++) {
-            if (users[i]->type == FD_CLIENT && i == cs) {
+        currUser = users[cs];
+        std::stringstream streamData(currUser->buf_read);
+        log_info("received from %s: %s", currUser->username.c_str(), currUser->buf_read);
 
-                std::stringstream streamData(users[cs]->buf_read);
-				std::cout << "line received: " << users[cs]->buf_read << std::endl;
-				fd = i;
-				currUser = users[fd];
-
-				std::string str;
-				while (std::getline(streamData, str, '\n')) {
-					str.erase(std::remove(str.begin(), str.end(), '\r' ), str.end());
-                	str.erase(std::remove(str.begin(), str.end(), '\n' ), str.end());
-					outputMessage = parse(str);
-					outputMessage->sendMsg();
-					delete(outputMessage);
-				}
-            } else if (users[i]->type == FD_CLIENT) {
+        std::string str;
+        while (std::getline(streamData, str, '\n')) {
+            str.erase(std::remove(str.begin(), str.end(), '\r' ), str.end());
+            str.erase(std::remove(str.begin(), str.end(), '\n' ), str.end());
+            outputMessage = parse(str);
+            outputMessage->sendMsg();
+            delete(outputMessage);
+        }
+    }
+            /*
+             else if (users[i]->type == FD_CLIENT) {
                 send(i, users[cs]->buf_read , r, 0);
             }
-        }
-
-    }
+            */
+    
 }
 
 OutputMessage *Server::parse(std::string src) {
     const char separator = ' ';
+    
     inputMessage = new InputMessage();
     outputMessage = new OutputMessage(servername, currUser->getNickname());
 
@@ -212,12 +204,6 @@ void Server::fct_write(int cs)
 void Server::client_write(int cs)
 {
     (void)cs;
-}
-
-void Server::print_debug(std::string &s) {
-    if (is_debug) {
-        std::cout << "debug : " << s << std::endl;
-    }
 }
 
 void Server::pingUsers() {

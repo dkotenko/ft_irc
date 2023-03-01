@@ -25,7 +25,7 @@ public:
 	std::string getTopic();
 	void editMode();
 	void inviteUser(std::string nickname);
-	bool checkUserInChannel(std::string username);
+	bool containsUser(std::string username);
 
 	std::string getOperatorUsername();
 

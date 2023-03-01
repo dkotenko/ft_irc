@@ -48,7 +48,7 @@ void OutputMessage::add(std::string s, int replyCode, int fd) {
     add(s, replyCode);
 }
 
-void OutputMessage::addPrivmsg(std::string s, int fd, std::string fromusername, std::string fromhostname, std::string tousername) {
+void OutputMessage::addPrivMsg(std::string s, int fd, std::string fromusername, std::string fromhostname, std::string tousername) {
     addFd(fd);
     std::string line = ":";
     line += fromusername;

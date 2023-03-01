@@ -1,10 +1,11 @@
 #include "ServerData.hpp"
 
-void ServerData::addChannel(std::string channelName) {
+Channel *ServerData::addChannel(std::string &channelName) {
     if (channels.count(channelName) == 0) {
         Channel *channel = new Channel(channelName);
         channels[channelName] = channel;
     }
+    return channels[channelName];
 }
 
 void ServerData::printAllChannels() {

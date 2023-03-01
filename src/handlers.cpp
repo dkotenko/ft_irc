@@ -53,7 +53,6 @@ void Server::handleNick() {
 void Server::handleUser() {
 	if (!currUser->isRegistered() && inputMessage->params.size() >= 4 
 		&& inputMessage->params[3][0] == ':' && inputMessage->params[3].size() > 1) {
-		log_debug("connect status %d", currUser->connectStatus);
         currUser->connectStatus |= USER_PASSED;
         currUser->setRegistered(currUser->connectStatus == REGISTERED);
         currUser->username = inputMessage->params[0];
@@ -69,6 +68,7 @@ void Server::handleUser() {
 				currUser->realname += inputMessage->params[i];
 			}
 		}
+		log_debug("connect status %d", currUser->connectStatus);
 		registerNewUser(currUser);
     }
 	else
@@ -120,6 +120,7 @@ void Server::sendWelcome(int i) {
     }
 }
 
+//:pidgin!pidgin@127.0.0.1 JOIN :#123
 void Server::handleJoin() {
     if (!currUser->isRegistered()) {
 		log_debug("User %s is not registered", currUser->username.c_str());
@@ -127,22 +128,22 @@ void Server::handleJoin() {
     }
 	for (int i = 0; i < (int)inputMessage->getParams().size(); i++) {
 		if (inputMessage->getParams()[i][0] == '#') {
-			serverData.addChannel(inputMessage->getParams()[i]);
-			if (!serverData.channels[inputMessage->getParams()[i]]->checkUserInChannel(currUser->username)) {
-				serverData.channels[inputMessage->getParams()[0]]->addUser(currUser->username);
+			std::string &channelName = inputMessage->getParams()[i];
+			Channel *channel = serverData.addChannel(channelName);
+			if (!channel->containsUser(currUser->username)) {
+				channel->addUser(currUser->username);
 				std::string res = inputMessage->getParams()[i];
 				res += " :";
-				if (serverData.channels[inputMessage->getParams()[0]]->getTopic() == "") {
-					res += "No topic is set";
+				if (channel->getTopic() == "") {
 					outputMessage->add(res, RPL_NOTOPIC);
 				}
 				else {
-					res += serverData.channels[inputMessage->getParams()[0]]->getTopic();
+					res += channel->getTopic();
 					outputMessage->add(res, RPL_TOPIC);
 				}
 				outputMessage->fd_to.push_back(fd);
+				handleNames();
 			}
-			handleNames();
 		} else {
 			handleError(ERR_NOSUCHCHANNEL, "", "");
 		}
@@ -184,7 +185,7 @@ void Server::handlePrivMsg() {
 			//outputMessage->data = message;
 			//outputMessage->add(message, 0);
 			//TODO как правильно отправлять сообщения??? Не приходят сообщения клиенту
-			outputMessage->addPrivmsg(message, inputMessage->fd_from, serverData.getUsernameByFd(inputMessage->fd_from), "127.0.0.1", inputMessage->getParams()[0]);
+			outputMessage->addPrivMsg(message, inputMessage->fd_from, serverData.getUsernameByFd(inputMessage->fd_from), "127.0.0.1", inputMessage->getParams()[0]);
 		}
 		else {
 			handleError(ERR_NOSUCHNICK, inputMessage->getParams()[0], "");

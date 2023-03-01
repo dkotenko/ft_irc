@@ -1,9 +1,5 @@
-//
-// Created by Redwyn Poetess on 22.08.2022.
-//
+#pragma once
 
-#ifndef FT_IRC_USER_H
-#define FT_IRC_USER_H
 #include <vector>
 #include <string>
 #include <cstring>
@@ -12,18 +8,21 @@
 #include "PingTimer.hpp"
 
 # define BUF_SIZE	4096
-# define FD_FREE	0
-# define FD_SERV	1
-# define FD_CLIENT	2
 
-//111
+enum e_fds {
+    FD_FREE     = 0,
+    FD_SERV     = 1,
+    FD_CLIENT   = 2,
+    FD_NUM      = 3
+};
+
 enum e_connect_states {
-    NOT_REGISTERED = 0,
-    NICK_PASSED = 1,
-    USER_PASSED = 2, //10
-    PASS_PASSED = 4, //100
-    REGISTERED = 7,
-    CONNECT_STATES_NUM
+    NOT_REGISTERED  = 0,
+    NICK_PASSED     = 1, //0b001
+    USER_PASSED     = 2, //0b010
+    PASS_PASSED     = 4, //0b100
+    REGISTERED      = 7,  //0b111
+    CONNECT_STATES_NUM = 5
 };
 
 
@@ -50,8 +49,10 @@ public:
     int fd;
     char *buf_read;
     char *buf_write;
+    PingTimer timer;
+    //OutputMessage outputMessage;
+
     void clean();
-    
     void setAwayText(std::string awaytext);
     void setAwayStatus(bool awaystatus);
     const std::string &getUsername() const;
@@ -63,13 +64,9 @@ public:
     void doPing();
     void updatePing();
     bool isNeedsPing();
-    
     bool isRegistered();
     void setRegistered(bool b);
-    
-    PingTimer timer;
 private:
     std::string password;
 };
 
-#endif //FT_IRC_USER_H

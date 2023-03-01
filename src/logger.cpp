@@ -5,6 +5,7 @@
 
 #include "logger.hpp"
 #include "utils.hpp"
+#include "const.hpp"
 
 #define COLOR_GRAY		"\e[1;30m"
 #define COLOR_RED		"\e[0;31m"

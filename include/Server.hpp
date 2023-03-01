@@ -66,7 +66,6 @@ private:
 
     void disconnectDeadUsers();
 
-    void print_debug(std::string &s);
     void create();
     void check_fd();
     void do_select();

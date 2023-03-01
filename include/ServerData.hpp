@@ -11,7 +11,7 @@ class ServerData
 {
 
 	public:
-        void addChannel(std::string channelName);
+        Channel *addChannel(std::string &channelName);
         std::map<std::string, User*> users;
         std::map<std::string, Channel*> channels;
         void printAllChannels();
