@@ -10,8 +10,10 @@
 #include <sys/socket.h>
 #include <iostream>
 #include <cstring>
+#include <iterator>
 #include "const.hpp"
 #include "replies.hpp"
+#include "logger.hpp"
 
 class OutputMessage {
     public:

@@ -71,12 +71,18 @@ void OutputMessage::addPrivMsg(std::string s, int fd, std::string fromusername, 
 }
 
 void OutputMessage::sendMsg() {
+    std::stringstream ss;
+    int len = 0;
+
     for(int i = 0; i < fd_to.size(); i++) {
-        for (int line = 0; line < lines.size(); line++) {
-            send(fd_to[i], lines[line].c_str(), lines[line].length(), 0);
-            std::cout << "message to fd " << fd_to[i] << " was sent: " << lines[line].c_str();
-        }
+        const char* const delim = "";
+        std::ostringstream joined;
+        std::copy(lines.begin(), lines.end(),
+           std::ostream_iterator<std::string>(joined, delim));
+        log_debug("message to fd %d was sent:\n%s", fd_to[i], joined.str().c_str());
+        send(fd_to[i], joined.str().c_str(), joined.str().length(), 0);
     }
+    
 }
 
 void OutputMessage::clear() {
