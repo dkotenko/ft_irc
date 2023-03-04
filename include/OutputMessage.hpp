@@ -6,6 +6,7 @@
 #define FT_IRC_MESSAGEOUTPUT_H
 #include <string>
 #include <vector>
+#include <queue>
 #include <sstream>
 #include <sys/socket.h>
 #include <iostream>
@@ -22,17 +23,14 @@ class OutputMessage {
         std::vector<int> fd_to;
 
         OutputMessage(std::string servername, std::string nickName);
-        ~OutputMessage();
         void add(std::string s, int replyCode);
         void add(std::string s, int replyCode, int fd);
         void addPrivMsg(std::string s, int fd, std::string fromusername, std::string fromhostname, std::string tousername);
         void addFd(int fd);
-        void sendMsg();
-        void clear();
-        //~OutputMessage();
+        void sendMsg(int fd);
     private:
         int length;
-        std::vector<std::string> lines;
+        std::queue<std::string> lines;
         std::string servername;
         std::string nickName;
         std::string getReplyCodeAsString(int replyCode);

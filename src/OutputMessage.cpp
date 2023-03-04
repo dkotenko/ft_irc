@@ -9,10 +9,6 @@ OutputMessage::OutputMessage(std::string servername, std::string nickName) {
     this->nickName = nickName;
 }
 
-OutputMessage::~OutputMessage() {
-    clear();
-}
-
 void OutputMessage::addFd(int fd) {
     for (int i = 0; i < fd_to.size(); i++) {
         if (fd_to[i] == fd) {
@@ -40,7 +36,7 @@ void OutputMessage::add(std::string s, int replyCode) {
     }
     line += s;
     line += ENDLINE;
-    lines.push_back(line);
+    lines.push(line);
 }
 
 void OutputMessage::add(std::string s, int replyCode, int fd) {
@@ -61,30 +57,30 @@ void OutputMessage::addPrivMsg(std::string s, int fd, std::string fromusername, 
     line += " ";
     line += s;
     line += ENDLINE;
-    lines.push_back(line);
+    lines.push(line);
 
 /*
     std::string line;
     line + s;
-    lines.push_back(line);
+    lines.push(line);
 */
 }
 
-void OutputMessage::sendMsg() {
-    std::stringstream ss;
-    int len = 0;
-
-    for(int i = 0; i < fd_to.size(); i++) {
-        const char* const delim = "";
-        std::ostringstream joined;
-        std::copy(lines.begin(), lines.end(),
-           std::ostream_iterator<std::string>(joined, delim));
-        log_debug("message to fd %d was sent:\n%s", fd_to[i], joined.str().c_str());
-        send(fd_to[i], joined.str().c_str(), joined.str().length(), 0);
-    }
+void OutputMessage::sendMsg(int fd) {
+    if (lines.size() == 0) {
+		return ;
+	}
     
-}
+    std::string toSend;
 
-void OutputMessage::clear() {
-    lines.clear();
+	if (lines.front().length() > MESSAGE_MAX_LEN) {
+		toSend = lines.front().substr(0, MESSAGE_MAX_LEN);
+		lines.front() = lines.front().substr(MESSAGE_MAX_LEN);
+        send(fd, toSend.c_str(), toSend.length(), 0);
+	} else {
+		toSend = lines.front();
+        send(fd, toSend.c_str(), toSend.length(), 0);
+        lines.pop();
+	}
+    log_debug("message to fd %d was sent:\n%s", fd, toSend.c_str());
 }

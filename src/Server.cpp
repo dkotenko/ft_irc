@@ -146,6 +146,7 @@ void Server::client_read(int cs)
     }
     else {
         currUser = users[cs];
+        outputMessage = &currUser->outputMessage;
         std::stringstream streamData(currUser->buf_read);
         log_info("received from %s: %s", currUser->username.c_str(), currUser->buf_read);
 
@@ -153,17 +154,9 @@ void Server::client_read(int cs)
         while (std::getline(streamData, str, '\n')) {
             str.erase(std::remove(str.begin(), str.end(), '\r' ), str.end());
             str.erase(std::remove(str.begin(), str.end(), '\n' ), str.end());
-            outputMessage = parse(str);
-            outputMessage->sendMsg();
-            delete(outputMessage);
+            parse(str);
         }
     }
-            /*
-             else if (users[i]->type == FD_CLIENT) {
-                send(i, users[cs]->buf_read , r, 0);
-            }
-            */
-    
 }
 
 OutputMessage *Server::parse(std::string src) {
@@ -208,19 +201,16 @@ void Server::client_write(int cs)
 
 void Server::pingUsers() {
     std::map<std::string, User*>::iterator it;
-    
 
-    //std::cout << serverData.users.size() << std::endl;
     for (it = serverData.users.begin(); it != serverData.users.end(); it++)
     {
-        //std::cout << it->second->username << std::endl;
-        if (it->second->isNeedsPing()) {
-            it->second->doPing();
+        User *user = it->second;
+        if (user->isNeedsPing()) {
+            user->doPing();
             OutputMessage outputMessage(servername, "");
             std::string toAdd("PING :");
             toAdd += servername;
-            outputMessage.add(toAdd, RPL_NONE, it->second->fd);
-            outputMessage.sendMsg();
+            outputMessage.add(toAdd, RPL_NONE, user->fd);
         }
     }
 }

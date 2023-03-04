@@ -6,6 +6,7 @@
 #include <map>
 #include "OutputMessage.hpp"
 #include "PingTimer.hpp"
+#include <queue>
 
 # define BUF_SIZE	4096
 
@@ -50,7 +51,7 @@ public:
     char *buf_read;
     char *buf_write;
     PingTimer timer;
-    //OutputMessage outputMessage;
+    std::deque<OutputMessage>messages;
 
     void clean();
     void setAwayText(std::string awaytext);
@@ -66,6 +67,7 @@ public:
     bool isNeedsPing();
     bool isRegistered();
     void setRegistered(bool b);
+    void sendMessage();
 private:
     std::string password;
 };
