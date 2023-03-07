@@ -7,8 +7,9 @@
 #include "OutputMessage.hpp"
 #include "PingTimer.hpp"
 #include <queue>
+#include "const.hpp"
 
-# define BUF_SIZE	4096
+
 
 enum e_fds {
     FD_FREE     = 0,
@@ -31,27 +32,20 @@ enum e_connect_states {
 // JOIN
 class User {
 public:
-    User(int type, int fd);
+    User(int fd);
     ~User();
     
     std::string username;
     std::string nickname;
     std::string realname;
     std::string hostname;
-    std::string ipAddress;
-    int port;
-    std::string servername;
+
     std::string awaytext;
     bool awaystatus;
-    int connectStatus;
-    bool registered;
-    bool welcomeReceived;
-    int type;
     int fd;
-    char *buf_read;
-    char *buf_write;
+    
     PingTimer timer;
-    std::deque<OutputMessage>messages;
+    OutputMessage outputMessage;
 
     void clean();
     void setAwayText(std::string awaytext);
@@ -68,6 +62,7 @@ public:
     bool isRegistered();
     void setRegistered(bool b);
     void sendMessage();
+    bool hasMessage();
 private:
     std::string password;
 };

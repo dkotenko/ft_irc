@@ -10,9 +10,8 @@ Server::Server(int port, std::string password) {
     maxfd = FD_SETSIZE - 1;
     is_debug = false;
 
-    for (int i = 0; i < maxfd; i++)
-    {
-        users.push_back(new User(FD_FREE, i));
+    for (int i = 0; i < maxfd; i++) {
+        fds.push_back(new FileDescriptor(i));
     }
     populateHandleMap();
     this->create();
@@ -29,15 +28,15 @@ void Server::create()
 
     sockfd =  socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd == -1) {
-        printError("Failed to create socket");
+        log_fatal("Failed to create socket");
     }
     const int enable = 1;
     if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
-        printError("setsockopt(SO_REUSEADDR) failed");
+        log_fatal("setsockopt(SO_REUSEADDR) failed");
     }
 
     if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &enable, sizeof(int)) < 0) {
-        printError("setsockopt(SO_REUSEPORT) failed");
+        log_fatal("setsockopt(SO_REUSEPORT) failed");
     }
 
     sin.sin_family = AF_INET;
@@ -46,29 +45,25 @@ void Server::create()
     bind(sockfd, (struct sockaddr*)&sin, sizeof(sin));
     listen(sockfd, 42);
     fcntl(sockfd, F_SETFL, O_NONBLOCK);
-    users[sockfd]->type = FD_SERV;
+    fds[sockfd]->type = FD_SERV;
 }
 
 void	Server::init_fd()
 {
-  int	i;
+    int	i = 0;
+    max = 0;
+    FD_ZERO(&fd_read);
+    FD_ZERO(&fd_write);
 
-  i = 0;
-  max = 0;
-  FD_ZERO(&fd_read);
-  FD_ZERO(&fd_write);
-  while (i < maxfd)
-    {
-      if (users[i]->type != FD_FREE)
-	{
-	  FD_SET(i, &fd_read); 
-	  if (strlen(users[i]->buf_write) > 0)
-	    {
-	      FD_SET(i, &fd_write);
-	    }
-	  max = MAX(max, i);
-	}
-      i++;
+    while (i < maxfd) {
+        if (fds[i]->type != FD_FREE) {
+            FD_SET(i, &fd_read); 
+            if (users[i]->hasMessage()) {
+                FD_SET(i, &fd_write);
+            }
+            max = MAX(max, i);
+        }
+        i++;
     }
 }
 
@@ -76,6 +71,11 @@ void	Server::do_select()
 {
   struct timeval timeout = {0, 0};
   r = select(max + 1, &fd_read, &fd_write, NULL, &timeout);
+  if (r == 0) {
+    log_warning("Timeout reached during select()");
+  } else if (r < 0 ) {
+    log_error("An error occured during select(): ");
+  }
 }
 
 void	Server::check_fd()
@@ -107,12 +107,12 @@ void Server::run() {
 
 
 void Server::fct_read(int fd) {
-	if (users[fd]->type == FD_SERV) {
+	if (fds[fd]->type == FD_SERV) {
 		srv_accept(fd);
-	} else if (users[fd]->type == FD_CLIENT) {
+	} else if (fds[fd]->type == FD_CLIENT) {
 		client_read(fd);
 	} else {
-		std::cout << "Error: invalid fd type in fct_read: " << users[fd]->type << std::endl;
+		std::cout << "Error: invalid fd type in fct_read: " << fds[fd]->type << std::endl;
 	}
 }
 
@@ -163,7 +163,7 @@ OutputMessage *Server::parse(std::string src) {
     const char separator = ' ';
     
     inputMessage = new InputMessage();
-    outputMessage = new OutputMessage(servername, currUser->getNickname());
+    outputMessage = new OutputMessage(currUser->getNickname());
 
     std::vector<std::string> outputArray;
     std::stringstream streamData(src);
@@ -207,10 +207,9 @@ void Server::pingUsers() {
         User *user = it->second;
         if (user->isNeedsPing()) {
             user->doPing();
-            OutputMessage outputMessage(servername, "");
             std::string toAdd("PING :");
             toAdd += servername;
-            outputMessage.add(toAdd, RPL_NONE, user->fd);
+            outputMessage->add(toAdd, RPL_NONE, user->fd);
         }
     }
 }

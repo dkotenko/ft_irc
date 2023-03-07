@@ -4,8 +4,12 @@
 
 #include "OutputMessage.hpp"
 
-OutputMessage::OutputMessage(std::string servername, std::string nickName) {
-    this->servername = servername;
+OutputMessage::OutputMessage() {}
+
+OutputMessage::OutputMessage(std::string nickName, int fd) :
+    servername(SERVER_NAME)
+{
+    this->fd = fd;
     this->nickName = nickName;
 }
 
@@ -58,12 +62,6 @@ void OutputMessage::addPrivMsg(std::string s, int fd, std::string fromusername, 
     line += s;
     line += ENDLINE;
     lines.push(line);
-
-/*
-    std::string line;
-    line + s;
-    lines.push(line);
-*/
 }
 
 void OutputMessage::sendMsg(int fd) {

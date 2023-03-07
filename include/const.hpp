@@ -2,6 +2,7 @@
 # define CONST_HPP
 
 #define MESSAGE_MAX_LEN 512
+#define BUF_SIZE 4096
 
 #define CMD_NICK "NICK"
 #define CMD_USER "USER"
@@ -28,6 +29,8 @@
 
 #define PING_TIMEOUT 120
 #define PING_TIMES 5
+
+#define NO_FD -1
 
 # define DEBUG
 

@@ -4,24 +4,19 @@
 
 #include "User.hpp"
 
-User::User(int type, int fd)
+User::User(int type) :
+	buf_read(new char[BUF_SIZE + 1] ()),
+	buf_write(new char[BUF_SIZE + 1]()),
+	fd(NO_FD)
 {
 	this->type = type;
-	this->fd = fd;
-	buf_read = new char[BUF_SIZE + 1] ();
-	buf_write = new char[BUF_SIZE + 1] ();
 	this->clean();
 	this->nickname = "";
 	this->username = "";
 }
 
 void User::clean() {
-	this->type = FD_FREE;
-	connectStatus = NOT_REGISTERED;
-	registered = false;
-	welcomeReceived = false;
-	ipAddress.clear();
-	port = 0;
+	
 	std::memset(buf_read, 0, BUF_SIZE + 1);
 	std::memset(buf_write, 0, BUF_SIZE + 1);
 }
@@ -85,4 +80,8 @@ bool User::isNeedsPing() {
 
 void User::sendMessage() {
 	
+}
+
+bool User::hasMessage() {
+	return outputMessage.lines.size() > 0;
 }

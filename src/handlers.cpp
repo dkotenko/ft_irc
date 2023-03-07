@@ -37,7 +37,7 @@ void Server::handleQuit() {
 
 void Server::registerNewUser(User *user) {
 	serverData.addUser(user);
-	sendWelcome(user->fd);
+	sendWelcome();
 }
 
 void Server::handleNick() {
@@ -48,6 +48,26 @@ void Server::handleNick() {
 		registerNewUser(currUser);
         return ;
     }
+}
+
+std::string Server::connectStatusAsString(int status) {
+	std::stringstream ss;
+
+	int checkPass = (status & ( 1 << PASS_PASSED )) >> PASS_PASSED;
+	if (checkPass) {
+		ss << "| Password passed |";
+	}
+
+	int checkNickName = (status & ( 1 << NICK_PASSED )) >> NICK_PASSED;
+	if (checkNickName) {
+		ss << "| Nickname passed |";
+	}
+
+	int checkUserName = (status & ( 1 << USER_PASSED )) >> USER_PASSED;
+	if (checkUserName) {
+		ss << "| Username passed |";
+	}
+	return ss.str();
 }
 
 void Server::handleUser() {
@@ -68,7 +88,7 @@ void Server::handleUser() {
 				currUser->realname += inputMessage->params[i];
 			}
 		}
-		log_debug("connect status %d", currUser->connectStatus);
+		log_debug("connect status: %s", connectStatusAsString(currUser->connectStatus).c_str());
 		registerNewUser(currUser);
     }
 	else
@@ -91,7 +111,6 @@ void Server::handlePass() {
 	if (passed[0] == ':') {
 		passed = passed.substr(1, passed.size() - 1);
 	}
-    
 	
 	if (passed != password) {
         handleError(ERR_PASSWDMISMATCH, "", "");
@@ -104,18 +123,17 @@ void Server::handlePass() {
 
 #define WELCOME_REPL "001"
 
-void Server::sendWelcome(int i) {
+void Server::sendWelcome() {
     if (currUser->isRegistered() && !currUser->welcomeReceived) {
 		
 		//:FT_IRC 375 pidgin
-		outputMessage->add(std::string("FT_IRC Message of the day"), RPL_MOTDSTART);
+		currUser->outputMessage.add(std::string("FT_IRC Message of the day"), RPL_MOTDSTART);
         
 		//toAdd += ":FT_IRC 372 pidgin ";
-		outputMessage->add(SERVER_MESSAGE_OF_THE_DAY, RPL_MOTD);
+		currUser->outputMessage.add(SERVER_MESSAGE_OF_THE_DAY, RPL_MOTD);
 
 		//:FT_IRC 376 pidgin 
-        outputMessage->add(std::string(":End of /MOTD command"), RPL_ENDOFMOTD);
-        outputMessage->fd_to.push_back(i);
+        currUser->outputMessage.add(std::string(":End of /MOTD command"), RPL_ENDOFMOTD);
         currUser->welcomeReceived = true;
     }
 }
@@ -141,7 +159,6 @@ void Server::handleJoin() {
 					res += channel->getTopic();
 					outputMessage->add(res, RPL_TOPIC);
 				}
-				outputMessage->fd_to.push_back(fd);
 				handleNames();
 			}
 		} else {
@@ -151,7 +168,6 @@ void Server::handleJoin() {
 }
 
 void Server::handlePrivMsg() {
-    //serverData.printAllChannels();
 	if (inputMessage->getParams().size() < 2)
 		return;
 	if (inputMessage->getParams()[0][0] == '#') {
@@ -176,7 +192,6 @@ void Server::handlePrivMsg() {
 	else {
 		if (serverData.users.count(inputMessage->getParams()[0])) {
 			std::string message;
-			outputMessage->fd_to.push_back(serverData.users[inputMessage->getParams()[0]]->fd);
 			for (int i = 1; i < inputMessage->getParams().size(); i++) {
 				if (i != 1) 
 					message += " ";
@@ -227,7 +242,6 @@ void Server::handleNotice() {
 	else {
 		if (serverData.users.count(inputMessage->getParams()[0])) {
 			std::string message;
-			outputMessage->fd_to.push_back(serverData.users[inputMessage->getParams()[0]]->fd);
 			for (int i = 1; i < inputMessage->getParams().size(); i++) {
 				if (i != 1) 
 					message += " ";

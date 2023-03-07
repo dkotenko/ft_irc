@@ -78,7 +78,13 @@ std::string ServerData::doNames(std::vector<std::string> channelsList) {
 }
 
 void ServerData::addUser(User *user) {
-    if (user->username != "" && users.count(user->username) == 0) {
+    if (user->username == "") {
+        //TODO
+        return ;
+    }
+
+    if (users.count(user->username) >= 0) {
+        
         users[user->username] = user;
         std::cout << "user " << user->username << " added, users size: " << users.size() << std::endl;
     }

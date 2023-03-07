@@ -30,6 +30,7 @@
 #include "const.hpp"
 #include "replies.hpp"
 #include "logger.hpp"
+#include "FileDescriptor.hpp"
 
 #ifdef __APPLE__
 #define IRC_NOSIGNAL SO_NOSIGPIPE
@@ -51,7 +52,7 @@ public:
     std::string servername;
     fd_set	fd_read;
     fd_set	fd_write;
-    std::vector<User *> users;
+    std::vector<FileDescriptor> fds;
     ServerData serverData;
     bool is_debug;
     std::map<std::string, void (Server::*)()> handleMap;
@@ -77,10 +78,11 @@ private:
     void client_write(int cs);
     OutputMessage *parse(std::string msg);
     void populateHandleMap();
-    void sendWelcome(int i);
+    void sendWelcome();
     void pingUsers();
     void registerNewUser(User *user);
     void doQuit(User *user);
+    std::string connectStatusAsString(int status);
 
     void handleNick();
     void handleUser();

@@ -21,16 +21,18 @@ class OutputMessage {
         std::string data;
         int fd_from;
         std::vector<int> fd_to;
+        int fd;
 
-        OutputMessage(std::string servername, std::string nickName);
+        OutputMessage();
+        OutputMessage(std::string nickName);
         void add(std::string s, int replyCode);
         void add(std::string s, int replyCode, int fd);
         void addPrivMsg(std::string s, int fd, std::string fromusername, std::string fromhostname, std::string tousername);
         void addFd(int fd);
         void sendMsg(int fd);
+        std::queue<std::string> lines;
     private:
         int length;
-        std::queue<std::string> lines;
         std::string servername;
         std::string nickName;
         std::string getReplyCodeAsString(int replyCode);

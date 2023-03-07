@@ -11,7 +11,6 @@ int validation(int argc, char **argv) {
         std::cout<<"Usage: ./ft_irc <port> <password>" << std::endl;
         return 1;
     }
-    //std::cout<<argv[1]<<" "<<argv[2]<<"\n";
     (void)argv;
     return 0;
 }
