@@ -35,6 +35,16 @@ std::string ServerData::getUsernameByFd(int fd) {
     return NULL;
 }
 
+User *ServerData::getUserByFd(int fd) {
+
+    std::map<std::string, User*> :: iterator it = users.find(fd);
+    if (iter != it.end()) {
+        return users[fd];
+    } else {
+        return NULL;
+    }
+}
+
 bool ServerData::checkChannel(std::string channelName) {
     if (channels.count(channelName))
         return true;

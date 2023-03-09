@@ -35,17 +35,17 @@ void Server::handleQuit() {
 	doQuit(currUser);
 }
 
-void Server::registerNewUser(User *user) {
+void Server::registerNewUser(FileDescriptor *FileDescriptor) {
 	serverData.addUser(user);
 	sendWelcome();
 }
 
 void Server::handleNick() {
-    if (!currUser->isRegistered()) {
-        currUser->connectStatus |= NICK_PASSED;
-        currUser->setRegistered(currUser->connectStatus == REGISTERED);
+    if (!currFd->isRegistered()) {
+        currFd->connectStatus |= NICK_PASSED;
+        currFd->setRegistered(currFd->connectStatus == REGISTERED);
         currUser->nickname = inputMessage->getParams()[0];
-		registerNewUser(currUser);
+		registerNewUser(currFd);
         return ;
     }
 }
@@ -89,7 +89,7 @@ void Server::handleUser() {
 			}
 		}
 		log_debug("connect status: %s", connectStatusAsString(currUser->connectStatus).c_str());
-		registerNewUser(currUser);
+		registerNewUser(currFd);
     }
 	else
 		handleError(ERR_NEEDMOREPARAMS, "USER", "");
@@ -98,7 +98,7 @@ void Server::handleUser() {
 
 void Server::handlePass() {
 	
-	if (currUser->isRegistered()) {
+	if (currFd->isRegistered()) {
         handleError(ERR_ALREADYREGISTRED, "", "");
 		return ;
     }
@@ -116,9 +116,9 @@ void Server::handlePass() {
         handleError(ERR_PASSWDMISMATCH, "", "");
 		return ;
 	}
-	currUser->connectStatus |= PASS_PASSED;
-	currUser->setRegistered(currUser->connectStatus == REGISTERED);
-	registerNewUser(currUser);
+	currFd->connectStatus |= PASS_PASSED;
+	currFd->setRegistered(currUser->connectStatus == REGISTERED);
+	registerNewUser(currFd);
 }
 
 #define WELCOME_REPL "001"

@@ -21,6 +21,8 @@ class ServerData
         void addUser(User *user);
         void deleteUser(User *user);
         std::string getUsernameByFd(int fd);
+        User *getUserByFd(int fd);
+
     private:
 
 };

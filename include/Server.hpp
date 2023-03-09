@@ -47,9 +47,6 @@ public:
     int connection;
     int		maxfd;
     int		max;
-    int		r;
-    int fd;
-    std::string servername;
     fd_set	fd_read;
     fd_set	fd_write;
     std::vector<FileDescriptor> fds;
@@ -64,6 +61,7 @@ private:
     InputMessage *inputMessage;
     OutputMessage *outputMessage;
     User *currUser;
+    FileDescriptor *currFd;
 
     void disconnectDeadUsers();
 
@@ -73,14 +71,14 @@ private:
     void init_fd();
     void fct_read(int fd);
     void srv_accept(int s);
-    void client_read(int cs);
+    void client_read(int fd);
     void fct_write(int cs);
     void client_write(int cs);
     OutputMessage *parse(std::string msg);
     void populateHandleMap();
     void sendWelcome();
     void pingUsers();
-    void registerNewUser(User *user);
+    void registerNewUser(FileDescriptor *FileDescriptor);
     void doQuit(User *user);
     std::string connectStatusAsString(int status);
 

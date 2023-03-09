@@ -1,14 +1,14 @@
 #include "Server.hpp"
 #include "utils.hpp"
 
-Server::Server(int port, std::string password) {
+Server::Server(int port, std::string password) :
+    port(port),
+    password(password),
+    maxfd(FD_SETSIZE - 1),
+    is_debug(false) 
+{
     struct rlimit rlp;
-    this->port = port;
-    this->password = password;
-    servername = SERVER_NAME;
     xassert(getrlimit(RLIMIT_NOFILE, &rlp) != -1, "getrlimit");
-    maxfd = FD_SETSIZE - 1;
-    is_debug = false;
 
     for (int i = 0; i < maxfd; i++) {
         fds.push_back(new FileDescriptor(i));
@@ -58,7 +58,7 @@ void	Server::init_fd()
     while (i < maxfd) {
         if (fds[i]->type != FD_FREE) {
             FD_SET(i, &fd_read); 
-            if (users[i]->hasMessage()) {
+            if (serverData.getUserByFd(i)->hasMessage()) {
                 FD_SET(i, &fd_write);
             }
             max = MAX(max, i);
@@ -67,20 +67,20 @@ void	Server::init_fd()
     }
 }
 
-void	Server::do_select()
+int	Server::do_select()
 {
   struct timeval timeout = {0, 0};
-  r = select(max + 1, &fd_read, &fd_write, NULL, &timeout);
-  if (r == 0) {
+  int activeFdNumber = select(max + 1, &fd_read, &fd_write, NULL, &timeout);
+  if (activeFdNumber == 0) {
     log_warning("Timeout reached during select()");
-  } else if (r < 0 ) {
-    log_error("An error occured during select(): ");
+  } else if (activeFdNumber < 0 ) {
+    log_error("An error occured during select(): %s", strerror(errno));
   }
 }
 
-void	Server::check_fd()
+void	Server::check_fd(int activeFdNumber)
 {
-    for (int i = 0; (i < maxfd) && (r > 0) ; i++) {
+    for (int i = 0; (i < maxfd) && (activeFdNumber > 0) ; i++) {
         if (FD_ISSET(i, &fd_read)) {
             fct_read(i);
         }
@@ -89,7 +89,7 @@ void	Server::check_fd()
         }
         if (FD_ISSET(i, &fd_read) ||
         FD_ISSET(i, &fd_write)) {
-            r--;
+            activeFdNumber--;
         }
     }
 }
@@ -99,8 +99,8 @@ void Server::run() {
         disconnectDeadUsers();
         pingUsers();
         init_fd();
-        do_select();
-        check_fd();
+        int activeFdNumber = do_select();
+        check_fd(activeFdNumber);
     }
 }
 
@@ -127,28 +127,33 @@ void Server::srv_accept(int s)
     std::string ipAddress = inet_ntoa(csin.sin_addr);
     int port = ntohs(csin.sin_port);
     log_info("New client #%d from %s:%d", cs, ipAddress.c_str(), port);
-    users[cs]->type = FD_CLIENT;
-    users[cs]->ipAddress = ipAddress;
-    users[cs]->port = port;
+    fds[cs]->type = FD_CLIENT;
+    fds[cs]->ipAddress = ipAddress;
+    fds[cs]->port = port;
 }
 
-void Server::client_read(int cs)
+void Server::client_read(int fd)
 {
     int	r;
     int	i;
 
-    std::memset(users[cs]->buf_read, 0, BUF_SIZE);
-    r = recv(cs, users[cs]->buf_read, MESSAGE_MAX_LEN, 0);
+    std::memset(fds[fd]->buf_read, 0, BUF_SIZE);
+    r = recv(fd, fds[fd]->buf_read, MESSAGE_MAX_LEN, 0);
     if (r <= 0) {
-      close(cs);
-      users[cs]->clean();
-      log_info("client #%d gone away", cs);
+      close(fd);
+      fds[fd]->clean();
+      log_info("client #%d gone away", fd);
     }
     else {
-        currUser = users[cs];
+        currUser = serverData.getUserByFd(fd);
+        FileDescriptor *currFd = &fds[fd];
         outputMessage = &currUser->outputMessage;
-        std::stringstream streamData(currUser->buf_read);
-        log_info("received from %s: %s", currUser->username.c_str(), currUser->buf_read);
+        std::stringstream streamData(currFd->buf_read);
+        log_info(
+            "received from %s(fd: %d): %s",
+            currUser ? currUser->username.c_str() : "NO USERNAME",
+            fd,
+            currUser->buf_read);
 
         std::string str;
         while (std::getline(streamData, str, '\n')) {
@@ -159,7 +164,7 @@ void Server::client_read(int cs)
     }
 }
 
-OutputMessage *Server::parse(std::string src) {
+OutputMessage *Server::parse(std::string src, int fd) {
     const char separator = ' ';
     
     inputMessage = new InputMessage();
@@ -169,7 +174,7 @@ OutputMessage *Server::parse(std::string src) {
     std::stringstream streamData(src);
     std::string val;
     int i = 0;
-    inputMessage->fd_from = this->fd;
+    inputMessage->fd_from = fd;
     while (std::getline(streamData, val, separator)) {
         if (i == 0 && val[0] != ':') {
             inputMessage->command = val;
@@ -208,7 +213,7 @@ void Server::pingUsers() {
         if (user->isNeedsPing()) {
             user->doPing();
             std::string toAdd("PING :");
-            toAdd += servername;
+            toAdd += SERVER_NAME;
             outputMessage->add(toAdd, RPL_NONE, user->fd);
         }
     }
