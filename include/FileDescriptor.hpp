@@ -6,6 +6,14 @@
 
 class FileDescriptor
 {
+	typedef struct  s_userInfo
+	{
+		std::string username;
+    	std::string nickname;
+    	std::string realname;
+    	std::string hostname;	
+	} t_userInfo;
+	
 
 	public:
 
@@ -21,7 +29,7 @@ class FileDescriptor
 		int connectStatus;
 		bool registered;
 		bool welcomeReceived;
-		
+		t_userInfo userInfo;
 		char *buf_read;
     	PingTimer timer;
 };

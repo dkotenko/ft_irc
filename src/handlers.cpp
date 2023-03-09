@@ -71,24 +71,24 @@ std::string Server::connectStatusAsString(int status) {
 }
 
 void Server::handleUser() {
-	if (!currUser->isRegistered() && inputMessage->params.size() >= 4 
+	if (!currFd->isRegistered() && inputMessage->params.size() >= 4 
 		&& inputMessage->params[3][0] == ':' && inputMessage->params[3].size() > 1) {
-        currUser->connectStatus |= USER_PASSED;
-        currUser->setRegistered(currUser->connectStatus == REGISTERED);
-        currUser->username = inputMessage->params[0];
-		currUser->hostname = inputMessage->params[1];
-		currUser->servername = inputMessage->params[2];
+        currFd->setRegistered(currUser->connectStatus == REGISTERED);
+        currFd->userInfo.username = inputMessage->params[0];
+		currFd->userInfo.hostname = inputMessage->params[1];
+		currFd->userInfo.servername = inputMessage->params[2];
 		for (int i = 3; i < inputMessage->params.size(); ++i) {
 			if (i == 3) {
-				currUser->realname += inputMessage->params[i];
-				currUser->realname.erase(1, currUser->realname.size() - 1);
+				currFd->userInfo.realname += inputMessage->params[i];
+				currFd->userInfo.realname.erase(1, currFd->userInfo.realname.size() - 1);
 			}
 			else {
-				currUser->realname += " ";
-				currUser->realname += inputMessage->params[i];
+				currFd->userInfo.realname += " ";
+				currFd->userInfo.realname += inputMessage->params[i];
 			}
 		}
-		log_debug("connect status: %s", connectStatusAsString(currUser->connectStatus).c_str());
+		currFd->connectStatus |= USER_PASSED;
+		log_debug("connect status: %s", connectStatusAsString(currFd->connectStatus).c_str());
 		registerNewUser(currFd);
     }
 	else
@@ -124,7 +124,7 @@ void Server::handlePass() {
 #define WELCOME_REPL "001"
 
 void Server::sendWelcome() {
-    if (currUser->isRegistered() && !currUser->welcomeReceived) {
+    if (currFd->isRegistered() && !currUser->welcomeReceived) {
 		
 		//:FT_IRC 375 pidgin
 		currUser->outputMessage.add(std::string("FT_IRC Message of the day"), RPL_MOTDSTART);
@@ -272,7 +272,7 @@ void Server::handleTopic() {
     }
     
     if (serverData.getChannel(inputMessage->getParams()[0])->getOperatorUsername() == 
-        users[inputMessage->fd_from]->username) {
+        currUser->username) {
         serverData.getChannel(inputMessage->getParams()[0])->setTopic(inputMessage->getParams()[1]);
     }
 }
@@ -283,7 +283,7 @@ void Server::handleInvite() {
     }
 
     if (serverData.getChannel(inputMessage->getParams()[0])->getOperatorUsername() == 
-        users[inputMessage->fd_from]->username) {
+        currUser->username) {
         serverData.getChannel(inputMessage->getParams()[1])->inviteUser(inputMessage->getParams()[0]);
     }
 }
