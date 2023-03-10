@@ -6,6 +6,7 @@
 #include "map"
 #include "User.hpp"
 #include "Channel.hpp"
+#include "FileDescriptor.hpp"
 
 class ServerData
 {
@@ -18,7 +19,7 @@ class ServerData
         Channel* getChannel(std::string channelName);
         std::string doNames(std::vector<std::string> channelsList);
         bool checkChannel(std::string channelName);
-        void addUser(User *user);
+        void addUser(FileDescriptor *fileDescriptor);
         void deleteUser(User *user);
         std::string getUsernameByFd(int fd);
         User *getUserByFd(int fd);

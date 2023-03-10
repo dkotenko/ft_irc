@@ -11,7 +11,7 @@ Server::Server(int port, std::string password) :
     xassert(getrlimit(RLIMIT_NOFILE, &rlp) != -1, "getrlimit");
 
     for (int i = 0; i < maxfd; i++) {
-        fds.push_back(new FileDescriptor(i));
+        fds.push_back(FileDescriptor(i));
     }
     populateHandleMap();
     this->create();
@@ -45,7 +45,7 @@ void Server::create()
     bind(sockfd, (struct sockaddr*)&sin, sizeof(sin));
     listen(sockfd, 42);
     fcntl(sockfd, F_SETFL, O_NONBLOCK);
-    fds[sockfd]->type = FD_SERV;
+    fds[sockfd].type = FD_SERV;
 }
 
 void	Server::init_fd()
@@ -56,7 +56,7 @@ void	Server::init_fd()
     FD_ZERO(&fd_write);
 
     while (i < maxfd) {
-        if (fds[i]->type != FD_FREE) {
+        if (fds[i].type != FD_FREE) {
             FD_SET(i, &fd_read); 
             if (serverData.getUserByFd(i)->hasMessage()) {
                 FD_SET(i, &fd_write);
@@ -76,6 +76,7 @@ int	Server::do_select()
   } else if (activeFdNumber < 0 ) {
     log_error("An error occured during select(): %s", strerror(errno));
   }
+  return activeFdNumber;
 }
 
 void	Server::check_fd(int activeFdNumber)
@@ -107,12 +108,12 @@ void Server::run() {
 
 
 void Server::fct_read(int fd) {
-	if (fds[fd]->type == FD_SERV) {
+	if (fds[fd].type == FD_SERV) {
 		srv_accept(fd);
-	} else if (fds[fd]->type == FD_CLIENT) {
+	} else if (fds[fd].type == FD_CLIENT) {
 		client_read(fd);
 	} else {
-		std::cout << "Error: invalid fd type in fct_read: " << fds[fd]->type << std::endl;
+		std::cout << "Error: invalid fd type in fct_read: " << fds[fd].type << std::endl;
 	}
 }
 
@@ -127,9 +128,9 @@ void Server::srv_accept(int s)
     std::string ipAddress = inet_ntoa(csin.sin_addr);
     int port = ntohs(csin.sin_port);
     log_info("New client #%d from %s:%d", cs, ipAddress.c_str(), port);
-    fds[cs]->type = FD_CLIENT;
-    fds[cs]->ipAddress = ipAddress;
-    fds[cs]->port = port;
+    fds[cs].type = FD_CLIENT;
+    fds[cs].ipAddress = ipAddress;
+    fds[cs].port = port;
 }
 
 void Server::client_read(int fd)
@@ -137,11 +138,11 @@ void Server::client_read(int fd)
     int	r;
     int	i;
 
-    std::memset(fds[fd]->buf_read, 0, BUF_SIZE);
-    r = recv(fd, fds[fd]->buf_read, MESSAGE_MAX_LEN, 0);
+    std::memset(fds[fd].buf_read, 0, BUF_SIZE);
+    r = recv(fd, fds[fd].buf_read, MESSAGE_MAX_LEN, 0);
     if (r <= 0) {
       close(fd);
-      fds[fd]->clean();
+      fds[fd].clean();
       log_info("client #%d gone away", fd);
     }
     else {
@@ -153,13 +154,13 @@ void Server::client_read(int fd)
             "received from %s(fd: %d): %s",
             currUser ? currUser->username.c_str() : "NO USERNAME",
             fd,
-            currUser->buf_read);
+            currFd->buf_read);
 
         std::string str;
         while (std::getline(streamData, str, '\n')) {
             str.erase(std::remove(str.begin(), str.end(), '\r' ), str.end());
             str.erase(std::remove(str.begin(), str.end(), '\n' ), str.end());
-            parse(str);
+            parse(str, fd);
         }
     }
 }
@@ -174,7 +175,6 @@ OutputMessage *Server::parse(std::string src, int fd) {
     std::stringstream streamData(src);
     std::string val;
     int i = 0;
-    inputMessage->fd_from = fd;
     while (std::getline(streamData, val, separator)) {
         if (i == 0 && val[0] != ':') {
             inputMessage->command = val;
@@ -223,7 +223,7 @@ void Server::disconnectDeadUsers() {
     std::vector<User *> to_delete;
 
     for (std::map<std::string, User*>::iterator it = serverData.users.begin(); it != serverData.users.end(); ) {
-        if (it->second->isRegistered() && it->second->isLost()) {
+        if (it->second->isLost()) {
             std::cout << it->second->username << " disconnected" << std::endl;
             to_delete.push_back(it->second);
         }

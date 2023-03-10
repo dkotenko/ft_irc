@@ -19,7 +19,6 @@
 class OutputMessage {
     public:
         std::string data;
-        int fd_from;
         std::vector<int> fd_to;
         int fd;
 

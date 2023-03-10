@@ -5,11 +5,10 @@
 */
 
 FileDescriptor::FileDescriptor(int fd) :
-	fd(fd)
+	fd(fd),
 	type(FD_FREE),
 	connectStatus(NOT_REGISTERED),
 	registered(false),
-	welcomeReceived(false),
 	ipAddress(""),
 	port(0)
 {}
@@ -52,6 +51,17 @@ std::ostream &			operator<<( std::ostream & o, FileDescriptor const & i )
 ** --------------------------------- METHODS ----------------------------------
 */
 
+bool FileDescriptor::isRegistered() {
+    return registered;
+}
+
+void FileDescriptor::setRegistered(bool b) {
+	registered = b;
+}
+
+void FileDescriptor::clean() {
+	*this = FileDescriptor(fd);
+}
 
 /*
 ** --------------------------------- ACCESSOR ---------------------------------

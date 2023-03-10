@@ -15,7 +15,8 @@ SRC_FILES =	main.cpp \
 			Channel.cpp \
 			handlers.cpp \
 			PingTimer.cpp \
-			logger.cpp
+			logger.cpp \
+			FileDescriptor.cpp
 
 
 INC_FILES =	Server.hpp \
@@ -28,7 +29,8 @@ INC_FILES =	Server.hpp \
 			const.hpp \
 			replies.hpp \
 			PingTimer.hpp \
-			logger.hpp
+			logger.hpp \
+			FileDescriptor.hpp
 
 OBJS_FILES	= $(SRC_FILES:%.cpp=%.o)
 

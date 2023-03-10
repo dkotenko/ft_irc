@@ -35,16 +35,6 @@ std::string ServerData::getUsernameByFd(int fd) {
     return NULL;
 }
 
-User *ServerData::getUserByFd(int fd) {
-
-    std::map<std::string, User*> :: iterator it = users.find(fd);
-    if (iter != it.end()) {
-        return users[fd];
-    } else {
-        return NULL;
-    }
-}
-
 bool ServerData::checkChannel(std::string channelName) {
     if (channels.count(channelName))
         return true;
@@ -87,16 +77,22 @@ std::string ServerData::doNames(std::vector<std::string> channelsList) {
     return answer;
 }
 
-void ServerData::addUser(User *user) {
-    if (user->username == "") {
-        //TODO
+void ServerData::addUser(FileDescriptor *fileDescriptor) {
+    std::string &username = fileDescriptor->userInfo.username;
+    if (username == "") {
         return ;
     }
 
-    if (users.count(user->username) >= 0) {
-        
-        users[user->username] = user;
-        std::cout << "user " << user->username << " added, users size: " << users.size() << std::endl;
+    if (users.count(username) > 0) {
+        User *existed = users[username];
+        existed->nickname = fileDescriptor->userInfo.nickname;
+        existed->realname = fileDescriptor->userInfo.realname;
+        existed->hostname = fileDescriptor->userInfo.hostname;
+        existed->fd = fileDescriptor->fd;
+        log_debug("user %s exists, fd %d set to user", username.c_str(), fileDescriptor->fd);
+    } else {
+        users[username] = new User(fileDescriptor);
+        log_debug("user %s added, users number = %d", username.c_str(), (int)users.size());
     }
 }
 

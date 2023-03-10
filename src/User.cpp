@@ -4,21 +4,23 @@
 
 #include "User.hpp"
 
-User::User(int type) :
-	buf_read(new char[BUF_SIZE + 1] ()),
-	buf_write(new char[BUF_SIZE + 1]()),
+User::User() :
 	fd(NO_FD)
 {
-	this->type = type;
 	this->clean();
 	this->nickname = "";
 	this->username = "";
 }
 
+User::User(FileDescriptor *fileDescriptor) :
+	fd(fileDescriptor->fd)
+{
+	this->clean();
+	this->nickname = fileDescriptor->userInfo.nickname;
+	this->username = fileDescriptor->userInfo.username;
+}
+
 void User::clean() {
-	
-	std::memset(buf_read, 0, BUF_SIZE + 1);
-	std::memset(buf_write, 0, BUF_SIZE + 1);
 }
 
 
@@ -48,14 +50,6 @@ std::string User::getAwayText() {
 
 void User::deleteUser(std::string username) {
     (void)username;
-}
-
-bool User::isRegistered() {
-    return registered;
-}
-
-void User::setRegistered(bool b) {
-	registered = b;
 }
 
 User::~User() {

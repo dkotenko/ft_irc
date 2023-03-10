@@ -50,6 +50,7 @@ public:
     fd_set	fd_read;
     fd_set	fd_write;
     std::vector<FileDescriptor> fds;
+    std::map<int, User *> clients;
     ServerData serverData;
     bool is_debug;
     std::map<std::string, void (Server::*)()> handleMap;
@@ -66,15 +67,15 @@ private:
     void disconnectDeadUsers();
 
     void create();
-    void check_fd();
-    void do_select();
+    void check_fd(int activeFdNumber);
+    int do_select();
     void init_fd();
     void fct_read(int fd);
     void srv_accept(int s);
     void client_read(int fd);
     void fct_write(int cs);
     void client_write(int cs);
-    OutputMessage *parse(std::string msg);
+    OutputMessage *parse(std::string msg, int fd);
     void populateHandleMap();
     void sendWelcome();
     void pingUsers();

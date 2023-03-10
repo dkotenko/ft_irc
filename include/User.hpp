@@ -5,34 +5,19 @@
 #include <cstring>
 #include <map>
 #include "OutputMessage.hpp"
-#include "PingTimer.hpp"
 #include <queue>
 #include "const.hpp"
+#include "FileDescriptor.hpp"
 
 
-
-enum e_fds {
-    FD_FREE     = 0,
-    FD_SERV     = 1,
-    FD_CLIENT   = 2,
-    FD_NUM      = 3
-};
-
-enum e_connect_states {
-    NOT_REGISTERED  = 0,
-    NICK_PASSED     = 1, //0b001
-    USER_PASSED     = 2, //0b010
-    PASS_PASSED     = 4, //0b100
-    REGISTERED      = 7,  //0b111
-    CONNECT_STATES_NUM = 5
-};
 
 
 
 // JOIN
 class User {
 public:
-    User(int fd);
+    User();
+    User(FileDescriptor *fileDescriptor);
     ~User();
     
     std::string username;
@@ -42,6 +27,7 @@ public:
 
     std::string awaytext;
     bool awaystatus;
+	bool welcomeReceived;
     int fd;
     
     PingTimer timer;
@@ -59,8 +45,6 @@ public:
     void doPing();
     void updatePing();
     bool isNeedsPing();
-    bool isRegistered();
-    void setRegistered(bool b);
     void sendMessage();
     bool hasMessage();
 private:

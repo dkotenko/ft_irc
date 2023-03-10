@@ -12,7 +12,6 @@
 
 class InputMessage {
 public:
-    int fd_from;
     std::vector<int> fd_to;
     std::string command;
     std::vector<std::string> params;

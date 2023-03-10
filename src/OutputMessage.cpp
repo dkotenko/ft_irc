@@ -6,10 +6,9 @@
 
 OutputMessage::OutputMessage() {}
 
-OutputMessage::OutputMessage(std::string nickName, int fd) :
+OutputMessage::OutputMessage(std::string nickName) :
     servername(SERVER_NAME)
 {
-    this->fd = fd;
     this->nickName = nickName;
 }
 

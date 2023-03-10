@@ -24,7 +24,7 @@ void Server::handlePong() {
 }
 
 void Server::doQuit(User *user) {
-	if (user->isRegistered()) {
+	if (currFd->isRegistered()) {
 		serverData.deleteUser(user);
 		close(user->fd);
 		user->clean();
@@ -35,8 +35,8 @@ void Server::handleQuit() {
 	doQuit(currUser);
 }
 
-void Server::registerNewUser(FileDescriptor *FileDescriptor) {
-	serverData.addUser(user);
+void Server::registerNewUser(FileDescriptor *fileDescriptor) {
+	serverData.addUser(fileDescriptor);
 	sendWelcome();
 }
 
@@ -73,7 +73,7 @@ std::string Server::connectStatusAsString(int status) {
 void Server::handleUser() {
 	if (!currFd->isRegistered() && inputMessage->params.size() >= 4 
 		&& inputMessage->params[3][0] == ':' && inputMessage->params[3].size() > 1) {
-        currFd->setRegistered(currUser->connectStatus == REGISTERED);
+        currFd->setRegistered(currFd->connectStatus == REGISTERED);
         currFd->userInfo.username = inputMessage->params[0];
 		currFd->userInfo.hostname = inputMessage->params[1];
 		currFd->userInfo.servername = inputMessage->params[2];
@@ -117,7 +117,7 @@ void Server::handlePass() {
 		return ;
 	}
 	currFd->connectStatus |= PASS_PASSED;
-	currFd->setRegistered(currUser->connectStatus == REGISTERED);
+	currFd->setRegistered(currFd->connectStatus == REGISTERED);
 	registerNewUser(currFd);
 }
 
@@ -140,7 +140,7 @@ void Server::sendWelcome() {
 
 //:pidgin!pidgin@127.0.0.1 JOIN :#123
 void Server::handleJoin() {
-    if (!currUser->isRegistered()) {
+    if (!currFd->isRegistered()) {
 		log_debug("User %s is not registered", currUser->username.c_str());
         return ;
     }
@@ -180,7 +180,7 @@ void Server::handlePrivMsg() {
 			}
 	        serverData.getChannel(inputMessage->getParams()[0])->addMessage
 			(
-				users[inputMessage->fd_from]->username,
+				currUser->username,
 				serverData.getChannel(inputMessage->getParams()[0])->getUsers(),
 				message
 			);
@@ -200,14 +200,14 @@ void Server::handlePrivMsg() {
 			//outputMessage->data = message;
 			//outputMessage->add(message, 0);
 			//TODO как правильно отправлять сообщения??? Не приходят сообщения клиенту
-			outputMessage->addPrivMsg(message, inputMessage->fd_from, serverData.getUsernameByFd(inputMessage->fd_from), "127.0.0.1", inputMessage->getParams()[0]);
+			outputMessage->addPrivMsg(message, currFd->fd, currUser->username, "127.0.0.1", inputMessage->getParams()[0]);
 		}
 		else {
 			handleError(ERR_NOSUCHNICK, inputMessage->getParams()[0], "");
 		}
 	}
 
-	if (serverData.users[users[inputMessage->fd_from]->username]->getAwayStatus()) {
+	if (currUser->getAwayStatus()) {
 		std::string msg;
 		msg += inputMessage->getParams()[0];
 		msg += " :";
@@ -230,7 +230,7 @@ void Server::handleNotice() {
 			}
 	        serverData.getChannel(inputMessage->getParams()[0])->addMessage
 			(
-				users[inputMessage->fd_from]->username,
+				currUser->username,
 				serverData.getChannel(inputMessage->getParams()[0])->getUsers(),
 				message
 			);
@@ -256,18 +256,18 @@ void Server::handleNotice() {
 }
 
 void Server::handleMode() {
-    if (!currUser->isRegistered()) {
+    if (!currFd->isRegistered()) {
         return;
     }
     
     if (serverData.getChannel(inputMessage->getParams()[0])->getOperatorUsername() == 
-        users[inputMessage->fd_from]->username) {
+        currUser->username) {
         return;
     }
 }
 
 void Server::handleTopic() {
-    if (!currUser->isRegistered()) {
+    if (!currFd->isRegistered()) {
         return;
     }
     
@@ -278,7 +278,7 @@ void Server::handleTopic() {
 }
 
 void Server::handleInvite() {
-    if (!currUser->isRegistered()) {
+    if (!currFd->isRegistered()) {
         return;
     }
 
@@ -289,18 +289,18 @@ void Server::handleInvite() {
 }
 
 void Server::handleKick() {
-    if (!currUser->isRegistered()) {
+    if (!currFd->isRegistered()) {
         return;
     }
     
     if (serverData.getChannel(inputMessage->getParams()[1])->getOperatorUsername() == 
-        users[inputMessage->fd_from]->username) {
+        currUser->username) {
         serverData.getChannel(inputMessage->getParams()[0])->kickUser(inputMessage->getParams()[1]);
     }
 	
     if (inputMessage->getParams().size() == 2) {
         if (serverData.checkChannel(inputMessage->getParams()[0]) && 
-        serverData.getChannel(inputMessage->getParams()[0])->getOperatorUsername() == users[inputMessage->fd_from]->username) {
+        serverData.getChannel(inputMessage->getParams()[0])->getOperatorUsername() == currUser->username) {
             serverData.getChannel(inputMessage->getParams()[0])->kickUser(inputMessage->getParams()[1]);
         }
     }
@@ -308,7 +308,7 @@ void Server::handleKick() {
 
 void Server::handleError(int err, const std::string &arg1, const std::string &arg2)
 {
-	std::string	msg = ":" + servername + " ";
+	std::string	msg = ":" + std::string(SERVER_NAME) + " ";
 	std::stringstream	ss;
 	ss << err;
 	msg += ss.str() + " " + currUser->getNickname();
@@ -449,7 +449,7 @@ void Server::handleError(int err, const std::string &arg1, const std::string &ar
 			msg += "UNKNOWN ERROR";
 			break;
 	}
-	outputMessage->add(msg, RPL_NONE, fd);
+	outputMessage->add(msg, RPL_NONE, currFd->fd);
 }
 
 std::vector<std::string> split(const std::string& s, char delim) {
@@ -463,29 +463,29 @@ std::vector<std::string> split(const std::string& s, char delim) {
 }
 
 void Server::handleNames() {
-    if (!currUser->isRegistered()) {
+    if (!currFd->isRegistered()) {
         return;
     }
     std::vector<std::string> channelsList;
     if (inputMessage->getParams().size() == 1) {
         channelsList = split(inputMessage->getParams()[0], ',');
     }
-	outputMessage->add(serverData.doNames(channelsList), RPL_NAMREPLY, fd);
+	outputMessage->add(serverData.doNames(channelsList), RPL_NAMREPLY, currFd->fd);
 	std::string res;
 	if (channelsList.size() > 0) {
 		res += channelsList[0] + " ";
 	}
 	res += ":End of /NAMES list";
-	outputMessage->add(res, RPL_ENDOFNAMES, fd);
+	outputMessage->add(res, RPL_ENDOFNAMES, currFd->fd);
 }
 
 void Server::handleList() {
-	if (!currUser->isRegistered()) {
+	if (!currFd->isRegistered()) {
         return;
     }
 	if (inputMessage->getParamsSize() == 0) {
 		std::map<std::string ,Channel*> :: iterator it;
-		outputMessage->add(std::string("Channel :Users Name"), RPL_LISTSTART, fd);
+		outputMessage->add(std::string("Channel :Users Name"), RPL_LISTSTART, currFd->fd);
 		
     	for(it=serverData.channels.begin(); it != serverData.channels.end(); ++it) {
 			std::string res = it->first + " ";
@@ -493,13 +493,13 @@ void Server::handleList() {
 			res += SSTR(it->second->getUsers().size()) + " ";
 			res += it->second->getTopic();
 			res += " :[+n]";
-			outputMessage->add(res, RPL_LIST, fd);
+			outputMessage->add(res, RPL_LIST, currFd->fd);
     	}
 		outputMessage->add(std::string(":End of /LIST"), RPL_LISTEND);
 	}
 	else if (inputMessage->getParamsSize() == 1) {
 		std::vector<std::string> channelsVector = split(inputMessage->params[0], ',');
-		outputMessage->add(std::string("Channel :Users Name"), RPL_LISTSTART, fd);
+		outputMessage->add(std::string("Channel :Users Name"), RPL_LISTSTART, currFd->fd);
 		for (int i = 0; i < channelsVector.size(); ++i) {
 			if (serverData.checkChannel(channelsVector[i])) {
 				std::string res = channelsVector[i] + " ";
@@ -513,10 +513,10 @@ void Server::handleList() {
 					res += usersVector[j];
 				}
 				res += " :[+n]";
-				outputMessage->add(res, RPL_LIST, fd);
+				outputMessage->add(res, RPL_LIST, currFd->fd);
 			}
 		}
-		outputMessage->add(std::string(":End of /LIST"), RPL_LISTEND, fd);
+		outputMessage->add(std::string(":End of /LIST"), RPL_LISTEND, currFd->fd);
 	}
 }
 
@@ -552,7 +552,7 @@ std::vector<User *> Server::getUsersByWildcard(std::string &wildcard) {
 
 void Server::handleWhoIs() {
 	
-	if (!currUser->isRegistered()) {
+	if (!currFd->isRegistered()) {
 		handleError(ERR_NOTREGISTERED, "", "");
         return;
     }
@@ -569,14 +569,14 @@ void Server::handleWhoIs() {
 		User *user = *it;
 		outputMessage->add(user->getNickname() + " "  + \
 			user->username + " " + \
-			user->ipAddress + " * :" + \
+			fds[user->fd].ipAddress + " * :" + \
 			user->realname, RPL_WHOISUSER);
 
 		std::string channelsResponse = user->getNickname() + " :";
 
 		outputMessage->add(channelsResponse, RPL_WHOISCHANNELS);
 		outputMessage->add(user->getNickname() + " "  + \
-			user->servername + " :" + \
+			SERVER_NAME + " :" + \
 			SERVER_INFO, RPL_WHOISSERVER);
 		outputMessage->add("todo", RPL_WHOISIDLE);
  	}
@@ -584,7 +584,7 @@ void Server::handleWhoIs() {
 }
 
 void Server::handleAway() {
-	std::string username = serverData.getUsernameByFd(inputMessage->fd_from);
+	std::string username = serverData.getUsernameByFd(currFd->fd);
 	if (inputMessage->getParamsSize() == 0) {
 		serverData.users[username]->setAwayStatus(false);
 		return;
