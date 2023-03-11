@@ -50,7 +50,6 @@ public:
     fd_set	fd_read;
     fd_set	fd_write;
     std::vector<FileDescriptor> fds;
-    std::map<int, User *> clients;
     ServerData serverData;
     bool is_debug;
     std::map<std::string, void (Server::*)()> handleMap;
@@ -82,6 +81,7 @@ private:
     void registerNewUser(FileDescriptor *FileDescriptor);
     void doQuit(User *user);
     std::string connectStatusAsString(int status);
+    User *getUserByFd(int fd);
 
     void handleNick();
     void handleUser();

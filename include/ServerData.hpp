@@ -22,7 +22,6 @@ class ServerData
         void addUser(FileDescriptor *fileDescriptor);
         void deleteUser(User *user);
         std::string getUsernameByFd(int fd);
-        User *getUserByFd(int fd);
 
     private:
 

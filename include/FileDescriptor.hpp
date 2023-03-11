@@ -34,31 +34,28 @@ typedef struct  s_userInfo
 class FileDescriptor {
 
 	public:
-
-		FileDescriptor();
 		FileDescriptor(int fd);
 		FileDescriptor( FileDescriptor const & src );
 		~FileDescriptor();
-
 		FileDescriptor &		operator=( FileDescriptor const & rhs );
-    	std::string hostname;
-    	std::string ipAddress;
+
 		int port;
 		int fd;
 		int connectStatus;
 		int type;
-		
+		bool registered;
+		char buf_read[MESSAGE_MAX_LEN + 1];
+    	std::string hostname;
+    	std::string ipAddress;
 		t_userInfo userInfo;
-		char *buf_read;
     	PingTimer timer;
-
 
     	bool isRegistered();
     	void setRegistered(bool b);
 		void clean();
 
 	private:
-		bool registered;
+		
 };
 
 std::ostream &			operator<<( std::ostream & o, FileDescriptor const & i );

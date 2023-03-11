@@ -13,6 +13,8 @@ Server::Server(int port, std::string password) :
     for (int i = 0; i < maxfd; i++) {
         fds.push_back(FileDescriptor(i));
     }
+    log_debug("%d - type", fds[0].type);
+    exit(0);
     populateHandleMap();
     this->create();
 }
@@ -54,11 +56,13 @@ void	Server::init_fd()
     max = 0;
     FD_ZERO(&fd_read);
     FD_ZERO(&fd_write);
-
+    
+    
     while (i < maxfd) {
         if (fds[i].type != FD_FREE) {
+            exit(0);
             FD_SET(i, &fd_read); 
-            if (serverData.getUserByFd(i)->hasMessage()) {
+            if (fds[i].isRegistered() && getUserByFd(i)->hasMessage()) {
                 FD_SET(i, &fd_write);
             }
             max = MAX(max, i);
@@ -67,13 +71,15 @@ void	Server::init_fd()
     }
 }
 
+User *Server::getUserByFd(int fd) {
+    return serverData.users[fds[fd].userInfo.username];
+}
+
 int	Server::do_select()
 {
   struct timeval timeout = {0, 0};
   int activeFdNumber = select(max + 1, &fd_read, &fd_write, NULL, &timeout);
-  if (activeFdNumber == 0) {
-    log_warning("Timeout reached during select()");
-  } else if (activeFdNumber < 0 ) {
+  if (activeFdNumber < 0 ) {
     log_error("An error occured during select(): %s", strerror(errno));
   }
   return activeFdNumber;
@@ -146,7 +152,7 @@ void Server::client_read(int fd)
       log_info("client #%d gone away", fd);
     }
     else {
-        currUser = serverData.getUserByFd(fd);
+        currUser = getUserByFd(fd);
         FileDescriptor *currFd = &fds[fd];
         outputMessage = &currUser->outputMessage;
         std::stringstream streamData(currFd->buf_read);

@@ -5,16 +5,26 @@
 */
 
 FileDescriptor::FileDescriptor(int fd) :
+	port(0),
 	fd(fd),
-	type(FD_FREE),
 	connectStatus(NOT_REGISTERED),
+	type(2),
 	registered(false),
+	hostname(""),
 	ipAddress(""),
-	port(0)
+	userInfo({"", "", "", "", ""})
 {}
 
 FileDescriptor::FileDescriptor( const FileDescriptor & src )
 {
+	port = src.port;
+	fd = src.fd;
+	connectStatus = src.connectStatus;
+	type = src.type;
+	registered = src.registered;
+	hostname = src.hostname;
+	ipAddress = src.ipAddress;
+	userInfo = src.userInfo;
 }
 
 
@@ -33,10 +43,17 @@ FileDescriptor::~FileDescriptor()
 
 FileDescriptor &				FileDescriptor::operator=( FileDescriptor const & rhs )
 {
-	//if ( this != &rhs )
-	//{
-		//this->_value = rhs.getValue();
-	//}
+	if ( this != &rhs )
+	{
+		port = rhs.port;
+		fd = rhs.fd;
+		connectStatus = rhs.connectStatus;
+		type = rhs.type;
+		registered = rhs.registered;
+    	hostname = rhs.hostname;
+    	ipAddress = rhs.ipAddress;
+		userInfo = rhs.userInfo;
+	}
 	return *this;
 }
 
