@@ -74,7 +74,7 @@ private:
     void client_read(int fd);
     void fct_write(int cs);
     void client_write(int cs);
-    OutputMessage *parse(std::string msg, int fd);
+    void parse(std::string msg, int fd);
     void populateHandleMap();
     void sendWelcome();
     void pingUsers();

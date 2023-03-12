@@ -8,11 +8,11 @@ FileDescriptor::FileDescriptor(int fd) :
 	port(0),
 	fd(fd),
 	connectStatus(NOT_REGISTERED),
-	type(2),
+	type(FD_FREE),
 	registered(false),
 	hostname(""),
 	ipAddress(""),
-	userInfo({"", "", "", "", ""})
+	userInfo((t_userInfo){"", "", "", "", ""})
 {}
 
 FileDescriptor::FileDescriptor( const FileDescriptor & src )
@@ -78,6 +78,26 @@ void FileDescriptor::setRegistered(bool b) {
 
 void FileDescriptor::clean() {
 	*this = FileDescriptor(fd);
+}
+
+bool FileDescriptor::hasMessage() {
+	return buf_write[0];
+}
+
+bool FileDescriptor::isLost() {
+	return timer.isNoResponce();
+}
+
+void FileDescriptor::doPing() {
+	timer.doPing();
+}
+
+void FileDescriptor::updatePing() {
+	timer.reset();
+}
+
+bool FileDescriptor::isNeedsPing() {
+	return timer.isNeedsPing();
 }
 
 /*

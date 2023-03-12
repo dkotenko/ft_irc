@@ -29,11 +29,12 @@
         ( std::ostringstream() << std::dec << x ) ).str()
 
 
-int			xassert(int value, const std::string& input);
+int             xassert(int value, const std::string& input);
 void		sigh(int n);
 void    	printError(std::string s);
 void    	here(int n);
-std::string ft_itoa(int n);
-
+std::string     ft_itoa(int n);
+std::string     generateRandomString(const int len);
+int             getBitByPosition(int n, int position);
 
 #endif

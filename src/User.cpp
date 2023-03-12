@@ -8,19 +8,18 @@ User::User() :
 	fd(NO_FD)
 {
 	this->clean();
-	this->nickname = "";
-	this->username = "";
 }
 
 User::User(FileDescriptor *fileDescriptor) :
 	fd(fileDescriptor->fd)
 {
-	this->clean();
 	this->nickname = fileDescriptor->userInfo.nickname;
 	this->username = fileDescriptor->userInfo.username;
 }
 
 void User::clean() {
+	this->nickname = "";
+	this->username = "";
 }
 
 
@@ -54,22 +53,6 @@ void User::deleteUser(std::string username) {
 
 User::~User() {
 	this->clean();
-}
-
-bool User::isLost() {
-	return timer.isNoResponce();
-}
-
-void User::doPing() {
-	timer.doPing();
-}
-
-void User::updatePing() {
-	timer.reset();
-}
-
-bool User::isNeedsPing() {
-	return timer.isNeedsPing();
 }
 
 void User::sendMessage() {

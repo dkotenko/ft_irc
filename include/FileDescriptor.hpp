@@ -10,8 +10,7 @@ enum e_connect_states {
     NICK_PASSED     = 1, //0b001
     USER_PASSED     = 2, //0b010
     PASS_PASSED     = 4, //0b100
-    REGISTERED      = 7,  //0b111
-    CONNECT_STATES_NUM = 5
+    REGISTERED      = 7  //0b111
 };
 
 enum e_fds {
@@ -45,6 +44,7 @@ class FileDescriptor {
 		int type;
 		bool registered;
 		char buf_read[MESSAGE_MAX_LEN + 1];
+		char buf_write[MESSAGE_MAX_LEN + 1];
     	std::string hostname;
     	std::string ipAddress;
 		t_userInfo userInfo;
@@ -53,6 +53,14 @@ class FileDescriptor {
     	bool isRegistered();
     	void setRegistered(bool b);
 		void clean();
+		bool hasMessage();
+		/*
+		** PING
+		*/
+        bool isLost();
+        void doPing();
+        void updatePing();
+        bool isNeedsPing();
 
 	private:
 		

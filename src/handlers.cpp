@@ -40,34 +40,33 @@ void Server::registerNewUser(FileDescriptor *fileDescriptor) {
 	sendWelcome();
 }
 
+std::string Server::connectStatusAsString(int status) {
+	std::stringstream ss;
+
+	log_debug("connect status: %d", status);
+	if (getBitByPosition(status, 3)) {
+		ss << "| Password passed |";
+	}
+
+	if (getBitByPosition(status, 1)) {
+		ss << "| Nickname passed |";
+	}
+
+	if (getBitByPosition(status, 2)) {
+		ss << "| Username passed |";
+	}
+	return ss.str();
+}
+
 void Server::handleNick() {
     if (!currFd->isRegistered()) {
         currFd->connectStatus |= NICK_PASSED;
         currFd->setRegistered(currFd->connectStatus == REGISTERED);
         currUser->nickname = inputMessage->getParams()[0];
+		log_debug("Connect status: after NICK: %s", connectStatusAsString(currFd->connectStatus).c_str());
 		registerNewUser(currFd);
         return ;
     }
-}
-
-std::string Server::connectStatusAsString(int status) {
-	std::stringstream ss;
-
-	int checkPass = (status & ( 1 << PASS_PASSED )) >> PASS_PASSED;
-	if (checkPass) {
-		ss << "| Password passed |";
-	}
-
-	int checkNickName = (status & ( 1 << NICK_PASSED )) >> NICK_PASSED;
-	if (checkNickName) {
-		ss << "| Nickname passed |";
-	}
-
-	int checkUserName = (status & ( 1 << USER_PASSED )) >> USER_PASSED;
-	if (checkUserName) {
-		ss << "| Username passed |";
-	}
-	return ss.str();
 }
 
 void Server::handleUser() {
@@ -88,7 +87,7 @@ void Server::handleUser() {
 			}
 		}
 		currFd->connectStatus |= USER_PASSED;
-		log_debug("connect status: %s", connectStatusAsString(currFd->connectStatus).c_str());
+		log_debug("Connect status: after USER: %s", connectStatusAsString(currFd->connectStatus).c_str());
 		registerNewUser(currFd);
     }
 	else
@@ -117,6 +116,7 @@ void Server::handlePass() {
 		return ;
 	}
 	currFd->connectStatus |= PASS_PASSED;
+	log_debug("Connect status after PASS: %d  %s", currFd->connectStatus, connectStatusAsString(currFd->connectStatus).c_str());
 	currFd->setRegistered(currFd->connectStatus == REGISTERED);
 	registerNewUser(currFd);
 }

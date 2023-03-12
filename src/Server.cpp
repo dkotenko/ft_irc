@@ -13,8 +13,6 @@ Server::Server(int port, std::string password) :
     for (int i = 0; i < maxfd; i++) {
         fds.push_back(FileDescriptor(i));
     }
-    log_debug("%d - type", fds[0].type);
-    exit(0);
     populateHandleMap();
     this->create();
 }
@@ -60,9 +58,8 @@ void	Server::init_fd()
     
     while (i < maxfd) {
         if (fds[i].type != FD_FREE) {
-            exit(0);
             FD_SET(i, &fd_read); 
-            if (fds[i].isRegistered() && getUserByFd(i)->hasMessage()) {
+            if (fds[i].hasMessage()) {
                 FD_SET(i, &fd_write);
             }
             max = MAX(max, i);
@@ -111,8 +108,6 @@ void Server::run() {
     }
 }
 
-
-
 void Server::fct_read(int fd) {
 	if (fds[fd].type == FD_SERV) {
 		srv_accept(fd);
@@ -153,7 +148,7 @@ void Server::client_read(int fd)
     }
     else {
         currUser = getUserByFd(fd);
-        FileDescriptor *currFd = &fds[fd];
+        currFd = &fds[fd];
         outputMessage = &currUser->outputMessage;
         std::stringstream streamData(currFd->buf_read);
         log_info(
@@ -171,12 +166,10 @@ void Server::client_read(int fd)
     }
 }
 
-OutputMessage *Server::parse(std::string src, int fd) {
+void Server::parse(std::string src, int fd) {
     const char separator = ' ';
-    
     inputMessage = new InputMessage();
-    outputMessage = new OutputMessage(currUser->getNickname());
-
+    
     std::vector<std::string> outputArray;
     std::stringstream streamData(src);
     std::string val;
@@ -194,10 +187,9 @@ OutputMessage *Server::parse(std::string src, int fd) {
     if (handleMap.count(inputMessage->command) == 1) {
 
         (this->*(handleMap[inputMessage->command]))();
-        currUser->updatePing();
+        currFd->updatePing();
     }
     delete(inputMessage);
-    return outputMessage;
 }
 
 void Server::fct_write(int cs)
@@ -216,27 +208,31 @@ void Server::pingUsers() {
     for (it = serverData.users.begin(); it != serverData.users.end(); it++)
     {
         User *user = it->second;
-        if (user->isNeedsPing()) {
-            user->doPing();
+        FileDescriptor *fd = &fds[user->fd];
+        if (fd->isNeedsPing()) {
+            fd->doPing();
             std::string toAdd("PING :");
             toAdd += SERVER_NAME;
-            outputMessage->add(toAdd, RPL_NONE, user->fd);
+            user->outputMessage.add(toAdd, RPL_NONE, user->fd);
         }
     }
 }
 
 void Server::disconnectDeadUsers() {
-    std::vector<User *> to_delete;
+    std::vector<User *> deletion;
+    std::vector<User *>::iterator toDelete;
+    std::map<std::string, User*>::iterator it;
 
-    for (std::map<std::string, User*>::iterator it = serverData.users.begin(); it != serverData.users.end(); ) {
-        if (it->second->isLost()) {
-            std::cout << it->second->username << " disconnected" << std::endl;
-            to_delete.push_back(it->second);
+    for (it = serverData.users.begin(); it != serverData.users.end(); it++) {
+        User *user = it->second;
+        FileDescriptor *fd = &fds[user->fd];
+        if (fd->isLost()) {
+            deletion.push_back(it->second);
         }
-        it++;
     }
 
-    for (int i = 0; i < to_delete.size(); i++) {
-        doQuit(to_delete[i]);
+    for (toDelete = deletion.begin(); toDelete != deletion.end(); toDelete++) {
+        log_info("%s disconnected", (*toDelete)->username.c_str());
+        doQuit(*toDelete);
     }
 }

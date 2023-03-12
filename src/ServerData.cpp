@@ -78,11 +78,11 @@ std::string ServerData::doNames(std::vector<std::string> channelsList) {
 }
 
 void ServerData::addUser(FileDescriptor *fileDescriptor) {
-    std::string &username = fileDescriptor->userInfo.username;
-    if (username == "") {
+    if (!fileDescriptor->isRegistered()) {
         return ;
     }
 
+    std::string &username = fileDescriptor->userInfo.username;
     if (users.count(username) > 0) {
         User *existed = users[username];
         existed->nickname = fileDescriptor->userInfo.nickname;
@@ -94,6 +94,10 @@ void ServerData::addUser(FileDescriptor *fileDescriptor) {
         users[username] = new User(fileDescriptor);
         log_debug("user %s added, users number = %d", username.c_str(), (int)users.size());
     }
+}
+
+void createTempUser(FileDescriptor *fileDescriptor) {
+    
 }
 
 void ServerData::deleteUser(User *user) {
