@@ -5,22 +5,29 @@
 #include "User.hpp"
 
 User::User() :
-	fd(NO_FD)
+	fd(NO_FD),
+	username(""),
+	nickname(""),
+    realname(""),
+    hostname(""),
+    awaytext(""),
+    awaystatus(false),
+    welcomeReceived(false),
+    online(false)
 {
-	this->clean();
 }
 
 User::User(FileDescriptor *fileDescriptor) :
-	fd(fileDescriptor->fd)
-{
-	this->nickname = fileDescriptor->userInfo.nickname;
-	this->username = fileDescriptor->userInfo.username;
-}
-
-void User::clean() {
-	this->nickname = "";
-	this->username = "";
-}
+	fd(fileDescriptor->fd),
+	username(fileDescriptor->userInfo.username),
+	nickname(fileDescriptor->userInfo.nickname),
+    realname(fileDescriptor->userInfo.realname),
+    hostname(fileDescriptor->userInfo.hostname),
+    awaytext(""),
+    awaystatus(false),
+    welcomeReceived(false),
+    online(false)
+{}
 
 
 void User::setAwayStatus(bool awaystatus) {
@@ -49,10 +56,6 @@ std::string User::getAwayText() {
 
 void User::deleteUser(std::string username) {
     (void)username;
-}
-
-User::~User() {
-	this->clean();
 }
 
 void User::sendMessage() {

@@ -12,6 +12,7 @@
 class User {
     public:
         User();
+        User(const User & src);
         User(FileDescriptor *fileDescriptor);
         ~User();
         
@@ -19,17 +20,15 @@ class User {
         std::string nickname;
         std::string realname;
         std::string hostname;
-
         std::string awaytext;
+        int fd;
         bool awaystatus;
         bool welcomeReceived;
-        int fd;
-        //TODO priv msg при отправке проверяет в сети ли юзер и отправляет "не в сети" если не в сети
         bool online;
         
+        //TODO priv msg при отправке проверяет в сети ли юзер и отправляет "не в сети" если не в сети
         OutputMessage outputMessage;
 
-        void clean();
         void setAwayText(std::string awaytext);
         void setAwayStatus(bool awaystatus);
         const std::string &getUsername() const;

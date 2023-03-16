@@ -19,10 +19,10 @@ class ServerData
         Channel* getChannel(std::string channelName);
         std::string doNames(std::vector<std::string> channelsList);
         bool checkChannel(std::string channelName);
-        void addUser(FileDescriptor *fileDescriptor);
+        User *addUser(FileDescriptor *fileDescriptor);
         void deleteUser(User *user);
         std::string getUsernameByFd(int fd);
-
+        void printUsers();
     private:
 
 };

@@ -27,7 +27,6 @@ void Server::doQuit(User *user) {
 	if (currFd->isRegistered()) {
 		serverData.deleteUser(user);
 		close(user->fd);
-		user->clean();
 	}
 }
 
@@ -35,8 +34,25 @@ void Server::handleQuit() {
 	doQuit(currUser);
 }
 
+
+#define WELCOME_REPL "001"
+
+void Server::sendWelcome() {
+    if (currFd->isRegistered() && currUser && !currUser->welcomeReceived) {
+		//:FT_IRC 375 pidgin
+		currUser->outputMessage.add(std::string("FT_IRC Message of the day"), RPL_MOTDSTART);
+        
+		//toAdd += ":FT_IRC 372 pidgin ";
+		currUser->outputMessage.add(SERVER_MESSAGE_OF_THE_DAY, RPL_MOTD);
+
+		//:FT_IRC 376 pidgin 
+        currUser->outputMessage.add(std::string(":End of /MOTD command"), RPL_ENDOFMOTD);
+        currUser->welcomeReceived = true;
+    }
+}
+
 void Server::registerNewUser(FileDescriptor *fileDescriptor) {
-	serverData.addUser(fileDescriptor);
+	currUser = serverData.addUser(fileDescriptor);
 	sendWelcome();
 }
 
@@ -62,10 +78,9 @@ void Server::handleNick() {
     if (!currFd->isRegistered()) {
         currFd->connectStatus |= NICK_PASSED;
         currFd->setRegistered(currFd->connectStatus == REGISTERED);
-        currUser->nickname = inputMessage->getParams()[0];
+        currFd->userInfo.nickname = inputMessage->getParams()[0];
 		log_debug("Connect status: after NICK: %s", connectStatusAsString(currFd->connectStatus).c_str());
 		registerNewUser(currFd);
-        return ;
     }
 }
 
@@ -90,9 +105,9 @@ void Server::handleUser() {
 		log_debug("Connect status: after USER: %s", connectStatusAsString(currFd->connectStatus).c_str());
 		registerNewUser(currFd);
     }
-	else
+	else {
 		handleError(ERR_NEEDMOREPARAMS, "USER", "");
-		return ;
+	}
 }
 
 void Server::handlePass() {
@@ -119,23 +134,6 @@ void Server::handlePass() {
 	log_debug("Connect status after PASS: %d  %s", currFd->connectStatus, connectStatusAsString(currFd->connectStatus).c_str());
 	currFd->setRegistered(currFd->connectStatus == REGISTERED);
 	registerNewUser(currFd);
-}
-
-#define WELCOME_REPL "001"
-
-void Server::sendWelcome() {
-    if (currFd->isRegistered() && !currUser->welcomeReceived) {
-		
-		//:FT_IRC 375 pidgin
-		currUser->outputMessage.add(std::string("FT_IRC Message of the day"), RPL_MOTDSTART);
-        
-		//toAdd += ":FT_IRC 372 pidgin ";
-		currUser->outputMessage.add(SERVER_MESSAGE_OF_THE_DAY, RPL_MOTD);
-
-		//:FT_IRC 376 pidgin 
-        currUser->outputMessage.add(std::string(":End of /MOTD command"), RPL_ENDOFMOTD);
-        currUser->welcomeReceived = true;
-    }
 }
 
 //:pidgin!pidgin@127.0.0.1 JOIN :#123

@@ -3,7 +3,9 @@
 
 # include <iostream>
 # include <string>
+# include <cstring>
 # include "PingTimer.hpp"
+# include "logger.hpp"
 
 enum e_connect_states {
     NOT_REGISTERED  = 0,

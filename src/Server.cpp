@@ -54,12 +54,11 @@ void	Server::init_fd()
     max = 0;
     FD_ZERO(&fd_read);
     FD_ZERO(&fd_write);
-    
-    
     while (i < maxfd) {
         if (fds[i].type != FD_FREE) {
-            FD_SET(i, &fd_read); 
-            if (fds[i].hasMessage()) {
+            FD_SET(i, &fd_read);
+            User *user = getUserByFd(i);
+            if (user && user->hasMessage()) {
                 FD_SET(i, &fd_write);
             }
             max = MAX(max, i);
@@ -69,7 +68,11 @@ void	Server::init_fd()
 }
 
 User *Server::getUserByFd(int fd) {
-    return serverData.users[fds[fd].userInfo.username];
+    try {
+        return serverData.users.at(fds[fd].userInfo.username);
+    } catch (const std::out_of_range&) {
+        return nullptr;
+    }   
 }
 
 int	Server::do_select()
@@ -77,7 +80,7 @@ int	Server::do_select()
   struct timeval timeout = {0, 0};
   int activeFdNumber = select(max + 1, &fd_read, &fd_write, NULL, &timeout);
   if (activeFdNumber < 0 ) {
-    log_error("An error occured during select(): %s", strerror(errno));
+    log_fatal("An error occured during select(): %s", strerror(errno));
   }
   return activeFdNumber;
 }
@@ -197,9 +200,9 @@ void Server::fct_write(int cs)
 	client_write(cs);
 }
 
-void Server::client_write(int cs)
+void Server::client_write(int fd)
 {
-    (void)cs;
+    outputMessage->sendMsg(fd);
 }
 
 void Server::pingUsers() {

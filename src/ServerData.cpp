@@ -15,6 +15,13 @@ void ServerData::printAllChannels() {
     }
 }
 
+void ServerData::printUsers() {
+    std::map<std::string, User*>::iterator it;
+    for (it = users.begin(); it != users.end(); it++) {
+        std::cout << it->first << std::endl;
+    }
+}
+
 Channel *ServerData::getChannel(std::string channelName) {
     if (channels.count(channelName)) {
         return channels[channelName];
@@ -77,11 +84,10 @@ std::string ServerData::doNames(std::vector<std::string> channelsList) {
     return answer;
 }
 
-void ServerData::addUser(FileDescriptor *fileDescriptor) {
+User *ServerData::addUser(FileDescriptor *fileDescriptor) {
     if (!fileDescriptor->isRegistered()) {
-        return ;
+        return NULL;
     }
-
     std::string &username = fileDescriptor->userInfo.username;
     if (users.count(username) > 0) {
         User *existed = users[username];
@@ -94,10 +100,7 @@ void ServerData::addUser(FileDescriptor *fileDescriptor) {
         users[username] = new User(fileDescriptor);
         log_debug("user %s added, users number = %d", username.c_str(), (int)users.size());
     }
-}
-
-void createTempUser(FileDescriptor *fileDescriptor) {
-    
+    return users[username];
 }
 
 void ServerData::deleteUser(User *user) {

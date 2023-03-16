@@ -13,7 +13,10 @@ FileDescriptor::FileDescriptor(int fd) :
 	hostname(""),
 	ipAddress(""),
 	userInfo((t_userInfo){"", "", "", "", ""})
-{}
+{
+	std::memset(buf_read, 0, MESSAGE_MAX_LEN + 1);
+	std::memset(buf_write, 0, MESSAGE_MAX_LEN + 1);
+}
 
 FileDescriptor::FileDescriptor( const FileDescriptor & src )
 {
@@ -25,6 +28,8 @@ FileDescriptor::FileDescriptor( const FileDescriptor & src )
 	hostname = src.hostname;
 	ipAddress = src.ipAddress;
 	userInfo = src.userInfo;
+	std::memset(buf_read, 0, MESSAGE_MAX_LEN + 1);
+	std::memset(buf_write, 0, MESSAGE_MAX_LEN + 1);
 }
 
 
@@ -97,7 +102,11 @@ void FileDescriptor::updatePing() {
 }
 
 bool FileDescriptor::isNeedsPing() {
-	return timer.isNeedsPing();
+	bool needs = timer.isNeedsPing();
+	if (needs) {
+		log_debug("fd %d needs ping", fd);
+	}
+	return needs;
 }
 
 /*

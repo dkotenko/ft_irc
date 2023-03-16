@@ -67,6 +67,7 @@ void OutputMessage::sendMsg(int fd) {
     if (lines.size() == 0) {
 		return ;
 	}
+    log_info("here");
     
     std::string toSend;
 
