@@ -25,7 +25,6 @@ PingTimer::~PingTimer()
 void PingTimer::reset() {
 	lastPingTimeMs = getCurrTimeMs();
 	timesToPing = PING_TIMES;
-	log_info("%lld", timeToResponceMs);
 }
 
 bool PingTimer::isNeedsPing() {

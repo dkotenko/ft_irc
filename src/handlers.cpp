@@ -198,7 +198,7 @@ void Server::handlePrivMsg() {
 			//outputMessage->data = message;
 			//outputMessage->add(message, 0);
 			//TODO как правильно отправлять сообщения??? Не приходят сообщения клиенту
-			outputMessage->addPrivMsg(message, currFd->fd, currUser->username, "127.0.0.1", inputMessage->getParams()[0]);
+			outputMessage->addPrivMsg(message, currUser->username, currUser->hostname, inputMessage->getParams()[0]);
 		}
 		else {
 			handleError(ERR_NOSUCHNICK, inputMessage->getParams()[0], "");
@@ -447,7 +447,7 @@ void Server::handleError(int err, const std::string &arg1, const std::string &ar
 			msg += "UNKNOWN ERROR";
 			break;
 	}
-	outputMessage->add(msg, RPL_NONE, currFd->fd);
+	outputMessage->add(msg, RPL_NONE);
 }
 
 std::vector<std::string> split(const std::string& s, char delim) {
@@ -468,13 +468,13 @@ void Server::handleNames() {
     if (inputMessage->getParams().size() == 1) {
         channelsList = split(inputMessage->getParams()[0], ',');
     }
-	outputMessage->add(serverData.doNames(channelsList), RPL_NAMREPLY, currFd->fd);
+	outputMessage->add(serverData.doNames(channelsList), RPL_NAMREPLY);
 	std::string res;
 	if (channelsList.size() > 0) {
 		res += channelsList[0] + " ";
 	}
 	res += ":End of /NAMES list";
-	outputMessage->add(res, RPL_ENDOFNAMES, currFd->fd);
+	outputMessage->add(res, RPL_ENDOFNAMES);
 }
 
 void Server::handleList() {
@@ -483,7 +483,7 @@ void Server::handleList() {
     }
 	if (inputMessage->getParamsSize() == 0) {
 		std::map<std::string ,Channel*> :: iterator it;
-		outputMessage->add(std::string("Channel :Users Name"), RPL_LISTSTART, currFd->fd);
+		outputMessage->add(std::string("Channel :Users Name"), RPL_LISTSTART);
 		
     	for(it=serverData.channels.begin(); it != serverData.channels.end(); ++it) {
 			std::string res = it->first + " ";
@@ -491,13 +491,13 @@ void Server::handleList() {
 			res += SSTR(it->second->getUsers().size()) + " ";
 			res += it->second->getTopic();
 			res += " :[+n]";
-			outputMessage->add(res, RPL_LIST, currFd->fd);
+			outputMessage->add(res, RPL_LIST);
     	}
 		outputMessage->add(std::string(":End of /LIST"), RPL_LISTEND);
 	}
 	else if (inputMessage->getParamsSize() == 1) {
 		std::vector<std::string> channelsVector = split(inputMessage->params[0], ',');
-		outputMessage->add(std::string("Channel :Users Name"), RPL_LISTSTART, currFd->fd);
+		outputMessage->add(std::string("Channel :Users Name"), RPL_LISTSTART);
 		for (int i = 0; i < channelsVector.size(); ++i) {
 			if (serverData.checkChannel(channelsVector[i])) {
 				std::string res = channelsVector[i] + " ";
@@ -511,10 +511,10 @@ void Server::handleList() {
 					res += usersVector[j];
 				}
 				res += " :[+n]";
-				outputMessage->add(res, RPL_LIST, currFd->fd);
+				outputMessage->add(res, RPL_LIST);
 			}
 		}
-		outputMessage->add(std::string(":End of /LIST"), RPL_LISTEND, currFd->fd);
+		outputMessage->add(std::string(":End of /LIST"), RPL_LISTEND);
 	}
 }
 
@@ -562,7 +562,6 @@ void Server::handleWhoIs() {
 
 	std::string wildcard = inputMessage->getParams()[0];
 	std::vector<User *> v = getUsersByWildcard(wildcard);
-	outputMessage->addFd(currUser->fd);
 	for(std::vector<User *>::iterator it = v.begin(); it != v.end(); ++it) {
 		User *user = *it;
 		outputMessage->add(user->getNickname() + " "  + \

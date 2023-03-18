@@ -218,7 +218,7 @@ void Server::pingUsers() {
             user->doPing();
             std::string toAdd("PING :");
             toAdd += SERVER_NAME;
-            user->outputMessage.add(toAdd, RPL_NONE, user->fd);
+            user->outputMessage.add(toAdd, RPL_NONE);
         }
     }
 }

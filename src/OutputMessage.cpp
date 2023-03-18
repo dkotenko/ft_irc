@@ -4,29 +4,14 @@
 
 #include "OutputMessage.hpp"
 
-OutputMessage::OutputMessage() {
-    length = -1;
-}
+OutputMessage::OutputMessage() {}
 
 OutputMessage::OutputMessage(std::string nickName) :
-    servername(SERVER_NAME)
-{
-    length = 2;
-    this->nickName = nickName;
-}
+    servername(SERVER_NAME),
+    nickName(nickName)
+{}
 
-OutputMessage::OutputMessage(OutputMessage &src) {
-    length = 12;
-}
-
-void OutputMessage::addFd(int fd) {
-    for (int i = 0; i < fd_to.size(); i++) {
-        if (fd_to[i] == fd) {
-            return ;
-        }
-    }
-    fd_to.push_back(fd);
-}
+OutputMessage::OutputMessage(OutputMessage &src) {}
 
 std::string OutputMessage::getReplyCodeAsString(int replyCode) {
     std::stringstream ss;
@@ -49,13 +34,7 @@ void OutputMessage::add(std::string s, int replyCode) {
     lines.push(line);
 }
 
-void OutputMessage::add(std::string s, int replyCode, int fd) {
-    addFd(fd);
-    add(s, replyCode);
-}
-
-void OutputMessage::addPrivMsg(std::string s, int fd, std::string fromusername, std::string fromhostname, std::string tousername) {
-    addFd(fd);
+void OutputMessage::addPrivMsg(std::string &s, std::string &fromusername, std::string &fromhostname, std::string &tousername) {
     std::string line = ":";
     line += fromusername;
     line += "!";
@@ -71,14 +50,11 @@ void OutputMessage::addPrivMsg(std::string s, int fd, std::string fromusername, 
 }
 
 void OutputMessage::sendMsg(int fd) {
-    log_info("%d", length);
     if (lines.size() == 0) {
 		return ;
 	}
     
-    
     std::string toSend;
-
 	if (lines.front().length() > MESSAGE_MAX_LEN) {
 		toSend = lines.front().substr(0, MESSAGE_MAX_LEN);
 		lines.front() = lines.front().substr(MESSAGE_MAX_LEN);
