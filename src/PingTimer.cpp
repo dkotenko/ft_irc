@@ -1,5 +1,6 @@
 #include "PingTimer.hpp"
 #include <iostream>
+#include "logger.hpp"
 
 /*
 ** ------------------------------- CONSTRUCTOR --------------------------------
@@ -8,6 +9,7 @@
 PingTimer::PingTimer()
 {
 	timeToResponceMs = PING_TIMEOUT * 1000;
+	
 	reset();
 }
 
@@ -21,9 +23,9 @@ PingTimer::~PingTimer()
 }
 
 void PingTimer::reset() {
-	
 	lastPingTimeMs = getCurrTimeMs();
 	timesToPing = PING_TIMES;
+	log_info("%lld", timeToResponceMs);
 }
 
 bool PingTimer::isNeedsPing() {

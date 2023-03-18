@@ -190,7 +190,10 @@ void Server::parse(std::string src, int fd) {
     if (handleMap.count(inputMessage->command) == 1) {
 
         (this->*(handleMap[inputMessage->command]))();
-        currFd->updatePing();
+        if (currUser) {
+            currUser->updatePing();
+        }
+        
     }
     delete(inputMessage);
 }
@@ -202,7 +205,7 @@ void Server::fct_write(int cs)
 
 void Server::client_write(int fd)
 {
-    outputMessage->sendMsg(fd);
+    getUserByFd(fd)->outputMessage.sendMsg(fd);
 }
 
 void Server::pingUsers() {
@@ -211,9 +214,8 @@ void Server::pingUsers() {
     for (it = serverData.users.begin(); it != serverData.users.end(); it++)
     {
         User *user = it->second;
-        FileDescriptor *fd = &fds[user->fd];
-        if (fd->isNeedsPing()) {
-            fd->doPing();
+        if (user->isNeedsPing()) {
+            user->doPing();
             std::string toAdd("PING :");
             toAdd += SERVER_NAME;
             user->outputMessage.add(toAdd, RPL_NONE, user->fd);
@@ -228,8 +230,7 @@ void Server::disconnectDeadUsers() {
 
     for (it = serverData.users.begin(); it != serverData.users.end(); it++) {
         User *user = it->second;
-        FileDescriptor *fd = &fds[user->fd];
-        if (fd->isLost()) {
+        if (user->isLost()) {
             deletion.push_back(it->second);
         }
     }

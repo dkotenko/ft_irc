@@ -24,6 +24,7 @@ class OutputMessage {
 
         OutputMessage();
         OutputMessage(std::string nickName);
+        OutputMessage(OutputMessage &src);
         void add(std::string s, int replyCode);
         void add(std::string s, int replyCode, int fd);
         void addPrivMsg(std::string s, int fd, std::string fromusername, std::string fromhostname, std::string tousername);

@@ -25,9 +25,22 @@ class User {
         bool awaystatus;
         bool welcomeReceived;
         bool online;
-        
+
         //TODO priv msg при отправке проверяет в сети ли юзер и отправляет "не в сети" если не в сети
         OutputMessage outputMessage;
+
+        
+
+        /*
+		** PING
+		*/
+        PingTimer timer;
+        bool isLost();
+        void doPing();
+        void updatePing();
+        bool isNeedsPing();
+        
+        
 
         void setAwayText(std::string awaytext);
         void setAwayStatus(bool awaystatus);

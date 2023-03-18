@@ -89,26 +89,6 @@ bool FileDescriptor::hasMessage() {
 	return buf_write[0];
 }
 
-bool FileDescriptor::isLost() {
-	return timer.isNoResponce();
-}
-
-void FileDescriptor::doPing() {
-	timer.doPing();
-}
-
-void FileDescriptor::updatePing() {
-	timer.reset();
-}
-
-bool FileDescriptor::isNeedsPing() {
-	bool needs = timer.isNeedsPing();
-	if (needs) {
-		log_debug("fd %d needs ping", fd);
-	}
-	return needs;
-}
-
 /*
 ** --------------------------------- ACCESSOR ---------------------------------
 */

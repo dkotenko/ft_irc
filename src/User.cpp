@@ -65,3 +65,25 @@ void User::sendMessage() {
 bool User::hasMessage() {
 	return outputMessage.lines.size() > 0;
 }
+
+
+
+bool User::isLost() {
+	return timer.isNoResponce();
+}
+
+void User::doPing() {
+	timer.doPing();
+}
+
+void User::updatePing() {
+	timer.reset();
+}
+
+bool User::isNeedsPing() {
+	bool needs = timer.isNeedsPing();
+	if (needs) {
+		log_debug("fd %d needs ping", fd);
+	}
+	return needs;
+}

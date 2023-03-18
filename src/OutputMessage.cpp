@@ -4,12 +4,19 @@
 
 #include "OutputMessage.hpp"
 
-OutputMessage::OutputMessage() {}
+OutputMessage::OutputMessage() {
+    length = -1;
+}
 
 OutputMessage::OutputMessage(std::string nickName) :
     servername(SERVER_NAME)
 {
+    length = 2;
     this->nickName = nickName;
+}
+
+OutputMessage::OutputMessage(OutputMessage &src) {
+    length = 12;
 }
 
 void OutputMessage::addFd(int fd) {
@@ -64,10 +71,11 @@ void OutputMessage::addPrivMsg(std::string s, int fd, std::string fromusername, 
 }
 
 void OutputMessage::sendMsg(int fd) {
+    log_info("%d", length);
     if (lines.size() == 0) {
 		return ;
 	}
-    log_info("here");
+    
     
     std::string toSend;
 

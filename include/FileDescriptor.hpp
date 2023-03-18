@@ -50,19 +50,13 @@ class FileDescriptor {
     	std::string hostname;
     	std::string ipAddress;
 		t_userInfo userInfo;
-    	PingTimer timer;
+    	
 
     	bool isRegistered();
     	void setRegistered(bool b);
 		void clean();
 		bool hasMessage();
-		/*
-		** PING
-		*/
-        bool isLost();
-        void doPing();
-        void updatePing();
-        bool isNeedsPing();
+		
 
 	private:
 		
