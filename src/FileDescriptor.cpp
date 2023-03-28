@@ -11,8 +11,7 @@ FileDescriptor::FileDescriptor(int fd) :
 	type(FD_FREE),
 	registered(false),
 	hostname(""),
-	ipAddress(""),
-	userInfo((t_userInfo){"", "", "", "", ""})
+	ipAddress("")
 {
 	std::memset(buf_read, 0, MESSAGE_MAX_LEN + 1);
 	std::memset(buf_write, 0, MESSAGE_MAX_LEN + 1);

@@ -60,9 +60,14 @@ void OutputMessage::sendMsg(int fd) {
 		lines.front() = lines.front().substr(MESSAGE_MAX_LEN);
         send(fd, toSend.c_str(), toSend.length(), 0);
 	} else {
-		toSend = lines.front();
+        while (lines.size() > 0) {
+            if (toSend.length() + lines.front().length() > MESSAGE_MAX_LEN) {
+                break ;
+            }
+            toSend += lines.front();
+            lines.pop();
+        }
         send(fd, toSend.c_str(), toSend.length(), 0);
-        lines.pop();
 	}
     log_debug("message to fd %d was sent:\n%s", fd, toSend.c_str());
 }

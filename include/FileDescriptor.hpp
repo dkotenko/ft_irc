@@ -24,6 +24,26 @@ enum e_fds {
 
 typedef struct  s_userInfo
 {
+	s_userInfo():
+		username("NO USERNAME"),
+		nickname("NO NICKNAME"),
+		realname("NO REALNAME"),
+		hostname("NO HOSTNAME"),
+		servername("NO SERVERNAME") {}
+	s_userInfo(const s_userInfo& src):
+		username(src.username),
+		nickname(src.nickname),
+		realname(src.realname),
+		hostname(src.hostname),
+		servername(src.servername) {}
+	s_userInfo &operator=( s_userInfo const & rhs ) {
+		username = rhs.username;
+		nickname = rhs.nickname;
+		realname = rhs.realname;
+		hostname = rhs.hostname;
+		servername = rhs.servername;
+		return *this;
+	}
 	std::string username;
 	std::string nickname;
 	std::string realname;

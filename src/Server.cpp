@@ -142,7 +142,7 @@ void Server::client_read(int fd)
     int	r;
     int	i;
 
-    std::memset(fds[fd].buf_read, 0, BUF_SIZE);
+    std::memset(fds[fd].buf_read, 0, MESSAGE_MAX_LEN);
     r = recv(fd, fds[fd].buf_read, MESSAGE_MAX_LEN, 0);
     if (r <= 0) {
       close(fd);
@@ -154,11 +154,7 @@ void Server::client_read(int fd)
         currFd = &fds[fd];
         outputMessage = &currUser->outputMessage;
         std::stringstream streamData(currFd->buf_read);
-        log_info(
-            "received from %s(fd: %d): %s",
-            currUser ? currUser->username.c_str() : "NO USERNAME",
-            fd,
-            currFd->buf_read);
+        log_info("received from %s(fd: %d): %s", currFd->userInfo.username.c_str(), fd, currFd->buf_read);
 
         std::string str;
         while (std::getline(streamData, str, '\n')) {

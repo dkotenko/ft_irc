@@ -89,6 +89,8 @@ void Server::handleUser() {
 		&& inputMessage->params[3][0] == ':' && inputMessage->params[3].size() > 1) {
         currFd->setRegistered(currFd->connectStatus == REGISTERED);
         currFd->userInfo.username = inputMessage->params[0];
+		
+		std::cout << currFd->userInfo.username << std::endl;
 		currFd->userInfo.hostname = inputMessage->params[1];
 		currFd->userInfo.servername = inputMessage->params[2];
 		for (int i = 3; i < inputMessage->params.size(); ++i) {
